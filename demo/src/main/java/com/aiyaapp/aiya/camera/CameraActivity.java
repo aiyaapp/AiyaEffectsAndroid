@@ -51,7 +51,8 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
         @Override
         protected void otherSetting(Camera.Parameters param) {
             super.otherSetting(param);
-            param.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            //不支持自动聚焦，这样设置会导致崩溃
+            //param.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             //设置FpsRange，应查询相机支持的fps range，然后再进行设置
             //Android 提供了这个接口，但是这个设置不一定生效，与手机有关
             //param.setPreviewFpsRange(30,30);
