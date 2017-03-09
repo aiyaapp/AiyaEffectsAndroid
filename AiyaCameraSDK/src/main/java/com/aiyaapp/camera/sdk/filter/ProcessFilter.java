@@ -13,7 +13,8 @@ import android.opengl.GLES20;
 import com.aiyaapp.camera.sdk.AiyaCameraEffect;
 
 /**
- * Description:
+ * 用于处理用户通过视频或相机输入的图像流，给输入图像进行美颜处理、增加特效等。该类必须与
+ * {@link PrepareFilter}配合使用。
  */
 public class ProcessFilter extends AFilter {
 

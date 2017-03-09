@@ -19,12 +19,12 @@ import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 
 /**
- * Description:
+ *  SDK特效处理的主要流程实现，调用{@link PrepareFilter}及{@link ProcessFilter},
+ *  并提供接口使用户能够在固定的流程上，添加自定义Filter以作其他处理。
  */
 public class AiyaEffectFilter extends AFilter {
 
     private float[] SM=new float[16];     //用于显示的变换矩阵
-    private float[] OM;     //用于后台绘制的变换矩阵
 
     private SurfaceTexture mSurfaceTexture;
 
@@ -64,7 +64,6 @@ public class AiyaEffectFilter extends AFilter {
     }
 
     public void addFilter(AFilter filter,boolean beforeProcess){
-        filter.setMatrix(OM);
         if(beforeProcess){
             mBeFilter.addFilter(filter);
         }else{

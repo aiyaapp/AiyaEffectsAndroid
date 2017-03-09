@@ -51,7 +51,8 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
         @Override
         protected void otherSetting(Camera.Parameters param) {
             super.otherSetting(param);
-            param.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+            //不支持自动聚焦，这样设置会导致崩溃
+            //param.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
             //设置FpsRange，应查询相机支持的fps range，然后再进行设置
             //Android 提供了这个接口，但是这个设置不一定生效，与手机有关
             //param.setPreviewFpsRange(30,30);
@@ -165,17 +166,7 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
     @Override
     public void onFrame(final byte[] bytes,long time) {
         if(isTakePhoto){
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    LogUtils.e("has take pic");
-                    Bitmap bitmap=Bitmap.createBitmap(bmpWidth,bmpHeight, Bitmap.Config.ARGB_8888);
-                    ByteBuffer b=ByteBuffer.wrap(bytes);
-                    bitmap.copyPixelsFromBuffer(b);
-                    saveBitmap(bitmap);
-                    bitmap.recycle();
-                }
-            }).start();
+            saveBitmapAsync(bytes,bmpWidth,bmpHeight);
         }else{
 //            mEncoder.feedData(bytes,time);
         }
@@ -188,40 +179,6 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             android.util.Log.e("wuwang","mkdirs->"+p);
         }
         return p+path;
-    }
-
-    //图片保存
-    public void saveBitmap(Bitmap b){
-        String path =  getSD()+ "/AiyaCamera/photo/";
-        File folder=new File(path);
-        if(!folder.exists()&&!folder.mkdirs()){
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(CameraActivity.this, "无法保存照片", Toast.LENGTH_SHORT).show();
-                }
-            });
-            return;
-        }
-        long dataTake = System.currentTimeMillis();
-        final String jpegName=path+ dataTake +".jpg";
-        try {
-            FileOutputStream fout = new FileOutputStream(jpegName);
-            BufferedOutputStream bos = new BufferedOutputStream(fout);
-            b.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-            bos.flush();
-            bos.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(CameraActivity.this, "保存成功->"+jpegName, Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
 }
