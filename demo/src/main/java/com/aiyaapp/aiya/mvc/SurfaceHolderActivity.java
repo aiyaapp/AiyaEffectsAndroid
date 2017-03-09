@@ -13,18 +13,22 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
 
 import com.aiyaapp.aiya.EffectSelectActivity;
 import com.aiyaapp.aiya.R;
 import com.aiyaapp.aiya.util.PermissionUtils;
+import com.aiyaapp.camera.sdk.base.FrameCallback;
+import com.aiyaapp.camera.sdk.base.Log;
 import com.aiyaapp.camera.sdk.widget.AiyaController;
 import com.aiyaapp.camera.sdk.widget.AiyaModel;
 
 /**
  * Description:
  */
-public class SurfaceHolderActivity extends EffectSelectActivity{
+public class SurfaceHolderActivity extends EffectSelectActivity implements FrameCallback {
 
+    private int bmpWidth=720,bmpHeight=1280;
 
     private SurfaceView mSurfaceView;
 
@@ -53,6 +57,7 @@ public class SurfaceHolderActivity extends EffectSelectActivity{
             initData();
             modelInit();
             mAiyaController=new AiyaController(SurfaceHolderActivity.this);
+            mAiyaController.setFrameCallback(bmpWidth,bmpHeight,SurfaceHolderActivity.this);
             mAiyaModel=mCamera1Model;
 //            mAiyaModel=mCamera2Model;     //使用Camera2
             mSurfaceView= (SurfaceView)findViewById(R.id.mSurfaceView);
@@ -88,9 +93,20 @@ public class SurfaceHolderActivity extends EffectSelectActivity{
     }
 
     @Override
+    public void onClick(View view) {
+        super.onClick(view);
+        switch (view.getId()){
+            case R.id.mShutter:
+                mAiyaController.takePhoto();
+                break;
+        }
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         if(mAiyaController!=null){
+            Log.e("textureview","resume---->");
             mAiyaController.onResume();
         }
     }
@@ -99,6 +115,7 @@ public class SurfaceHolderActivity extends EffectSelectActivity{
     protected void onPause() {
         super.onPause();
         if (mAiyaController!=null){
+            Log.e("textureview","pause---->");
             mAiyaController.onPause();
         }
     }
@@ -111,5 +128,10 @@ public class SurfaceHolderActivity extends EffectSelectActivity{
         }
     }
 
+
+    @Override
+    public void onFrame(byte[] bytes, long time) {
+        saveBitmapAsync(bytes,bmpWidth,bmpHeight);
+    }
 
 }
