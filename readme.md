@@ -67,9 +67,10 @@ AiyaCameraSDK的主要功能是定位图像数据中的人脸，为人脸增加�
 # 4、架构设计
 AiyaCameraSDK（后面简写为SDK）的技术核心是人脸追踪和特效渲染。SDK总流程图如下：
 
-![这里写图片描述](http://img.blog.csdn.net/20170308144015160?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvanVuemlh/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![这里写图片描述](doc/sdk流程图.png)
 
 SDK架构分为三层：
+
 1. **最底层**是核心接口及围绕核心接口形成的单例类。SDK的功能是据此为基础实现的。对外主要包括AiyaCameraEffect及AiyaEffect两个单例类，分别用于人脸有关的特效和人脸无关的特效。
 2. **中间层**为一系列的Filter，Filter类是利用OpenGL来进行图像的渲染和处理，他们都继承于AFilter类。这些Filter可以很方便的运用于其他诸如GPUImage之类的框架中，也可直接在GL环境中进行调用。用户可以根据这些Filter进行扩展，自定义实现丰富的功能。
 3. **最外层**是SDK的功能控件，这些功能控件使用户可以更快速的将SDK集成到项目中。主要包括CameraView(数据、处理、输出一体)和AiyaController(剥离了数据和视图)。
@@ -77,7 +78,7 @@ SDK架构分为三层：
 # 5、API 说明
 ## 类图
 SDK主要类图如下：
-![这里写图片描述](http://img.blog.csdn.net/20170308143950566?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvanVuemlh/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![这里写图片描述](doc/类图.png)
 ## 类说明
 - Filter类都是继承AFilter，其中NoFilter和OesFilter为最基础的实现，OesFilter用来接收处理诸如视频、相机的会不断变化的图像流，NoFilter用于接收处理其他2D图像。
 - PrepareFilter调用了AiyaCameraEffect的track(用于人脸捕获)方法。ProcessFilter调用了AiyaCameraEffect的process(用于特效处理)方法，而track方法必须和process方法配合使用，所以PrepareFilter也必须和ProcessFilter方法配合使用。
