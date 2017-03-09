@@ -67,7 +67,7 @@ AiyaCameraSDK的主要功能是定位图像数据中的人脸，为人脸增加�
 # 4、架构设计
 AiyaCameraSDK（后面简写为SDK）的技术核心是人脸追踪和特效渲染。SDK总流程图如下：
 
-![这里写图片描述](http://img.blog.csdn.net/20170308144015160?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvanVuemlh/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/SouthEast)
+![这里写图片描述](doc/sdk流程图.png)
 
 SDK架构分为三层：
 1. **最底层**是核心接口及围绕核心接口形成的单例类。SDK的功能是据此为基础实现的。对外主要包括AiyaCameraEffect及AiyaEffect两个单例类，分别用于人脸有关的特效和人脸无关的特效。
