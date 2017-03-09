@@ -7,9 +7,6 @@
  */
 package com.aiyaapp.camera.sdk.widget;
 
-/**
- * Description:
- */
 public interface AiyaModel {
 
     void attachToController(AiyaController controller);

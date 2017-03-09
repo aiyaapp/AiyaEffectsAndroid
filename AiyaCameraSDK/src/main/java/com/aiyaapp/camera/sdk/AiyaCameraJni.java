@@ -4,7 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 /**
- * Created by abner on 16-10-14.
+ * 核心功能的JNI接口
  */
 final class AiyaCameraJni {
     private static final String TAG = "AiyaCameraJni";

@@ -11,7 +11,7 @@ import android.content.res.Resources;
 import android.opengl.GLES20;
 
 /**
- * Description:
+ * 美颜Filter
  */
 public class Beauty extends AFilter {
 

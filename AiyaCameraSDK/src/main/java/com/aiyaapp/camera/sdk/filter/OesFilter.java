@@ -14,7 +14,7 @@ import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 
 /**
- * Description:
+ * 以{@link GLES11Ext#GL_TEXTURE_EXTERNAL_OES}作为纹理输入的Filter，用于接受图像流作为输入
  */
 public class OesFilter extends AFilter{
 

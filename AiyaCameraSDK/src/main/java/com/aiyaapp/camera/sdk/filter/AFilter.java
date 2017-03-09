@@ -20,7 +20,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 /**
- * Description:
+ * Filter的基类，提供统一的创建、使用GL程序的方式。
  */
 public abstract class AFilter {
 

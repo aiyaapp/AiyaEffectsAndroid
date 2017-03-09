@@ -19,7 +19,8 @@ import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 
 /**
- * Description:
+ *  SDK特效处理的主要流程实现，调用{@link PrepareFilter}及{@link ProcessFilter},
+ *  并提供接口使用户能够在固定的流程上，添加自定义Filter以作其他处理。
  */
 public class AiyaEffectFilter extends AFilter {
 

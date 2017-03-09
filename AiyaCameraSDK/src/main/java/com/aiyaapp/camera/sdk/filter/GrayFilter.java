@@ -9,9 +9,6 @@ package com.aiyaapp.camera.sdk.filter;
 
 import android.content.res.Resources;
 
-/**
- * Description:
- */
 public class GrayFilter extends AFilter {
 
     public GrayFilter(Resources mRes) {

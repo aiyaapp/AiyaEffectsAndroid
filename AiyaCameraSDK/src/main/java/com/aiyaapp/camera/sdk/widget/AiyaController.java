@@ -38,7 +38,7 @@ import com.aiyaapp.camera.sdk.filter.MatrixUtils;
 import com.aiyaapp.camera.sdk.filter.NoFilter;
 
 /**
- * Description: 借助GLSurfaceView创建的GL环境，做渲染工作。不将内容渲染到GLSurfaceView
+ * 借助GLSurfaceView创建的GL环境，做渲染工作。不将内容渲染到GLSurfaceView
  * 的Surface上，而是将内容绘制到外部提供的Surface、SurfaceHolder或者SurfaceTexture上。
  */
 public class AiyaController implements GLSurfaceView.Renderer {
@@ -168,6 +168,16 @@ public class AiyaController implements GLSurfaceView.Renderer {
             mRenderer.onSurfaceChanged(gl, width, height);
         }
         Log.e("Matrix changed:"+ Arrays.toString(SM));
+
+        deleteFrameBuffer();
+        GLES20.glGenFramebuffers(1,mExportFrame,0);
+        EasyGlUtils.genTexturesWithParameter(1,mExportTexture,0,GLES20.GL_RGBA,mDataSize.x,
+            mDataSize.y);
+    }
+
+    private void deleteFrameBuffer() {
+        GLES20.glDeleteFramebuffers(1, mExportFrame, 0);
+        GLES20.glDeleteTextures(1, mExportTexture, 0);
     }
 
     @Override
@@ -292,14 +302,14 @@ public class AiyaController implements GLSurfaceView.Renderer {
                 outPutBuffer[indexOutput] = ByteBuffer.allocate(frameCallbackWidth *
                     frameCallbackHeight*4);
             }
-            GLES20.glViewport(0, 0, frameCallbackWidth, frameCallbackHeight);
             EasyGlUtils.bindFrameTexture(mExportFrame[0],mExportTexture[0]);
+            GLES20.glViewport(0, 0, frameCallbackWidth, frameCallbackHeight);
             mShowFilter.setMatrix(callbackOM);
             mShowFilter.draw();
             frameCallback();
             isShoot = false;
-            EasyGlUtils.unBindFrameBuffer();
             mShowFilter.setMatrix(SM);
+            EasyGlUtils.unBindFrameBuffer();
         }
     }
 

@@ -10,7 +10,7 @@ package com.aiyaapp.camera.sdk.filter;
 import android.opengl.Matrix;
 
 /**
- * Description:
+ * Filter的坐标变换矩阵工具类
  */
 public enum  MatrixUtils {
     ;

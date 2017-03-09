@@ -29,7 +29,8 @@ import com.aiyaapp.camera.sdk.base.StateObserver;
 import com.aiyaapp.camera.sdk.base.TrackCallback;
 
 /**
- * Description:
+ *  Sdk的核心接口，将工作线程、GL线程、人脸追踪线程分开，
+ *  提高SDK对视频流的处理速度。
  */
 public class AiyaCameraEffect implements ISdkManager {
 
@@ -244,7 +245,6 @@ public class AiyaCameraEffect implements ISdkManager {
         }
     }
 
-    //TODO 修改，信号量消费迁移到process中
     @Override
     public void track(final byte[] trackData, final float[] info, final int trackIndex) {
 //        Log.e("semaphore 1--> "+mSemaphore.availablePermits());

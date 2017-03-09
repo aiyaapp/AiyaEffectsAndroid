@@ -16,9 +16,6 @@ import android.content.res.Resources;
 import android.opengl.GLES20;
 import android.util.Log;
 
-/**
- * Description:
- */
 public class GroupFilter extends AFilter{
 
     private Queue<AFilter> mFilterQueue;

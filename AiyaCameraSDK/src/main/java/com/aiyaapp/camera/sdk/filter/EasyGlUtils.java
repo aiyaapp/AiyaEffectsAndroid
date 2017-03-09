@@ -9,9 +9,6 @@ package com.aiyaapp.camera.sdk.filter;
 
 import android.opengl.GLES20;
 
-/**
- * Description:
- */
 public enum EasyGlUtils {
     ;
     EasyGlUtils(){

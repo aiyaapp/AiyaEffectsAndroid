@@ -13,7 +13,7 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
 /**
- * Description:
+ * 水印Filter示例
  */
 public class WaterMarkFilter extends NoFilter {
 
