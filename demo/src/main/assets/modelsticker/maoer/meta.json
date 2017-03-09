@@ -1,0 +1,23 @@
+{
+  "format" : "1",
+  "name":"猫耳",
+  
+  "nodes" : [
+    { 
+	  "type":"2dAnim",
+      "dirname" : "er",   
+      "number"      : 14,     
+      "width" : 251,         
+      "height" : 112,
+      "duration" : 50,       
+      "isloop" : 1,           
+      "Triggertype" : 0,     
+      "untilFinish" : 1,      
+      "position" : "foreheadCenter",   
+      "anchorX" : 125,       
+      "anchorY" : 60,
+      "ratio" : 1.7,          
+      "fullscreen" : 0
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "format" : "1",
+  "name":"grass",
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "circle",
+      "number"      : 61,
+      "width" : 290,
+      "height" : 79,
+      "duration" : 50,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 145,
+      "anchorY" : 32,
+      "ratio" : 1.2,
+      "fullscreen" : 0
+    },
+    {
+	  "type":"2dAnim",
+      "dirname" : "grass",
+      "number"      : 35,
+      "width" : 738,
+      "height" : 260,
+      "duration" : 50,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 315,
+      "anchorY" : 102,
+      "ratio" : 2.7,
+      "fullscreen" : 0
+    }
+  ]
+}

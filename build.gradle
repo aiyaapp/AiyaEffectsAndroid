@@ -1,0 +1,36 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+              jcenter()
+//        maven {
+//            url "http://192.168.1.13:8081/nexus/content/repositories/thirdparty/"
+//        }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.1'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+ext{
+    vCode=20
+    vName="v2.0.0"
+}
+
+
+allprojects {
+    repositories {
+               jcenter()
+//        maven {
+//            url "http://192.168.1.13:8081/nexus/content/repositories/thirdparty/"
+//        }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+

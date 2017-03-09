@@ -1,0 +1,30 @@
+@startuml
+start
+partition 初始化
+
+:检查必要资源;
+if (资源不存在或不完整) then (是)
+    :拷贝资源;
+else (否)
+endif
+:鉴权;
+if (appkey与appid相匹配) then (是)
+
+else (否)
+    if (是否为试用License) then (是)
+        :提示特效1分钟后失效;
+    else (否)
+        stop
+    endif
+endif
+}
+repeat
+partition 图像处理
+    :取得数据;
+    :绘制并取得缩放后的图片;
+    :人脸追踪;
+    :根据追踪结果绘制原图及特效;
+}
+repeat while(继续)
+end
+@enduml

@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/mSwitchCamera"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:title="@string/switch_camera"/>
+    <!--<item-->
+        <!--android:id="@+id/mModeChange"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="ifRoom"-->
+        <!--android:title="@string/switch_mode"/>-->
+</menu>

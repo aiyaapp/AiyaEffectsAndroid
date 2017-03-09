@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:keepScreenOn="true" >
+<com.aiyaapp.aiya.media.VideoView android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mVideoView"/>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_marginBottom="20dp"
+    android:layout_marginTop="40dp"
+    android:paddingLeft="20dp"
+    android:paddingRight="20dp"
+    android:id="@+id/mOtherMenu" >
+    <TextView
+        style="@style/NormalMenu"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="特效"
+        android:onClick="onClick"
+        android:layout_centerVertical="true"
+        android:id="@+id/mLeft" />
+    <TextView
+        android:text="打开"
+        style="@style/NormalMenu"
+        android:gravity="center"
+        android:onClick="onClick"
+        android:id="@+id/mCenter"
+        android:layout_centerInParent="true"/>
+    <TextView
+        style="@style/NormalMenu"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:text="美颜"
+        android:onClick="onClick"
+        android:id="@+id/mRight" />
+</RelativeLayout>
+<android.support.v7.widget.RecyclerView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_above="@id/mOtherMenu"
+    android:id="@+id/mMenuView" >
+</android.support.v7.widget.RecyclerView>
+</RelativeLayout>

@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">哎吖相机</string>
+    <string name="switch_camera">切换摄像头</string>
+    <string name="switch_mode">录制模式</string>
+
+    <string name="show_type">展示方式</string>
+
+    <string name="open_camera">相机特效</string>
+    <string name="open_media">媒体特效</string>
+    <string name="open_camera_texture_view">TextureView相机特效</string>
+    <string name="open_camera2">Camera2特效</string>
+    <string name="open_camera1">Camera1特效</string>
+    <string name="open_texture">TextureView输出</string>
+    <string name="open_surface">SurfaceView输出</string>
+</resources>

@@ -1,0 +1,14 @@
+@startuml
+== 初始化阶段 ==
+数据源AiyaModel <- 处理器AiyaController : 提供SurfaceTexture接收数据
+处理器AiyaController<-视图     : 提供SurfaceTexture或者\nSurfaceHolder作为输出
+== 渲染阶段 ==
+数据源AiyaModel ->处理器AiyaController : 绘制数据到指定的SurfaceTexture上，\n然后处理器处理
+处理器AiyaController->视图     : 处理并绘制数据到指定的视图上
+数据源AiyaModel-->处理器AiyaController :
+处理器AiyaController-->视图     :
+数据源AiyaModel -->处理器AiyaController :
+处理器AiyaController-->视图     :
+==  ==
+note right of 视图 :视图可以为TextureView或SurfaceView\n也可以是Surface
+@enduml

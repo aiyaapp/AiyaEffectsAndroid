@@ -1,0 +1,22 @@
+{
+  "format" : "1",
+  "name":"baowener",
+  "nodes" : [
+    { 
+      "type":"2dAnim",
+	  "dirname" : "erduo",
+      "number"      : 25,     
+      "width" : 275,         
+      "height" : 107,
+      "duration" : 50,       
+      "isloop" : 1,           
+      "Triggertype" : 0,     
+      "untilFinish" : 1,      
+      "position" : "foreheadCenter",   
+      "anchorX" : 137,       
+      "anchorY" : 60,
+      "ratio" : 1.7,          
+      "fullscreen" : 0
+    }
+  ]
+}

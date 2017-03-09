@@ -1,0 +1,54 @@
+{
+  "format" : "1",
+  "name":"shoutao",
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "blush",
+      "number"      : 1,
+      "width" : 235,
+      "height" : 88,
+      "duration" : 50,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 114,
+      "anchorY" : 40,
+      "ratio" : 1.3,
+      "fullscreen" : 0
+    },
+    {
+	  "type":"2dAnim",
+      "dirname" : "hat",
+      "number"      : 30,
+      "width" : 360,
+      "height" : 324,
+      "duration" : 50,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 180,
+      "anchorY" : 124,
+      "ratio" : 1.9,
+      "fullscreen" : 0
+    },
+	{
+      "type":"2dAnim",
+      "dirname" : "gloves",
+      "number"      : 60,
+      "width" : 360,
+      "height" : 640,
+      "duration" : 50,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 180,
+      "anchorY" : 350,
+      "ratio" : 2.0,
+      "fullscreen" : 0
+    }
+  ]
+}
