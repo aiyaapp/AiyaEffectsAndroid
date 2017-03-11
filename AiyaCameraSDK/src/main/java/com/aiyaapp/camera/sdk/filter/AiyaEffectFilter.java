@@ -25,7 +25,6 @@ import com.aiyaapp.camera.sdk.base.Log;
 public class AiyaEffectFilter extends AFilter {
 
     private float[] SM=new float[16];     //用于显示的变换矩阵
-    private float[] OM;     //用于后台绘制的变换矩阵
 
     private SurfaceTexture mSurfaceTexture;
 
@@ -65,7 +64,6 @@ public class AiyaEffectFilter extends AFilter {
     }
 
     public void addFilter(AFilter filter,boolean beforeProcess){
-        filter.setMatrix(OM);
         if(beforeProcess){
             mBeFilter.addFilter(filter);
         }else{
