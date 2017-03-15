@@ -10,7 +10,7 @@ package com.aiyaapp.camera.sdk.filter;
 import android.content.res.Resources;
 
 /**
- * Description:
+ * 无特殊处理的Filter，用于将一张纹理渲染到指定的位置
  */
 public class NoFilter extends AFilter {
 

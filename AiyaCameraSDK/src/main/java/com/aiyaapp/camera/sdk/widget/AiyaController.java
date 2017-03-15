@@ -38,7 +38,7 @@ import com.aiyaapp.camera.sdk.filter.MatrixUtils;
 import com.aiyaapp.camera.sdk.filter.NoFilter;
 
 /**
- * Description: 借助GLSurfaceView创建的GL环境，做渲染工作。不将内容渲染到GLSurfaceView
+ * 借助GLSurfaceView创建的GL环境，做渲染工作。不将内容渲染到GLSurfaceView
  * 的Surface上，而是将内容绘制到外部提供的Surface、SurfaceHolder或者SurfaceTexture上。
  */
 public class AiyaController implements GLSurfaceView.Renderer {

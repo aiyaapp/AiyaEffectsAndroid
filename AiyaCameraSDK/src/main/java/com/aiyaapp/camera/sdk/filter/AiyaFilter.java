@@ -11,10 +11,9 @@ import android.content.res.Resources;
 import android.hardware.Camera;
 
 /**
- * Description:
+ * 接受图像流作为输入的Filter，通过setFlag方法，保证相机、视频等图像流的方向的正确性
  */
 public class AiyaFilter extends OesFilter {
-
 
 
     public AiyaFilter(Resources mRes) {

@@ -16,7 +16,10 @@ import com.aiyaapp.camera.sdk.AiyaCameraEffect;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
 
 /**
- * Description:
+ *  用于接收图像流，并做人脸特征点定位的类。该类必须与{@link ProcessFilter}配合使用
+ *  当有图像输入时，该类会渲染一个用户设置的宽为{@link ISdkManager#SET_TRACK_WIDTH}，
+ *  高为{@link ISdkManager#SET_TRACK_HEIGHT}的纹理，然后读取该纹理图像，用于人脸特征点定位。
+ *  然后将原图像保存为纹理，并将上一次保存的纹理作为输出。
  */
 public class PrepareFilter extends AFilter {
 

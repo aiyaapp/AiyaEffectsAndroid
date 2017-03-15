@@ -8,6 +8,7 @@
 package com.aiyaapp.aiya.mvc;
 
 import android.Manifest;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -20,6 +21,7 @@ import com.aiyaapp.aiya.R;
 import com.aiyaapp.aiya.util.PermissionUtils;
 import com.aiyaapp.camera.sdk.base.FrameCallback;
 import com.aiyaapp.camera.sdk.base.Log;
+import com.aiyaapp.camera.sdk.filter.WaterMarkFilter;
 import com.aiyaapp.camera.sdk.widget.AiyaController;
 import com.aiyaapp.camera.sdk.widget.AiyaModel;
 
@@ -57,6 +59,7 @@ public class SurfaceHolderActivity extends EffectSelectActivity implements Frame
             initData();
             modelInit();
             mAiyaController=new AiyaController(SurfaceHolderActivity.this);
+
             mAiyaController.setFrameCallback(bmpWidth,bmpHeight,SurfaceHolderActivity.this);
             mAiyaModel=mCamera1Model;
 //            mAiyaModel=mCamera2Model;     //使用Camera2

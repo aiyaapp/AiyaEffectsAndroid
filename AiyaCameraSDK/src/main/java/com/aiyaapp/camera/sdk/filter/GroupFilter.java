@@ -16,9 +16,6 @@ import android.content.res.Resources;
 import android.opengl.GLES20;
 import android.util.Log;
 
-/**
- * Description:
- */
 public class GroupFilter extends AFilter{
 
     private Queue<AFilter> mFilterQueue;
@@ -38,10 +35,12 @@ public class GroupFilter extends AFilter{
     }
 
     public void addFilter(final AFilter filter){
+        MatrixUtils.flip(filter.getMatrix(),false,true);
         mFilterQueue.add(filter);
     }
 
     public boolean removeFilter(AFilter filter){
+        MatrixUtils.flip(filter.getMatrix(),false,true);
         boolean b=mFilters.remove(filter);
         if(b){
             size--;
@@ -52,6 +51,7 @@ public class GroupFilter extends AFilter{
     public AFilter removeFilter(int index){
         AFilter f=mFilters.remove(index);
         if(f!=null){
+            MatrixUtils.flip(f.getMatrix(),false,true);
             size--;
         }
         return f;

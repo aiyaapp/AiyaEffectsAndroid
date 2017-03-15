@@ -1,0 +1,45 @@
+{
+  "format" : "1",
+  "name":"蓝色妖姬",
+  "needtrack" : 1,
+  "nodes" :  [
+    {
+	   "type":"2dAnim",
+      "dirname" : "huangguanchuxian",
+      "number"      : 357,
+      "width" : 400,
+      "height" : 400,
+      "duration" : 40,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 200,
+      "anchorY" : 130,
+      "ratio" : 1.1,
+      "fullscreen" : 0,
+      "keepaspect" : 1,
+      "defaultX" : 0.0,
+      "defaultY" : 0.5,
+      "defaultW" : 1.5,
+     
+    },
+    {
+      "type":"2dAnim",
+      "dirname" : "lanseyaoji",
+      "number"      : 250,
+      "width" : 540,
+      "height" : 960,
+      "duration" : 40,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "default",
+      "anchorX" : 101,
+      "anchorY" : 20,
+      "ratio" : 1.0,
+      "fullscreen" : 1,
+      "keepaspect" : 0,
+    }
+  ]
+}
