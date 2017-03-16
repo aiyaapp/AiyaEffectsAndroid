@@ -59,6 +59,7 @@ public class SurfaceHolderActivity extends EffectSelectActivity implements Frame
             initData();
             modelInit();
             mAiyaController=new AiyaController(SurfaceHolderActivity.this);
+
             mAiyaController.setFrameCallback(bmpWidth,bmpHeight,SurfaceHolderActivity.this);
             mAiyaModel=mCamera1Model;
 //            mAiyaModel=mCamera2Model;     //使用Camera2

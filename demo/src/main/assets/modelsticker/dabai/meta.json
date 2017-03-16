@@ -1,0 +1,45 @@
+{
+  "format" : "1",
+  "name":"暖心大白",
+  "needtrack" : 1,
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "dabai",
+      "number"      : 378,
+      "width" : 540,
+      "height" : 960,
+      "duration" : 40,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 270,
+      "anchorY" : 680,
+      "ratio" : 3.5,
+      "fullscreen" : 0,
+      "keepaspect" : 1,
+	  "defaultX" : 0.0,
+      "defaultY" : 0.8,
+      "defaultW" : 2.2,
+	  "fixsize"  : 2.2
+    },
+	{
+      "type":"2dAnim",
+      "dirname" : "nuanxindabai",
+      "number"      : 377,
+      "width" : 540,
+      "height" : 960,
+      "duration" : 40,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "default",
+      "anchorX" : 101,
+      "anchorY" : 20,
+      "ratio" : 1.0,
+      "fullscreen" : 1,
+      "keepaspect" : 0
+    }
+  ]
+}
