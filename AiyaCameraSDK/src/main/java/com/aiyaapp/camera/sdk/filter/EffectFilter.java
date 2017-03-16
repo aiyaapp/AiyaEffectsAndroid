@@ -17,7 +17,9 @@ import com.aiyaapp.camera.sdk.base.Log;
 import java.util.Arrays;
 
 /**
- * Description:
+ *  增加特效的Filter，相比{@link AiyaEffectFilter},EffectFilter是以textureid为输入，
+ *  默认会将最终结果渲染到外部指定的FrameBuffer或者WindowBuffer上。如果调用{@link #setFlag(int)},
+ *  可控制输出到内部的outputTextureId上。EffectFilter的处理，不关注外部数据源时相机、视频还是图片。
  */
 public class EffectFilter extends AFilter {
 
@@ -64,6 +66,10 @@ public class EffectFilter extends AFilter {
         }
     }
 
+    /**
+     * flag为1时，EffectFilter通过outputTextureId向外面提供数据，
+     * flag为0时，EffectFilter通过draw直接将数据渲染到外部指定的地方。
+     * **/
     @Override
     public void setFlag(int flag) {
         if(flag==0){
@@ -133,7 +139,7 @@ public class EffectFilter extends AFilter {
     }
 
     //SDK 特效处理的主要流程主要在此处
-    //PrepareFilter(mPreFilter)封装SDK的track方法，提供SurfaceTexture做为数据源的输出，也是它的输入。
+    //TrackFilter(mTrackFilter)封装SDK的track方法，同普通Filter类似，接收textureId作为输入
     //GroupFilter(mBeFilter和mAfFilter)用于提供在ProcessFilter前后增加滤镜(包括水印在类)的支持。
     //当用户没有添加自定义滤镜时，GroupFilter以输入直接作为输出，不影响性能。
     //ProcessFilter(mProcessFilter)封装SDK的process方法，会绘制出原图及贴图。
