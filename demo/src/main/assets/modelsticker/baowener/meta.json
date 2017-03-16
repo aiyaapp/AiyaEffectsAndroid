@@ -1,12 +1,12 @@
 {
   "format" : "1",
-  "name":"baowener",
+  "name":"豹纹耳",
   "nodes" : [
     { 
       "type":"2dAnim",
-	  "dirname" : "erduo",
+	  "dirname" : "erduo",   
       "number"      : 25,     
-      "width" : 275,         
+      "width" : 276,         
       "height" : 107,
       "duration" : 50,       
       "isloop" : 1,           

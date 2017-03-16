@@ -2,6 +2,16 @@ AiyaCameraSDK 说明文档
 
 [快速集成](doc/AiyaCameraSDK快速集成.md)
 
+[IOS版AiyaEffectsSDK](https://github.com/aiyaapp/AiyaEffectsIOS)
+
+[Android版集成到金山云的示例](https://github.com/aiyaapp/AiyaEffectsWithKSVCAndroid)
+
+[Android版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoAndroid)
+
+[IOS版集成到金山云的示例](https://github.com/aiyaapp/AiyaEffectsWithKSVCIOS)
+
+[IOS版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoIOS)
+
 # 1、版本信息
 最新版本 V2.0.0
 
