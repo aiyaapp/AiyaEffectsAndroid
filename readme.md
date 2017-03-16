@@ -11,14 +11,11 @@ AiyaEffectsSDK 说明文档
 [IOS版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoIOS)
 
 # 1、版本信息
-最新版本 V2.0.0
-
-AiyaEffects SDK V2.0.0
->
+最新版本：AiyaEffects SDK V2.0.0
 **功能更新**
-- 废弃AiyaCameraView，增加CameraView，提供设置CameraController接口，使用户可以自由设置Camera参数（Camera1 API）。
-- 增加AiyaController和AiyaModel类，将图像数据源、特效处理及展示视图分离。支持Camera2 API、视频特效处理。
-
+- 废弃AiyaCameraView，增加CameraView，提供设置CameraController接口，使用户可以自由设置Camera参数（Camera1 API）
+- 增加AiyaController和AiyaModel类，将图像数据源、特效处理及展示视图分离。支持Camera2 API、视频特效处理
+- 增加EffectFilter
 
 # 2、运行环境说明
 AiyaEffectsSDK minSdkVersion为15，即Android4.0以上可用。
@@ -67,7 +64,7 @@ compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.0.0'
     android:id="@+id/mSurfaceView" />
 ```
 ### 4、初始化
-初始化调用`AiyaCameraEffect.getInstance().init(final Context context, final String licensePath)`，第一个参数为App的Context，第二个参数为AiyaEffectsSDK的license文件路径,第三个参数为当前应用的appKey。在初始化过程中，会进行鉴权，若鉴权失败，则AiyaEffectsSDK无法正常运行。所以建议在开始初始化前，为AiyaCameraEffect注册状态监听器，监听初始化状态，示例如下：
+初始化调用`AiyaEffects.getInstance().init(final Context context, final String licensePath,final String appKey)`，第一个参数为App的Context，第二个参数为AiyaEffectsSDK的license文件路径，第三个参数为当前应用的appKey。在初始化过程中，会进行鉴权，若鉴权失败，则AiyaEffectsSDK无法正常运行。所以建议在开始初始化前，为AiyaEffects注册状态监听器，监听初始化状态，示例如下：
 ```java
 final StateObserver observer=new StateObserver() {
     @Override
@@ -82,8 +79,8 @@ final StateObserver observer=new StateObserver() {
         Log.e("onState Change finish");
     }
 };
-AiyaCameraEffect.getInstance().registerObserver(observer);
-AiyaCameraEffect.getInstance().init(this,getFilesDir().getAbsolutePath(),appKey);
+AiyaEffects.getInstance().registerObserver(observer);
+AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath(),appKey);
 ```
 常见状态如下：
 - INIT_SUCCESS 初始化成功
