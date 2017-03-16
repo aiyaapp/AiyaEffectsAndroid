@@ -114,7 +114,7 @@ public class TrackFilter extends AFilter{
 
     private void deleteFrameBuffer() {
         GLES20.glDeleteFramebuffers(1, fFrame, 0);
-        GLES20.glDeleteTextures(1, fTexture, 0);
+        GLES20.glDeleteTextures(fTextureSize, fTexture, 0);
     }
 
 }
