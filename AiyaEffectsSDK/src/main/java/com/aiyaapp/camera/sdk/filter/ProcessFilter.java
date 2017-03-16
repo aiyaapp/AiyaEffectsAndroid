@@ -10,7 +10,7 @@ package com.aiyaapp.camera.sdk.filter;
 import android.content.res.Resources;
 import android.opengl.GLES20;
 
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 
 /**
  * 用于处理用户通过视频或相机输入的图像流，给输入图像进行美颜处理、增加特效等。该类必须与
@@ -66,7 +66,7 @@ public class ProcessFilter extends AFilter {
         EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[0]);
         GLES20.glFramebufferRenderbuffer(GLES20.GL_FRAMEBUFFER, GLES20.GL_DEPTH_ATTACHMENT,
             GLES20.GL_RENDERBUFFER, fRender[0]);
-        AiyaCameraEffect.getInstance().process(getTextureId(),index);
+        AiyaEffects.getInstance().process(getTextureId(),index);
         EasyGlUtils.unBindFrameBuffer();
         if(b){
             GLES20.glEnable(GLES20.GL_CULL_FACE);

@@ -1,6 +1,4 @@
-AiyaCameraSDK 说明文档
-
-[快速集成](doc/AiyaCameraSDK快速集成.md)
+AiyaEffectsSDK 说明文档
 
 [IOS版AiyaEffectsSDK](https://github.com/aiyaapp/AiyaEffectsIOS)
 
@@ -15,258 +13,218 @@ AiyaCameraSDK 说明文档
 # 1、版本信息
 最新版本 V2.0.0
 
-AiyaCamera SDK V2.0.0
+AiyaEffects SDK V2.0.0
 >
 **功能更新**
 - 废弃AiyaCameraView，增加CameraView，提供设置CameraController接口，使用户可以自由设置Camera参数（Camera1 API）。
 - 增加AiyaController和AiyaModel类，将图像数据源、特效处理及展示视图分离。支持Camera2 API、视频特效处理。
 
-AiyaCamera SDK V1.3.1
->
-**功能更新**
-- 去除Drawer概念，将Drawer并入到Filter概念中
-- 增加AiyaEffectFilter，提升集成速度及灵活度
-
-AiyaCamera SDK V1.3.0
->
-**功能更新**
-- 提高美颜性能，优化美白效果
-
-AiyaCamera SDK V1.2.3
->
-**功能更新**
-- 优化预览，提高预览帧率
-- 优化美颜效果
-
-AiyaCamera SDK V1.2.2
->
-**功能更新：**
-- 将Track和Process封装成Filter，使SDK在GPUImage中可以快速集成
-
-AiyaCamera SDK V1.2.1
->
-**功能更新：**
-- 增加对Assets中特效选取的功能
-- 扩展AiyaCameraView，允许自定义Filter
-
-AiyaCameraSDK V1.1.3
->
-**功能更新：**
-- 修复有些贴纸图片没显示的问题
-- 支持新的贴纸位置
-
-AiyaCamera SDK V1.1.0
->
-**功能更新：**
-- 增加扩展设置接口
-- 优化贴纸流程
-- 增加美颜功能
-- 增加快速集成相机功能
-
-AiyaCamera SDK V1.0.0
->
-**功能更新：**
-完成贴纸效果
 
 # 2、运行环境说明
-AiyaCameraSDK minSdkVersion为15，即Android4.0以上可用。
+AiyaEffectsSDK minSdkVersion为15，即Android4.0以上可用。
 
 # 3. SDK功能说明
-AiyaCameraSDK的主要功能是定位图像数据中的人脸，为人脸增加有趣的贴纸效果，可用于相机、图片处理、直播等多种情景。
+AiyaEffectsSDK提供2D序列帧特效，face mask特效，3D静态特效和动画特效以及多种美颜算法，可用于相机、图片处理、直播等多种情景。
 
-# 4、架构设计
-AiyaCameraSDK（后面简写为SDK）的技术核心是人脸追踪和特效渲染。SDK总流程图如下：
-
-![这里写图片描述](doc/sdk流程图.png)
-
-SDK架构分为三层：
-
-1. **最底层**是核心接口及围绕核心接口形成的单例类。SDK的功能是据此为基础实现的。对外主要包括AiyaCameraEffect及AiyaEffect两个单例类，分别用于人脸有关的特效和人脸无关的特效。
-2. **中间层**为一系列的Filter，Filter类是利用OpenGL来进行图像的渲染和处理，他们都继承于AFilter类。这些Filter可以很方便的运用于其他诸如GPUImage之类的框架中，也可直接在GL环境中进行调用。用户可以根据这些Filter进行扩展，自定义实现丰富的功能。
-3. **最外层**是SDK的功能控件，这些功能控件使用户可以更快速的将SDK集成到项目中。主要包括CameraView(数据、处理、输出一体)和AiyaController(剥离了数据和视图)。
-
-# 5、API 说明
-## 类图
-SDK主要类图如下：
-![这里写图片描述](doc/类图.png)
-## 类说明
-- Filter类都是继承AFilter，其中NoFilter和OesFilter为最基础的实现，OesFilter用来接收处理诸如视频、相机的会不断变化的图像流，NoFilter用于接收处理其他2D图像。
-- PrepareFilter调用了AiyaCameraEffect的track(用于人脸捕获)方法。ProcessFilter调用了AiyaCameraEffect的process(用于特效处理)方法，而track方法必须和process方法配合使用，所以PrepareFilter也必须和ProcessFilter方法配合使用。
-- AiyaEffectFilter调用了PrepareFilter及ProcessFilter，并依据SDK处理流程做出了实现。而且在process前后都可以添加filter，所以通常情况下，使用AiyaEffectFilter就可以实现SDK功能的高度自定义。
-- 作为SDK架构的最外层，CameraView内部调用的是AiyaEffectFilter，相机应用可直接使用CameraView进行集成，直播主播端、视频通话等，也可直接使用AiyaCameraView。
-- **2.0版本SDK在AiyaEffectFilter的基础上增加了AiyaController和AiyaModel类，将图像数据源、特效处理及展示视图进行了剥离，用户可使用AiyaController和AiyaModel类，自由配置图像的数据源及展示视图来使用SDK的特效功能。**
-
-## API说明
-SDK的主要入口为单例模式的AiyaCameraEffect及单例模式的AiyaEffect。如果使用的特效与人脸相关的，请使用AiyaCameraEffect。使用的特效和人脸无关，请使用AiyaEffect。AiyaCameraEffect的主要API及参数如下（AiyaEffect的API与AiyaCameraEffect相近，相比AiyaCameraEffect少了track接口）：
-```java
-/**
-* SDK 初始化
-* @param context 上下文
-* @param licensePath license绝对路径
-*/
-void init(final Context context, final String licensePath, String appKey);
-
-/**
-* 设置贴纸特效路径
-* @param effectPath 贴纸特效的绝对路径
-*/
-void setEffect(String effectPath);
-
-/**
-* 设置参数
-* @param key 参数名
-* @param value 参数值
-*/
-void set(String key, int value);
-
-void set(String key, Object obj);
-
-/**
-* 人脸追踪，必须在GL环境中调用
-* @param trackData 需要追踪的原始图片数据
-* @param info 追踪结果
-*/
-void track(byte[] trackData, float[] info, int trackIndex);
-
-/**
-* 处理图片数据，必须在GL环境中调用
-* @param textureId   纹理Id
-* @param trackIndex
-*/
-void process(int textureId, int trackIndex);
-
-/**
-* 设置图片数据处理回调
-* @param callback 回调
-*/
-void setProcessCallback(ProcessCallback callback);
-
-/**
-* 设置人脸捕捉回调
-* @param callback
-*/
-void setTrackCallback(TrackCallback callback);
-
-/**
-* 注册状态观察者
-* @param observer
-*/
-void registerObserver(StateObserver observer);
-
-/**
-* 删除已注册的状态观察者
-* @param observer
-*/
-void unRegisterObserver(StateObserver observer);
-
-/**
-* 停止贴纸特效
-*/
-@Deprecated
-void stopEffect();
-
-/**
-* 获取参数
-* @param key 参数的KEy
-* @return 参数值
-*/
-int get(String key);
-
-/**
-* 释放SDK资源
-*/
-void release();
+# 4. 集成说明
+为使用户快速集成AiyaEffectsSDK功能，AiyaEffectsSDK提供了CameraView和AiyaController两个类。CameraView是使用Camera1 API配合GLSurfaceView提供相机预览功能。而AiyaController只关注对图像流的处理，数据源和视图由用户指定。使用AiyaController也可快速实现CameraView的所有功能。
+## 使用AiyaController集成
+### 1、导入Module
+使用AiyaEffectsSDK需先导入AiyaEffectsSDK的Module，然后在需要用到AiyaEffectsSDK的项目Module中增加对AiyaEffectsSDK的依赖。
+AiyaEffectsSDK已经加入jitpack仓库，用户也可以通过仓库的来集成。利用jitpack仓库集成，需要先在settings.gradle中加入jitpack仓库：
+```gradle
+allprojects {
+    repositories {
+        jcenter()
+        maven { url 'https://jitpack.io'}
+    }
+}
 ```
-其中set和get方法的Key主要有：
-```java
-String SET_BEAUTY_LEVEL="beauty_level";     //美颜等级，1-6，不在范围内表示关闭美颜
-String SET_EFFECT_ON="effects_on";          //特效开关1开0关
-
-String SET_IN_WIDTH="in_width";             //处理图片的输入宽度
-String SET_IN_HEIGHT="in_height";           //处理图片的输入高度
-String SET_TRACK_WIDTH="track_width";       //track图片的宽度
-String SET_TRACK_HEIGHT="track_height";     //track图片的高度
-
-String SET_OUT_WIDTH="out_width";           //输出宽度
-String SET_OUT_HEIGHT="out_height";         //输出高度
-
-String SET_ASSETS_MANAGER="assets_manager"; //AssetsManager
+然后在需要使用AiyaEffectsSDK的项目build.gradle中加入对AiyaEffectsSDK的依赖：
+```gradle
+compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.0.0'
 ```
 
-# 6、集成说明
-## 1、导入Module
-目前AiyaCameraSDK暂不支持仓库自动集成，只能手动集成。使用AiyaCameraSDK需先导入AiyaCameraSDK的Module，然后在需要用到AiyaCameraSDK的项目Module中增加对AiyaCameraSDK的依赖。
-
-## 2、AndroidManifest.xml文件配置
-使用AiyaCameraSDK，必须在App Module中添加：
+### 2、AndroidManifest.xml文件配置
+使用AiyaEffectsSDK，必须在App Module中添加：
 ```xml
 <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
 
 <uses-permission android:name="android.permission.INTERNET" />
+<uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 ```
-其他权限需要根据App自身需求添加，如AiyaCameraSDK用于相机应用，则应添加Camera权限等。Android6.0需要动态申请权限，具体请参照Android官网。
+其他权限需要根据App自身需求添加。Android6.0需要动态申请权限，具体请参照Android官网。
 
-## 3、初始化
-初始化调用`AiyaCameraEffect.getInstance().init(final Context context, final String licensePath)`，第一个参数为App的Context，第二个参数为AiyaCameraSDK的license文件路径,第三个参数为当前应用的appKey。在初始化过程中，会进行鉴权，若鉴权失败，则AiyaCameraSDK无法正常运行。所以建议在开始初始化前，为AiyaCameraEffect注册状态监听器，监听初始化状态，示例如下：
+### 3、在布局中加入展示视图
+通常情况下，用户是需要预览SDK处理效果的，如果用户不需要预览，而是期望直接将图像数据处理后编码或者推流等处理，可忽略此步骤。
+展示视图一般为TextureView、SurfaceHolder或其他可提供SurfaceTexture、Surface、SurfaceHolder的View。提供一个View，在Java代码中动态创建Surface并绑定到View上，也是可以的，但是并不建议这样做。
+```xml
+<SurfaceView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/mSurfaceView" />
+```
+### 4、初始化
+初始化调用`AiyaCameraEffect.getInstance().init(final Context context, final String licensePath)`，第一个参数为App的Context，第二个参数为AiyaEffectsSDK的license文件路径,第三个参数为当前应用的appKey。在初始化过程中，会进行鉴权，若鉴权失败，则AiyaEffectsSDK无法正常运行。所以建议在开始初始化前，为AiyaCameraEffect注册状态监听器，监听初始化状态，示例如下：
 ```java
 final StateObserver observer=new StateObserver() {
     @Override
     public void onStateChange(State state) {
-        if(state==State.RESOURCE_FAILED){
-            Log.e("resource failed");
-        }else if(state==State.RESOURCE_READY){
-            Log.e("resource ready");
+        Log.e("state-->"+state.getMsg());
+        if(state==State.RESOURCE_READY){
+            initEffectMenu();
         }else if(state==State.INIT_FAILED){
-            Log.e("init failed");
-            Toast.makeText(LoadActivity.this, "注册失败，请检查网络", Toast.LENGTH_SHORT)
+            Toast.makeText(CameraActivity.this, "注册失败，请检查网络", Toast.LENGTH_SHORT)
                 .show();
-            AiyaCameraEffect.getInstance().unRegisterObserver(this);
-        }else if(state==State.INIT_SUCCESS){
-            Log.e("init success");
-            setContentView(R.layout.activity_load);
-            AiyaCameraEffect.getInstance().unRegisterObserver(this);
         }
+        Log.e("onState Change finish");
     }
 };
 AiyaCameraEffect.getInstance().registerObserver(observer);
-AiyaCameraEffect.getInstance().init(LoadActivity.this,getExternalFilesDir(null)
-    .getAbsolutePath()+"/146-563-918-415-578-677-783-748-043-705-956.vlc","");
+AiyaCameraEffect.getInstance().init(this,getFilesDir().getAbsolutePath(),appKey);
 ```
 常见状态如下：
-- RESOURCE_READY 资源准备成功
 - INIT_SUCCESS 初始化成功
 - RESOURCE_FAILED 资源准备失败
 - INIT_FAILED 初始化失败
 
-**建议在Application的onCreate方法中或者在App的入口Activity中对AiyaCameraSDK进行初始化。**
-
-## 4、设置参数
-在使用AiyaCameraSdk处理图像数据时，需要指定被处理的图像数据的宽高，设置方法为：
+### 5、提供数据源
+AiyaController可以接受以SurfaceTexture共享出来的数据流，在Demo中，提供了包括Camera1 API、Camera2 API、视频流三类数据源示例，分别为Camera1Model、Camera2Model和MediaModel。数据源需要做的工作主要有：
+- 1、 实现Renderer。
 ```java
-AiyaCameraEffect.getInstance().set(AiyaCameraEffect.SET_IN_WIDTH,dataWidth);
-AiyaCameraEffect.getInstance().set(AiyaCameraEffect.SET_IN_HEIGHT,dataHeight);
+private class SampleRender implements Renderer{
+        @Override
+        public void onDestroy() {
+            //在此处释放销毁数据源
+        }
+
+        @Override
+        public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+            //在此处创建数据源
+            //......
+            //务必在此处设置将数据源中图像的大小告知AiyaController
+            //controller.setDataSize(width,height);
+            //对于相机需要将相机ID作为ImageDirection告知AiyaController
+            //controller.setImageDirection(cameraId);
+        }
+
+        @Override
+        public void onSurfaceChanged(GL10 gl, int width, int height) {
+            //数据源图像大小改变
+        }
+
+        @Override
+        public void onDrawFrame(GL10 gl) {
+            //如果数据需要回收利用，在此处执行
+        }
+}
 ```
 
-## 5、设置贴纸路径
-处理图像数据，为图像数据增加贴纸效果，需要使用`AiyaCameraEffect.getInstance().setEffect(final String effectJsonPath)`指定贴纸效果的配置文件路径。`setEffect(null)`可取消贴纸效果。
+### 6、使用AiyaController处理数据并展示
+以Camera1Model提供数据、SurfaceView展示处理结果为例。取得SurfaceView后，通过`getHolder()`方法，取得SurfaceView的SurfaceHolder。然后给SurfaceHolder增加回调，并在回调中，做相应处理：
+```java
+mSurfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+                @Override
+    public void surfaceCreated(SurfaceHolder holder) {
+        //调用AiyaController的surfaceCreated(holder)方法
+        //将数据源附加到AiyaController中
+    }
 
-## 6、处理图像数据
-为指定图像数据增加贴纸效果，调用`AiyaCameraEffect.getInstance().process(int textureId, int trackIndex) `来实现，该方法必须在GLThread中调用。其第一个参数为纹理id，第二个参数为使用track的数据的标记，目前仅支持0和1。在调用该方法前，必须先调用`AiyaCameraEffect.getInstance().track(trackData, infos, textureIndex);`来进行人脸捕捉，为process获取必要的数据。**track和process方法都必须在GL线程中调用。**
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+        //调用AiyaController的surfaceChanged方法
+    }
 
-## 7、释放SDK占用资源
-当不在需要使用贴纸效果时，调用`AiyaCameraEffect.getInstance().release()`来释放SDK占用的资源。若后面需要重新使用贴纸效果，则需要重新初始化。
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {
+        //调用AiyaController的surfaceDestroyed方法
+    }
+});
+```
 
-# 7. 资源说明
-贴纸资源制作规范请参照其他相关文档。
+### 7、生命周期相关处理
+同使用SurfaceView、GLSurfaceView类似，使用AiyaController也需要根据Activity或者Fragment等的生命周期，做相应的处理：
+```java
+@Override
+protected void onResume() {
+    super.onResume();
+    if(mAiyaController!=null){
+        mAiyaController.onResume();
+    }
+}
 
-# 8. 常见问题
-1. 特效绘制流程在AiyaEffectFilter中的draw方法中，如需自行实现，需要保证先调用PrepareFilter的draw方法，再调用ProcessFilter的draw方法。
-2. 确保应用有网络权限。非正式license可以试用一分钟特效，一分钟后特效将会失效。
-3. SDK中Filter也可与GPUImage配合试用。
-4. 尽量避免多次初始化AiyaCameraSDK，在不需要试用AiyaCameraSDK时，调用release，释放掉AiyaCameraSDK的资源。
-5. 避免不必要的数据导出。
+@Override
+protected void onPause() {
+    super.onPause();
+    if (mAiyaController!=null){
+        mAiyaController.onPause();
+    }
+}
 
-# 9. License说明
-暂无
+@Override
+protected void onDestroy() {
+    super.onDestroy();
+    if(mAiyaController!=null){
+        mAiyaController.destroy();
+    }
+}
+```
+
+### 8、其他处理
+AiyaController更多API:
+```java
+//设置特效
+public void setEffect(String effect);
+//设置美颜等级，0-6
+public void setFairLevel(int level);
+//视图大小和数据源图像大小不同时，图像的展示方式
+public void setShowType(int type);
+//设置处理完成后的回调和回调图像的大小
+public void setFrameCallback(int width,int height,FrameCallback frameCallback);
+//开始持续回调，录制、推流等使用
+public void startRecord();
+//停止持续回调
+public void stopRecord();
+//回调一帧数据，拍照、截屏等使用
+public void takePhoto();
+```
+
+## 使用CameraView集成
+使用CameraView集成与使用AiyaController类似，比AiyaController更简单。前四步基本一样，第三步将布局中的SurfaceView替换为CameraView。然后获取CameraView实例后，就可以给相机增加特效处理、美颜处理等。
+
+### 1、设置特效和美颜
+使用CameraView可以快速的得到一个相机的预览。
+当你需要为预览中的人脸增加特效时，可调用CameraView的setEffect方法来指定特效的文件路径，如`mCameraView.setEffect(path);`。当设置路径不存在或者为null时，将不会显示任何贴纸效果。
+利用`mCameraView.setFairLevel(mBeautyFlag);`可以快速的设置美颜效果，美颜等级为1-6级。当美颜等级被设置不在此范围中时，为关闭美颜的效果。
+
+### 2、拍照和录制
+使用CameraView可以快速的实现拍照和视频录制的功能。无论拍照和使录制视频，我们都需要为CameraView设置帧回调。设置方法为`setFrameCallback(int,int,FrameCallback);`，前两个参数分别为帧数据的宽和高，第三个参数为回调方法。
+1. 拍照
+调用CameraView的`takePhoto()`方法，当预览帧被读取时，设置的FrameCallback会被回调。回调方法onFrame的第一个参数byte[] bytes为获得的RGBA图片数据,第二个参数为图片的时间戳。
+2. 录制
+与拍照类似，调用CameraView的`startRecord()`方法后，每一帧数据可读时，FrameCallback将会被回调。FrameCallback回调的时间是不确定的，逐帧回调顺序是确定的。
+停止录制，调用`stopRecord()`方法。
+
+## 高级使用
+1. 自定义滤镜
+在AiyaController和CameraView中可以使用自定义滤镜来实现更多功能，AiyaEffectsSDK滤镜基类为AFilter，存在包com.aiyaapp.camera.sdk.filter之下。AiyaEffectsSDK中包含了水印滤镜、黑白滤镜、美颜滤镜的示例。需要自定义滤镜，可参照Beauty、GrayFilter、WaterMarkFilter等类进行实现。
+
+2. 使用自定义滤镜
+在使用AiyaController或者CameraView时，如果希望在预览和输出中增加其他元素，比如自定义美颜滤镜、复古滤镜、水印等可调用：
+```java
+/**
+ * 增加滤镜
+ * @param filter 滤镜
+ * @param isBeforeProcess 滤镜是否在加特效前增加
+ */
+public void addFilter(AFilter filter,boolean isBeforeProcess);
+```
+第二个参数为true还是false视需求而定，通常美颜滤镜之类的滤镜为true,水印之类的滤镜为false。
+
+
+# 其他
+1. CameraView默认使用前置摄像头，切换摄像头，可调用`mCameraView.switchCamera();`。
+2. 尽量避免在FrameCallback的回调方法中做耗时工作，以免阻塞渲染线程。
+

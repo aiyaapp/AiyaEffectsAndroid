@@ -24,7 +24,7 @@ import android.opengl.GLSurfaceView;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.FrameCallback;
 import com.aiyaapp.camera.sdk.base.Log;
 import com.aiyaapp.camera.sdk.base.ProcessCallback;
@@ -49,7 +49,7 @@ public class AiyaController implements GLSurfaceView.Renderer {
     private Context mContext;
 
     private Renderer mRenderer;                   //用户附加的Renderer或用来监听Renderer
-    private AiyaCameraEffect mEffect;
+    private AiyaEffects mEffect;
     private AiyaEffectFilter mEffectFilter;                     //特效处理的Filter
     private AFilter mShowFilter;                                //用来渲染输出的Filter
     private Point mDataSize;                                    //数据的大小
@@ -111,7 +111,7 @@ public class AiyaController implements GLSurfaceView.Renderer {
         mEffectFilter=new AiyaEffectFilter(mContext.getResources());
         mShowFilter=new NoFilter(mContext.getResources());
 
-        mEffect=AiyaCameraEffect.getInstance();
+        mEffect= AiyaEffects.getInstance();
 
         //设置默认的DateSize，DataSize由AiyaProvider根据数据源的图像宽高进行设置
         mDataSize=new Point(720,1280);
@@ -125,8 +125,8 @@ public class AiyaController implements GLSurfaceView.Renderer {
     public void setDataSize(int width,int height){
         mDataSize.x=width;
         mDataSize.y=height;
-        mEffect.set(AiyaCameraEffect.SET_IN_WIDTH,mDataSize.x);
-        mEffect.set(AiyaCameraEffect.SET_IN_HEIGHT,mDataSize.y);
+        mEffect.set(AiyaEffects.SET_IN_WIDTH,mDataSize.x);
+        mEffect.set(AiyaEffects.SET_IN_HEIGHT,mDataSize.y);
     }
 
     public SurfaceTexture getTexture(){
@@ -245,7 +245,7 @@ public class AiyaController implements GLSurfaceView.Renderer {
      * @param level 美颜等级，等级为0-6
      */
     public void setFairLevel(int level){
-        mEffect.set(AiyaCameraEffect.SET_BEAUTY_LEVEL,level);
+        mEffect.set(AiyaEffects.SET_BEAUTY_LEVEL,level);
     }
 
     /**
@@ -287,8 +287,8 @@ public class AiyaController implements GLSurfaceView.Renderer {
     private void sdkParamSet(){
         if(!isParamSet.get()&&mDataSize.x>0&&mDataSize.y>0) {
             isParamSet.set(true);
-            mEffect.set(AiyaCameraEffect.SET_IN_WIDTH,mDataSize.x);
-            mEffect.set(AiyaCameraEffect.SET_IN_HEIGHT,mDataSize.y);
+            mEffect.set(AiyaEffects.SET_IN_WIDTH,mDataSize.x);
+            mEffect.set(AiyaEffects.SET_IN_HEIGHT,mDataSize.y);
             mEffect.setProcessCallback(mcallback);
             mEffect.setTrackCallback(mTrackCallback);
         }

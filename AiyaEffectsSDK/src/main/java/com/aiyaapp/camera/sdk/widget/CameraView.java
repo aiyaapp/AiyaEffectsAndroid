@@ -26,7 +26,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.FrameCallback;
 import com.aiyaapp.camera.sdk.base.ProcessCallback;
 import com.aiyaapp.camera.sdk.base.TrackCallback;
@@ -42,7 +42,7 @@ import com.aiyaapp.camera.sdk.filter.NoFilter;
  */
 public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer {
 
-    private AiyaCameraEffect mEffect;
+    private AiyaEffects mEffect;
     private AiyaEffectFilter mEffectFilter;
     private AFilter mShowFilter;
     private static CameraController mDefaultCameraController=new CameraController();
@@ -76,7 +76,7 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
     }
 
     private void init(){
-        mEffect= AiyaCameraEffect.getInstance();
+        mEffect= AiyaEffects.getInstance();
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
@@ -175,7 +175,7 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
     }
 
     public void setFairLevel(int level){
-        mEffect.set(AiyaCameraEffect.SET_BEAUTY_LEVEL,level);
+        mEffect.set(AiyaEffects.SET_BEAUTY_LEVEL,level);
     }
 
     public void setEffect(String effect){
@@ -259,8 +259,8 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
     private void updateSdkParams(){
         if(!isParamSet.get()&&dataWidth>0&&dataHeight>0) {
             isParamSet.set(true);
-            mEffect.set(AiyaCameraEffect.SET_IN_WIDTH,dataWidth);
-            mEffect.set(AiyaCameraEffect.SET_IN_HEIGHT,dataHeight);
+            mEffect.set(AiyaEffects.SET_IN_WIDTH,dataWidth);
+            mEffect.set(AiyaEffects.SET_IN_HEIGHT,dataHeight);
             mEffect.setProcessCallback(mcallback);
             mEffect.setTrackCallback(mTrackCallback);
         }

@@ -2,28 +2,25 @@
  *
  * TrackFilter.java
  * 
- * Created by Wuwang on 2016/12/21
+ * Created by Wuwang on 2017/3/15
  * Copyright © 2016年 深圳哎吖科技. All rights reserved.
  */
 package com.aiyaapp.camera.sdk.filter;
 
-import java.nio.ByteBuffer;
-
 import android.content.res.Resources;
 import android.opengl.GLES20;
 
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
 
-/**
- *  用于接收图像流，并做人脸特征点定位的类。该类必须与{@link ProcessFilter}配合使用
- *  当有图像输入时，该类会渲染一个用户设置的宽为{@link ISdkManager#SET_TRACK_WIDTH}，
- *  高为{@link ISdkManager#SET_TRACK_HEIGHT}的纹理，然后读取该纹理图像，用于人脸特征点定位。
- *  然后将原图像保存为纹理，并将上一次保存的纹理作为输出。
- */
-public class PrepareFilter extends AFilter {
+import java.nio.ByteBuffer;
 
-    private AiyaFilter mFilter;
+/**
+ * Description:
+ */
+public class TrackFilter extends AFilter{
+
+    private NoFilter mFilter;
     private int width=0;
     private int height=0;
     private float[] infos = new float[20];
@@ -38,18 +35,9 @@ public class PrepareFilter extends AFilter {
     //获取Track数据
     private ByteBuffer tBuffer;
 
-    public PrepareFilter(Resources mRes) {
+    public TrackFilter(Resources mRes) {
         super(mRes);
-        mFilter=new AiyaFilter(mRes);
-    }
-
-    public void setCoordMatrix(float[] matrix){
-        mFilter.setCoordMatrix(matrix);
-    }
-
-    @Override
-    public void setFlag(int flag) {
-        mFilter.setFlag(flag);
+        mFilter=new NoFilter(mRes);
     }
 
     @Override
@@ -72,9 +60,9 @@ public class PrepareFilter extends AFilter {
     }
 
     private byte[] getTrackData() {
-        GLES20.glReadPixels(0, 0, AiyaCameraEffect.getInstance().get(ISdkManager.SET_TRACK_WIDTH),
-            AiyaCameraEffect.getInstance().get(ISdkManager.SET_TRACK_HEIGHT) , GLES20.GL_RGBA,
-            GLES20.GL_UNSIGNED_BYTE,tBuffer);
+        GLES20.glReadPixels(0, 0, AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_WIDTH),
+                AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_HEIGHT) , GLES20.GL_RGBA,
+                GLES20.GL_UNSIGNED_BYTE,tBuffer);
         return tBuffer.array();
     }
 
@@ -86,10 +74,10 @@ public class PrepareFilter extends AFilter {
         }
         mFilter.setTextureId(getTextureId());
         EasyGlUtils.bindFrameTexture(fFrame[0],fTexture[nowTextureIndex]);
-        GLES20.glViewport(0,0,AiyaCameraEffect.getInstance().get(ISdkManager.SET_TRACK_WIDTH),
-            AiyaCameraEffect.getInstance().get(ISdkManager.SET_TRACK_HEIGHT));
+        GLES20.glViewport(0,0, AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_WIDTH),
+                AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_HEIGHT));
         mFilter.draw();
-        AiyaCameraEffect.getInstance().track(getTrackData(), infos, nowTextureIndex);
+        AiyaEffects.getInstance().track(getTrackData(), infos, nowTextureIndex);
         GLES20.glViewport(0,0,width,height);
         mFilter.draw();
         EasyGlUtils.unBindFrameBuffer();
@@ -119,8 +107,8 @@ public class PrepareFilter extends AFilter {
                 tBuffer.clear();
             }
             tBuffer = ByteBuffer.allocate(
-                AiyaCameraEffect.getInstance().get(ISdkManager.SET_TRACK_WIDTH)*
-                    AiyaCameraEffect.getInstance().get(ISdkManager.SET_TRACK_HEIGHT )* 4);
+                    AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_WIDTH)*
+                            AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_HEIGHT )* 4);
         }
     }
 

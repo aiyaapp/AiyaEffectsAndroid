@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.aiyaapp.aiya.camera.CameraActivity;
 import com.aiyaapp.aiya.mvc.SurfaceHolderActivity;
 import com.aiyaapp.aiya.mvc.TextureViewActivity;
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.Log;
 import com.aiyaapp.camera.sdk.base.State;
 import com.aiyaapp.camera.sdk.base.StateObserver;
@@ -41,16 +41,16 @@ public class LoadActivity extends AppCompatActivity {
                     Log.e("init failed");
                     Toast.makeText(LoadActivity.this, "注册失败，请检查网络", Toast.LENGTH_SHORT)
                         .show();
-                    AiyaCameraEffect.getInstance().unRegisterObserver(this);
+                    AiyaEffects.getInstance().unRegisterObserver(this);
                 }else if(state==State.INIT_SUCCESS){
                     Log.e("init success");
                     setContentView(R.layout.activity_load);
-                    AiyaCameraEffect.getInstance().unRegisterObserver(this);
+                    AiyaEffects.getInstance().unRegisterObserver(this);
                 }
             }
         };
-        AiyaCameraEffect.getInstance().registerObserver(observer);
-        AiyaCameraEffect.getInstance().init(LoadActivity.this,getExternalFilesDir(null)
+        AiyaEffects.getInstance().registerObserver(observer);
+        AiyaEffects.getInstance().init(LoadActivity.this,getExternalFilesDir(null)
             .getAbsolutePath()+"/146-563-918-415-578-677-783-748-043-705-956.vlc","");
     }
 

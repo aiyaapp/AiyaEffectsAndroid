@@ -8,7 +8,6 @@
 package com.aiyaapp.camera.sdk.widget;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.microedition.khronos.egl.EGLConfig;
@@ -20,7 +19,7 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.FrameCallback;
 import com.aiyaapp.camera.sdk.base.ProcessCallback;
 import com.aiyaapp.camera.sdk.base.TrackCallback;
@@ -48,7 +47,7 @@ public class AiyaCameraView extends GLSurfaceView implements GLSurfaceView.Rende
     private Queue<byte[]> mBytesQueue;
 
     private int cameraId=1;
-    private AiyaCameraEffect mEffect;
+    private AiyaEffects mEffect;
     private int width,height;
     private float[] SM=new float[16];                       //用于绘制到屏幕上的变换矩阵
 
@@ -75,7 +74,7 @@ public class AiyaCameraView extends GLSurfaceView implements GLSurfaceView.Rende
     }
 
     private void init(){
-        mEffect=AiyaCameraEffect.getInstance();
+        mEffect= AiyaEffects.getInstance();
         setEGLContextClientVersion(2);
         setRenderer(this);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
@@ -253,7 +252,7 @@ public class AiyaCameraView extends GLSurfaceView implements GLSurfaceView.Rende
     }
 
     public void setFairLevel(int level){
-        mEffect.set(AiyaCameraEffect.SET_BEAUTY_LEVEL,level);
+        mEffect.set(AiyaEffects.SET_BEAUTY_LEVEL,level);
     }
 
     public void setEffect(String effect){
@@ -284,8 +283,8 @@ public class AiyaCameraView extends GLSurfaceView implements GLSurfaceView.Rende
     private void stickerInit(){
         if(!isSetParm&&dataWidth>0&&dataHeight>0) {
             isSetParm = true;
-            mEffect.set(AiyaCameraEffect.SET_IN_WIDTH,dataWidth);
-            mEffect.set(AiyaCameraEffect.SET_IN_HEIGHT,dataHeight);
+            mEffect.set(AiyaEffects.SET_IN_WIDTH,dataWidth);
+            mEffect.set(AiyaEffects.SET_IN_HEIGHT,dataHeight);
             mEffect.setProcessCallback(mcallback);
             mEffect.setTrackCallback(mTrackCallback);
         }

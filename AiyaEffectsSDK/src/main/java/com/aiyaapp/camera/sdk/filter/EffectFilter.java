@@ -10,7 +10,7 @@ package com.aiyaapp.camera.sdk.filter;
 import android.content.res.Resources;
 import android.opengl.GLES20;
 
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 
@@ -31,8 +31,8 @@ public class EffectFilter extends AFilter {
 
     private AFilter mTrackFilter;         //数据准备的Filter,track和保存
     private AFilter mProcessFilter;
-    private GroupFilter mBeFilter;
-    private GroupFilter mAfFilter;
+    private GroupFilter mPreProcessFilter;
+    private GroupFilter mPostProcessFilter;
 
     private int textureIndex = 0;
     //创建离屏buffer
@@ -53,16 +53,16 @@ public class EffectFilter extends AFilter {
 
         mShowFilter = new NoFilter(res);
 
-        mBeFilter=new GroupFilter(res);
-        mAfFilter=new GroupFilter(res);
+        mPreProcessFilter=new GroupFilter(res);
+        mPostProcessFilter=new GroupFilter(res);
         MatrixUtils.flip(FlipOM,false,true);
     }
 
     public void addFilter(AFilter filter,boolean beforeProcess){
         if(beforeProcess){
-            mBeFilter.addFilter(filter);
+            mPreProcessFilter.addFilter(filter);
         }else{
-            mAfFilter.addFilter(filter);
+            mPostProcessFilter.addFilter(filter);
         }
     }
 
@@ -83,7 +83,7 @@ public class EffectFilter extends AFilter {
 
     @Override
     public int getOutputTexture() {
-        return mAfFilter.getOutputTexture();
+        return mPostProcessFilter.getOutputTexture();
     }
 
     @Override
@@ -91,39 +91,39 @@ public class EffectFilter extends AFilter {
         mTrackFilter.create();
         mProcessFilter.create();
         mShowFilter.create();
-        mBeFilter.create();
-        mAfFilter.create();
+        mPreProcessFilter.create();
+        mPostProcessFilter.create();
     }
 
     @Override
     protected void onSizeChanged(int width, int height) {
         this.width = width;
         this.height = height;
-        AiyaCameraEffect.getInstance().set(ISdkManager.SET_IN_WIDTH,width);
-        AiyaCameraEffect.getInstance().set(ISdkManager.SET_IN_HEIGHT,height);
-        AiyaCameraEffect.getInstance().set(ISdkManager.SET_OUT_WIDTH,width);
-        AiyaCameraEffect.getInstance().set(ISdkManager.SET_OUT_HEIGHT,height);
+        AiyaEffects.getInstance().set(ISdkManager.SET_IN_WIDTH,width);
+        AiyaEffects.getInstance().set(ISdkManager.SET_IN_HEIGHT,height);
+        AiyaEffects.getInstance().set(ISdkManager.SET_OUT_WIDTH,width);
+        AiyaEffects.getInstance().set(ISdkManager.SET_OUT_HEIGHT,height);
         if(width>height&&width>320){
             if(width>320){
-                AiyaCameraEffect.getInstance().set(ISdkManager.SET_TRACK_WIDTH,320);
-                AiyaCameraEffect.getInstance().set(ISdkManager.SET_TRACK_HEIGHT,320*height/width);
+                AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_WIDTH,320);
+                AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_HEIGHT,320*height/width);
             }
         }else if(height>width&&height>320){
             if(height>320){
-                AiyaCameraEffect.getInstance().set(ISdkManager.SET_TRACK_WIDTH,320*width/height);
-                AiyaCameraEffect.getInstance().set(ISdkManager.SET_TRACK_HEIGHT,320);
+                AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_WIDTH,320*width/height);
+                AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_HEIGHT,320);
             }
         }else{
-            AiyaCameraEffect.getInstance().set(ISdkManager.SET_TRACK_WIDTH,width);
-            AiyaCameraEffect.getInstance().set(ISdkManager.SET_TRACK_HEIGHT,height);
+            AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_WIDTH,width);
+            AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_HEIGHT,height);
         }
-        AiyaCameraEffect.getInstance().set(ISdkManager.SET_ACTION,ISdkManager.ACTION_REFRESH_PARAMS_NOW);
+        AiyaEffects.getInstance().set(ISdkManager.SET_ACTION,ISdkManager.ACTION_REFRESH_PARAMS_NOW);
         deleteFrameBuffer();
         GLES20.glGenFramebuffers(1,fFrame,0);
         EasyGlUtils.genTexturesWithParameter(1,fTexture,0,GLES20.GL_RGBA,width,height);
         mTrackFilter.setSize(width,height);
-        mBeFilter.setSize(width,height);
-        mAfFilter.setSize(width,height);
+        mPreProcessFilter.setSize(width,height);
+        mPostProcessFilter.setSize(width,height);
         mProcessFilter.setSize(width,height);
         mShowFilter.setSize(width,height);
     }
@@ -140,7 +140,7 @@ public class EffectFilter extends AFilter {
 
     //SDK 特效处理的主要流程主要在此处
     //TrackFilter(mTrackFilter)封装SDK的track方法，同普通Filter类似，接收textureId作为输入
-    //GroupFilter(mBeFilter和mAfFilter)用于提供在ProcessFilter前后增加滤镜(包括水印在类)的支持。
+    //GroupFilter(mPreProcessFilter和mPostProcessFilter)用于提供在ProcessFilter前后增加滤镜(包括水印在类)的支持。
     //当用户没有添加自定义滤镜时，GroupFilter以输入直接作为输出，不影响性能。
     //ProcessFilter(mProcessFilter)封装SDK的process方法，会绘制出原图及贴图。
     //在流程中Filter是以前一个Filter的输出作为输入进行绘制的，输入输出都是TextureId。
@@ -155,22 +155,22 @@ public class EffectFilter extends AFilter {
         long start=System.currentTimeMillis();
         mTrackFilter.setTextureId(getTextureId());
         mTrackFilter.draw();
-        Log.e("track read------------------------>"+(System.currentTimeMillis()-start));
+        Log.d("track read------------------------>"+(System.currentTimeMillis()-start));
         start=System.currentTimeMillis();
-        mBeFilter.setTextureId(mTrackFilter.getOutputTexture());
-        mBeFilter.draw();
+        mPreProcessFilter.setTextureId(mTrackFilter.getOutputTexture());
+        mPreProcessFilter.draw();
 
-        Log.e("before filter------------------------>"+(System.currentTimeMillis()-start));
+        Log.d("before filter------------------------>"+(System.currentTimeMillis()-start));
         start=System.currentTimeMillis();
         //获取缓存的texture绘制并处理
-        mProcessFilter.setTextureId(mBeFilter.getOutputTexture());
+        mProcessFilter.setTextureId(mPreProcessFilter.getOutputTexture());
         mProcessFilter.draw();
-        Log.e("process------------------------>"+(System.currentTimeMillis()-start));
+        Log.d("process------------------------>"+(System.currentTimeMillis()-start));
         start=System.currentTimeMillis();
-        mAfFilter.setTextureId(mProcessFilter.getOutputTexture());
-        mAfFilter.draw();
-        Log.e("after filter------------------------>"+(System.currentTimeMillis()-start));
-        Log.e("show data index->" + textureIndex);
+        mPostProcessFilter.setTextureId(mProcessFilter.getOutputTexture());
+        mPostProcessFilter.draw();
+        Log.d("after filter------------------------>"+(System.currentTimeMillis()-start));
+        Log.d("show data index->" + textureIndex);
         //显示出刚才绘制的内容
         if(outBindFrameBuffer[0]!=0){
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER,outBindFrameBuffer[0]);
@@ -183,7 +183,7 @@ public class EffectFilter extends AFilter {
         changeGLState(GLES20.GL_CULL_FACE,isCullFaceEnable);
         if(!isExportByOutputTexturteId){
             GLES20.glViewport(0, 0, width, height);
-            mShowFilter.setTextureId(mAfFilter.getOutputTexture());
+            mShowFilter.setTextureId(mPostProcessFilter.getOutputTexture());
             mShowFilter.draw();
         }
     }

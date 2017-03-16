@@ -8,7 +8,7 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/AiyaCameraSDK" />
+            <option value="$PROJECT_DIR$/AiyaEffectsSDK" />
             <option value="$PROJECT_DIR$/demo" />
           </set>
         </option>

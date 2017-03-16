@@ -32,7 +32,7 @@ import com.aiyaapp.aiya.camera.LogUtils;
 import com.aiyaapp.aiya.camera.MenuAdapter;
 import com.aiyaapp.aiya.camera.MenuBean;
 import com.aiyaapp.aiya.util.ClickUtils;
-import com.aiyaapp.camera.sdk.AiyaCameraEffect;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 
@@ -72,9 +72,9 @@ public class EffectSelectActivity extends AppCompatActivity {
                 v.setSelected(true);
                 mStickerAdapter.notifyDataSetChanged();
                 if (name.equals("原始")) {
-                    AiyaCameraEffect.getInstance().setEffect(null);
+                    AiyaEffects.getInstance().setEffect(null);
                 }else{
-                    AiyaCameraEffect.getInstance().setEffect("assets/modelsticker/"+m.path);
+                    AiyaEffects.getInstance().setEffect("assets/modelsticker/"+m.path);
                 }
             }
         });
@@ -133,7 +133,7 @@ public class EffectSelectActivity extends AppCompatActivity {
                 break;
             case R.id.mRight:
                 mBeautyFlag=++mBeautyFlag>=7?0:mBeautyFlag;
-                AiyaCameraEffect.getInstance().set(ISdkManager.SET_BEAUTY_LEVEL,mBeautyFlag);
+                AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_LEVEL,mBeautyFlag);
                 refreshRightBtn();
                 break;
         }

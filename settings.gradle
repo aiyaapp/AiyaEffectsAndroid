@@ -1,1 +1,1 @@
-include ':AiyaCameraSDK',":demo"
+include ':AiyaEffectsSDK',":demo"

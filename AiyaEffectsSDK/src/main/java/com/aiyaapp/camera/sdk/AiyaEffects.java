@@ -32,14 +32,14 @@ import com.aiyaapp.camera.sdk.base.TrackCallback;
  *  Sdk的核心接口，将工作线程、GL线程、人脸追踪线程分开，
  *  提高SDK对视频流的处理速度。
  */
-public class AiyaCameraEffect implements ISdkManager {
+public class AiyaEffects implements ISdkManager {
 
 //        #define TRACK_STAT_OFF 0
 //        #define TRACK_STAT_OK 1
 //        #define TRACK_STAT_RECOVERING 2
 //        #define TRACK_STAT_INIT 3
 
-    private static AiyaCameraEffect instance;
+    private static AiyaEffects instance;
 
     private StateObservable mObservable;
     private AiyaCameraJni mAiyaCameraJni;
@@ -70,15 +70,15 @@ public class AiyaCameraEffect implements ISdkManager {
 
     private Object assetManager;
 
-    private AiyaCameraEffect(){
+    private AiyaEffects(){
         mObservable=new StateObservable();
     }
 
-    public static AiyaCameraEffect getInstance(){
+    public static AiyaEffects getInstance(){
         if(instance==null){
-            synchronized (AiyaCameraEffect.class){
+            synchronized (AiyaEffects.class){
                 if(instance==null){
-                    instance=new AiyaCameraEffect();
+                    instance=new AiyaEffects();
                 }
             }
         }
