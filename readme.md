@@ -308,8 +308,8 @@ public void addFilter(AFilter filter,boolean isBeforeProcess);
 贴纸资源制作规范请参照其他相关文档。
 
 # 6. 常见问题
-1. **特效只有一分钟**
-只有传入正式的License和appKey才不会有一分钟的限制.
+1. **特效为什么只有一分钟？**
+>只有传入正式的License和appKey才不会有一分钟的限制.
 
 # 7. License说明
 
