@@ -15,12 +15,10 @@
 [IOS版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoIOS)
 
 # 1、版本信息
-**当前版本：AiyaEffects SDK V2.0.0** 	[查看历史版本](doc/version_info.md)
+**当前版本：AiyaEffects SDK V2.0.1** 	[查看历史版本](doc/version_info.md)
 
 **功能更新**
-- 废弃AiyaCameraView，增加CameraView，提供设置CameraController接口，使用户可以自由设置Camera参数（Camera1 API）
-- 增加AiyaController和AiyaModel类，将图像数据源、特效处理及展示视图分离。支持Camera2 API、视频特效处理
-- 针对texture2d处理增加EffectFilter类
+- 启用特效资源加密
 
 # 2、运行环境说明
 AiyaEffectsSDK minSdkVersion为15，即Android4.0以上可用。
@@ -308,8 +306,8 @@ public void addFilter(AFilter filter,boolean isBeforeProcess);
 贴纸资源制作规范请参照其他相关文档。
 
 # 6. 常见问题
-1. **特效只有一分钟**
-只有传入正式的License和appKey才不会有一分钟的限制.
+1. **特效为什么只有一分钟？**
+>只有传入正式的License和appKey才不会有一分钟的限制.
 
 # 7. License说明
 
