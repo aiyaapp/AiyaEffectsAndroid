@@ -14,6 +14,7 @@ import android.opengl.GLES20;
 
 import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
+import com.aiyaapp.camera.sdk.base.Log;
 
 /**
  *  用于接收图像流，并做人脸特征点定位的类。该类必须与{@link ProcessFilter}配合使用
@@ -72,9 +73,11 @@ public class PrepareFilter extends AFilter {
     }
 
     private byte[] getTrackData() {
+        long t=System.currentTimeMillis();
         GLES20.glReadPixels(0, 0, AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_WIDTH),
             AiyaEffects.getInstance().get(ISdkManager.SET_TRACK_HEIGHT) , GLES20.GL_RGBA,
             GLES20.GL_UNSIGNED_BYTE,tBuffer);
+        Log.d("track read cost:"+(System.currentTimeMillis()-t));
         return tBuffer.array();
     }
 
