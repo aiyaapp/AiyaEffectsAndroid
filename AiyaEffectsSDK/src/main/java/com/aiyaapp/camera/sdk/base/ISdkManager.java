@@ -32,6 +32,9 @@ public interface ISdkManager {
     String SET_ASSETS_MANAGER="assets_manager"; //AssetsManager
 
     int ACTION_REFRESH_PARAMS_NOW=1;            //刷新params,需要在GL线程中执行
+
+    int STATE_EFFECT_END=0x00040000;            //特效播放结束
+    int STATE_EFFECT_PLAY=0x00020000;           //特效播放中
 //
 //    String SET_EFFECT="effect_path";            //设置贴纸效果
 
@@ -77,7 +80,7 @@ public interface ISdkManager {
      * @param textureId   纹理Id
      * @param trackIndex
      */
-    void process(int textureId, int trackIndex);
+    int process(int textureId, int trackIndex);
 
     /**
      * 设置图片数据处理回调
