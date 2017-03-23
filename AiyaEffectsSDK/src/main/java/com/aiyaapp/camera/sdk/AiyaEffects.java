@@ -273,7 +273,7 @@ public class AiyaEffects implements ISdkManager {
     }
 
     @Override
-    public void process(int textureId, int trackIndex) {
+    public int process(int textureId, int trackIndex) {
         if(isResourceReady){
             if(!isSetParam){
                 setParameters(input,output);
@@ -282,11 +282,13 @@ public class AiyaEffects implements ISdkManager {
                 mAiyaCameraJni.setEffect(nextEffect);
                 currentEffect=nextEffect;
             }
-            mAiyaCameraJni.processFrame(textureId,input.width,input.height,trackIndex);
+            int ret= mAiyaCameraJni.processFrame(textureId,input.width,input.height,trackIndex);
             if(mProcessCallback!=null){
                 mProcessCallback.onFinished();
             }
+            return ret;
         }
+        return 0;
     }
 
 
