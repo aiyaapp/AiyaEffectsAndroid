@@ -17,6 +17,7 @@ import android.Manifest;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -45,6 +46,7 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
         super.onCreate(savedInstanceState);
         PermissionUtils.askPermission(this,new String[]{Manifest.permission.CAMERA,Manifest
             .permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE},10,mRunnable);
+        Debug.startMethodTracing("ayDebug");
     }
 
     private CameraView.CameraController mController=new CameraView.CameraController(){
@@ -129,6 +131,7 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
         if(mCameraView!=null){
             mCameraView.onDestroy();
         }
+        Debug.stopMethodTracing();
     }
 
     @Override
