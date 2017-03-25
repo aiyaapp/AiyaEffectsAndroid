@@ -53,7 +53,7 @@ public class AiyaEffects implements ISdkManager {
     private ProcessCallback mProcessCallback;
     private TrackCallback mTrackCallback;
 
-    private Semaphore mSemaphore;
+//    private Semaphore mSemaphore;
 
     private ExecutorService mTrackExecutor;
 
@@ -100,12 +100,12 @@ public class AiyaEffects implements ISdkManager {
     }
 
     private void cInit(){
-        mSemaphore=new Semaphore(1,true);
+//        mSemaphore=new Semaphore(1,true);
         mAiyaCameraJni=new AiyaCameraJni();
         mWorkThread=new HandlerThread("Sdk Work Thread");
         mWorkThread.start();
         mWorkHandler=new Handler(mWorkThread.getLooper());
-        mTrackExecutor= Executors.newFixedThreadPool(2);
+        mTrackExecutor= Executors.newFixedThreadPool(1);
     }
 
     private boolean prepareResource(Context context,String licensePath){
@@ -256,11 +256,11 @@ public class AiyaEffects implements ISdkManager {
     public void track(final byte[] trackData, final float[] info, final int trackIndex) {
 //        Log.e("semaphore 1--> "+mSemaphore.availablePermits());
         if(isResourceReady){
-            try {
-                mSemaphore.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//            try {
+//                mSemaphore.acquire();
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
             mTrackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
@@ -271,7 +271,7 @@ public class AiyaEffects implements ISdkManager {
                     if(mTrackCallback!=null){
                         mTrackCallback.onTrack(trackCode,info);
                     }
-                    mSemaphore.release();
+//                    mSemaphore.release();
 //                Log.e("semaphore 2--> "+mSemaphore.availablePermits());
                 }
             });

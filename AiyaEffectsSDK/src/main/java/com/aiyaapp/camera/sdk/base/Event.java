@@ -42,11 +42,11 @@ public class Event {
     }
 
     public boolean isInitEvent(){
-        return eventType>0xF000&&eventType<0xFFFF;
+        return eventType>0xF000 && eventType<0xFFFF;
     }
 
     public boolean isProcessEvent(){
-        return eventType>0xE001&&eventType<0xE100;
+        return eventType>0xE001 && eventType<0xE100;
     }
 
 }
