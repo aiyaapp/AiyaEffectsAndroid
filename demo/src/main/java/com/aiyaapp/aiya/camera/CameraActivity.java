@@ -17,6 +17,7 @@ import android.Manifest;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.annotation.NonNull;
 import android.view.Menu;
 import android.view.MenuItem;

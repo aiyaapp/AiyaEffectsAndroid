@@ -27,11 +27,19 @@ public interface ISdkManager {
     String SET_OUT_WIDTH="out_width";           //输出宽度
     String SET_OUT_HEIGHT="out_height";         //输出高度
 
+    String SET_MODE="effect_mode";              //设置特效显示模式
+
     String SET_ACTION="set_action";             //动作
 
     String SET_ASSETS_MANAGER="assets_manager"; //AssetsManager
 
     int ACTION_REFRESH_PARAMS_NOW=1;            //刷新params,需要在GL线程中执行
+
+    int STATE_EFFECT_END=0x00040000;            //特效播放结束
+    int STATE_EFFECT_PLAY=0x00020000;           //特效播放中
+
+    int MODE_ORNAMENT=0;                        //饰品
+    int MODE_GIFT=1;                            //礼物
 //
 //    String SET_EFFECT="effect_path";            //设置贴纸效果
 
@@ -95,13 +103,13 @@ public interface ISdkManager {
      * 注册状态观察者
      * @param observer
      */
-    void registerObserver(StateObserver observer);
+    void registerObserver(ActionObserver observer);
 
     /**
      * 删除已注册的状态观察者
      * @param observer
      */
-    void unRegisterObserver(StateObserver observer);
+    void unRegisterObserver(ActionObserver observer);
 
     /**
      * 停止贴纸特效

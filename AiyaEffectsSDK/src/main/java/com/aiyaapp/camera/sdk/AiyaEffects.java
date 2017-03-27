@@ -23,9 +23,9 @@ import com.aiyaapp.camera.sdk.base.Log;
 import com.aiyaapp.camera.sdk.base.Parameter;
 import com.aiyaapp.camera.sdk.base.ProcessCallback;
 import com.aiyaapp.camera.sdk.base.Rotation;
-import com.aiyaapp.camera.sdk.base.State;
-import com.aiyaapp.camera.sdk.base.StateObservable;
-import com.aiyaapp.camera.sdk.base.StateObserver;
+import com.aiyaapp.camera.sdk.base.Event;
+import com.aiyaapp.camera.sdk.base.ActionObservable;
+import com.aiyaapp.camera.sdk.base.ActionObserver;
 import com.aiyaapp.camera.sdk.base.TrackCallback;
 
 /**
@@ -41,7 +41,7 @@ public class AiyaEffects implements ISdkManager {
 
     private static AiyaEffects instance;
 
-    private StateObservable mObservable;
+    private ActionObservable mObservable;
     private AiyaCameraJni mAiyaCameraJni;
 
     private HandlerThread mWorkThread;
@@ -66,12 +66,16 @@ public class AiyaEffects implements ISdkManager {
     private int mTrackHeight=320;
     private boolean isSetParam=false;
 
+    private int mMode=0;
+
     private boolean isResourceReady=false;
 
     private Object assetManager;
 
+    private Event mProcessEvent=new Event(Event.PROCESS_END,Event.PROCESS_PLAY,"",null);
+
     private AiyaEffects(){
-        mObservable=new StateObservable();
+        mObservable=new ActionObservable();
     }
 
     public static AiyaEffects getInstance(){
@@ -86,12 +90,12 @@ public class AiyaEffects implements ISdkManager {
     }
 
     @Override
-    public void registerObserver(StateObserver observer){
+    public void registerObserver(ActionObserver observer){
         mObservable.registerObserver(observer);
     }
 
     @Override
-    public void unRegisterObserver(StateObserver observer){
+    public void unRegisterObserver(ActionObserver observer){
         mObservable.unRegisterObserver(observer);
     }
 
@@ -130,7 +134,7 @@ public class AiyaEffects implements ISdkManager {
                 }
                 Log.e("prepare resource success:"+pb);
                 if(pb){
-                    mObservable.notifyState(State.RESOURCE_READY);
+                    mObservable.notifyState(new Event(Event.RESOURCE_READY,Event.RESOURCE_READY,"资源准备完成",null));
                     isResourceReady=true;
                     TelephonyManager tm = (TelephonyManager)context.getSystemService(Context
                         .TELEPHONY_SERVICE);
@@ -141,12 +145,12 @@ public class AiyaEffects implements ISdkManager {
                         licensePath,context.getPackageName(),DEVICE_ID,appKey);
                     Log.e("state="+state);
                     if(state==0){
-                        mObservable.notifyState(State.INIT_SUCCESS);
+                        mObservable.notifyState(new Event(Event.INIT_SUCCESS,Event.INIT_SUCCESS,"初始化成功",null));
                     }else{
-                        mObservable.notifyState(State.INIT_FAILED);
+                        mObservable.notifyState(new Event(Event.INIT_FAILED,state,"初始化失败",null));
                     }
                 }else{
-                    mObservable.notifyState(State.RESOURCE_FAILED);
+                    mObservable.notifyState(new Event(Event.RESOURCE_FAILED,Event.INIT_FAILED,"资源准备失败",null));
                     isResourceReady=false;
                 }
             }
@@ -225,6 +229,9 @@ public class AiyaEffects implements ISdkManager {
             case SET_TRACK_HEIGHT:
                 mTrackHeight=value;
                 break;
+            case SET_MODE:
+                this.mMode=value;
+                break;
             case SET_ACTION:
                 switch (value){
                     case ACTION_REFRESH_PARAMS_NOW:
@@ -282,9 +289,16 @@ public class AiyaEffects implements ISdkManager {
                 mAiyaCameraJni.setEffect(nextEffect);
                 currentEffect=nextEffect;
             }
-            mAiyaCameraJni.processFrame(textureId,input.width,input.height,trackIndex);
+            int ret= mAiyaCameraJni.processFrame(textureId,input.width,input.height,trackIndex);
             if(mProcessCallback!=null){
                 mProcessCallback.onFinished();
+            }
+            if(mMode==MODE_GIFT&&ret==STATE_EFFECT_END){
+                setEffect(null);
+            }
+            if(ret==STATE_EFFECT_END){
+                mProcessEvent.strTag=currentEffect;
+                mObservable.notifyState(mProcessEvent);
             }
         }
     }
@@ -320,6 +334,8 @@ public class AiyaEffects implements ISdkManager {
                 return mTrackWidth;
             case SET_TRACK_HEIGHT:
                 return mTrackHeight;
+            case SET_MODE:
+                return mMode;
             default:
                return -1;
         }

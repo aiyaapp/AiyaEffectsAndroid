@@ -19,8 +19,8 @@ import com.aiyaapp.aiya.mvc.SurfaceHolderActivity;
 import com.aiyaapp.aiya.mvc.TextureViewActivity;
 import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.Log;
-import com.aiyaapp.camera.sdk.base.State;
-import com.aiyaapp.camera.sdk.base.StateObserver;
+import com.aiyaapp.camera.sdk.base.Event;
+import com.aiyaapp.camera.sdk.base.ActionObserver;
 
 /**
  * Description:
@@ -30,19 +30,20 @@ public class LoadActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final StateObserver observer=new StateObserver() {
+        final ActionObserver observer=new ActionObserver() {
             @Override
-            public void onStateChange(State state) {
-                if(state==State.RESOURCE_FAILED){
+            public void onAction(Event event) {
+                if(event.eventType== Event.RESOURCE_FAILED){
                     Log.e("resource failed");
-                }else if(state==State.RESOURCE_READY){
+                    AiyaEffects.getInstance().unRegisterObserver(this);
+                }else if(event.eventType== Event.RESOURCE_READY){
                     Log.e("resource ready");
-                }else if(state==State.INIT_FAILED){
+                }else if(event.eventType== Event.INIT_FAILED){
                     Log.e("init failed");
                     Toast.makeText(LoadActivity.this, "注册失败，请检查网络", Toast.LENGTH_SHORT)
                         .show();
                     AiyaEffects.getInstance().unRegisterObserver(this);
-                }else if(state==State.INIT_SUCCESS){
+                }else if(event.eventType== Event.INIT_SUCCESS){
                     Log.e("init success");
                     setContentView(R.layout.activity_load);
                     AiyaEffects.getInstance().unRegisterObserver(this);
