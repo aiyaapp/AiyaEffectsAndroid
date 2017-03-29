@@ -29,8 +29,8 @@ public class ActionObservable {
         mHandler=new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
-                for (ActionObserver s:mObservers) {
-                    s.onAction((Event)msg.obj);
+                for (int i=0;i<mObservers.size();i++) {
+                    mObservers.get(i).onAction((Event)msg.obj);
                 }
             }
         };
