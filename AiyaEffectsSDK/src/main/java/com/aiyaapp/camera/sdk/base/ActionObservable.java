@@ -8,20 +8,19 @@
 package com.aiyaapp.camera.sdk.base;
 
 import java.util.ArrayList;
-import java.util.Observable;
 
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 
-public class StateObservable{
+public class ActionObservable {
 
-    private ArrayList<StateObserver> mObservers;
+    private ArrayList<ActionObserver> mObservers;
 
 
     private Handler mHandler;
 
-    public StateObservable(){
+    public ActionObservable(){
         mObservers=new ArrayList<>();
         initHandler();
     }
@@ -30,27 +29,26 @@ public class StateObservable{
         mHandler=new Handler(Looper.getMainLooper()){
             @Override
             public void handleMessage(Message msg) {
-                for (StateObserver s:mObservers) {
-                    s.onStateChange((State)msg.obj);
+                for (ActionObserver s:mObservers) {
+                    s.onAction((Event)msg.obj);
                 }
             }
         };
     }
 
-    public void notifyState(State state){
-        Log.e("notifyState->"+state.getMsg());
+    public void notifyState(Event state){
         Message msg=mHandler.obtainMessage();
         msg.obj=state;
         mHandler.sendMessage(msg);
     }
 
-    public void registerObserver(StateObserver observer){
+    public void registerObserver(ActionObserver observer){
         if(!mObservers.contains(observer)){
             mObservers.add(observer);
         }
     }
 
-    public void unRegisterObserver(StateObserver observer){
+    public void unRegisterObserver(ActionObserver observer){
         mObservers.remove(observer);
     }
 

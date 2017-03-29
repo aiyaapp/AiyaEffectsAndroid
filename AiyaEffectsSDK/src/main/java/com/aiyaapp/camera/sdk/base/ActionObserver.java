@@ -7,11 +7,8 @@
  */
 package com.aiyaapp.camera.sdk.base;
 
-/**
- * Description:
- */
-public interface StateObserver {
+public interface ActionObserver {
 
-    void onStateChange(State state);
+    void onAction(Event event);
 
 }
