@@ -67,6 +67,7 @@ public class AiyaEffects implements ISdkManager {
     private int mMode=0;
 
     private boolean isResourceReady=false;
+    private Semaphore mSemaphore;
 
     private Object assetManager;
 
@@ -98,6 +99,7 @@ public class AiyaEffects implements ISdkManager {
     }
 
     private void cInit(){
+        mSemaphore=new Semaphore(1,true);
         mAiyaCameraJni=new AiyaCameraJni();
         mWorkThread=new HandlerThread("Sdk Work Thread");
         mWorkThread.start();
@@ -262,6 +264,7 @@ public class AiyaEffects implements ISdkManager {
                     if(mTrackCallback!=null){
                         mTrackCallback.onTrack(trackCode,info);
                     }
+                    mSemaphore.release();
                 }
             });
         }
@@ -271,6 +274,11 @@ public class AiyaEffects implements ISdkManager {
     @Override
     public void process(int textureId, int trackIndex) {
         if(isResourceReady){
+            try {
+                mSemaphore.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if(!isSetParam){
                 setParameters(input,output);
             }
