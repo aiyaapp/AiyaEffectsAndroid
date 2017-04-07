@@ -179,6 +179,7 @@ public class AiyaEffects implements ISdkManager {
     @Override
     public void setEffect(String effectPath) {
         if(effectPath==null){
+            currentEffect=null;
             set(SET_EFFECT_ON,0);
         }else{
             set(SET_EFFECT_ON,1);
