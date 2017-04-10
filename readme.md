@@ -15,10 +15,11 @@
 [IOS版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoIOS)
 
 # 1、版本信息
-**当前版本：AiyaEffects SDK V2.0.1** 	[查看历史版本](doc/version_info.md)
+**当前版本：AiyaEffects SDK V2.0.4** 	[查看历史版本](doc/version_info.md)
 
 **功能更新**
-- 启用特效资源加密
+- 修复部分bug
+- 优化特效播放效果
 
 # 2、运行环境说明
 AiyaEffectsSDK minSdkVersion为15，即Android4.0以上可用。

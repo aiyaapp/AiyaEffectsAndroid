@@ -1,5 +1,11 @@
 
-最新版本 V2.0.1
+最新版本 V2.0.4
+
+AiyaEffects SDK V2.0.4
+>
+**功能更新**
+- 修复部分bug
+- 优化特效播放效果
 
 AiyaEffects SDK V2.0.1
 >
