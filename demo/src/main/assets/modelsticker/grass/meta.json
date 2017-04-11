@@ -7,7 +7,7 @@
       "dirname" : "circle",
       "number"      : 61,
       "width" : 290,
-      "height" : 79,
+      "height" : 80,
       "duration" : 50,
       "isloop" : 1,
       "Triggertype" : 0,
@@ -21,7 +21,7 @@
     {
 	  "type":"2dAnim",
       "dirname" : "grass",
-      "number"      : 35,
+      "number"      : 61,
       "width" : 738,
       "height" : 260,
       "duration" : 50,

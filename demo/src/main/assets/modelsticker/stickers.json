@@ -1,13 +1,16 @@
-[
+﻿[
 	{"name":"原始"},
-	{"name":"豹纹耳","path":"baowener/meta.json"},
-	{"name":"狗狗","path":"gougou/meta.json"},
-	{"name":"小草","path":"grass/meta.json"},
-	{"name":"老人","path":"oldman/meta.json"},
+	{"name":"手套","path":"shoutao/meta.json"},
 	{"name":"花环","path":"huahuan/meta.json"},
-	{"name":"花环3D","path":"huahuan3D/meta.json"},
-	{"name":"猫耳","path":"maoer/meta.json"},
+	{"name":"小草","path":"grass/meta.json"},
+	{"name":"bunny","path":"bunny/meta.json"},
 	{"name":"大白","path":"dabai/meta.json"},
-	{"name":"世外桃源","path":"shiwaitaoyuan/meta.json"},
-	{"name":"蓝色妖姬","path":"lanseyaoji/meta.json"}
+	{"name":"顶你","path":"dingni/meta.json"},
+	{"name":"高空示爱","path":"gaokongshiai/meta.json"},
+	{"name":"海洋之心","path":"haiyangzhixin/meta.json"},
+	{"name":"卡布奇诺","path":"kabuqinuo/meta.json"},
+	{"name":"蓝色妖姬","path":"lanseyaoji/meta.json"},
+	{"name":"黑天使","path":"heitianshi/meta.json"},
+	{"name":"3D花环","path":"huahuan3D/meta.json"},
+	{"name":"老人","path":"oldman/meta.json"}
 ]
