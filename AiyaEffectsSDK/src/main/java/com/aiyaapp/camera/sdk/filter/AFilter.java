@@ -121,6 +121,14 @@ public abstract class AFilter {
         onDraw();
     }
 
+    public void setVertBuffer(FloatBuffer buffer){
+        this.mVerBuffer=buffer;
+    }
+
+    public void setTexBuffer(FloatBuffer buffer){
+        this.mTexBuffer=buffer;
+    }
+
     public void setMatrix(float[] matrix){
         this.matrix=matrix;
     }
