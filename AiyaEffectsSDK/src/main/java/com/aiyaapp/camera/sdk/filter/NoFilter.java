@@ -28,4 +28,5 @@ public class NoFilter extends AFilter {
     protected void onSizeChanged(int width, int height) {
 
     }
+
 }
