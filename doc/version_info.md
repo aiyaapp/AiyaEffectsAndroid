@@ -1,5 +1,12 @@
 
-最新版本 V2.0.4
+最新版本 V2.1.0
+
+AiyaEffects SDK V2.1.0
+>
+**功能更新**
+- 采用rtf格式特效资源
+- 增加设置顶点坐标及纹理坐标的接口以兼容GPUImage
+- 增加BaseFilter
 
 AiyaEffects SDK V2.0.4
 >

@@ -15,11 +15,12 @@
 [IOS版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoIOS)
 
 # 1、版本信息
-**当前版本：AiyaEffects SDK V2.0.4** 	[查看历史版本](doc/version_info.md)
+**当前版本：AiyaEffects SDK V2.1.0** 	[查看历史版本](doc/version_info.md)
 
 **功能更新**
-- 修复部分bug
-- 优化特效播放效果
+- 采用rtf格式特效资源
+- 增加设置顶点坐标及纹理坐标的接口以兼容GPUImage
+- 增加BaseFilter
 
 # 2、运行环境说明
 AiyaEffectsSDK minSdkVersion为15，即Android4.0以上可用。
@@ -51,7 +52,11 @@ allprojects {
 compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.0.0'
 ```
 
-### 2、AndroidManifest.xml文件配置
+### 2、获取License
+1. 联系我们以获取license，license包括：appId、appKey及license文件。appId为应用包名，appKey由服务器生成，license文件名类似于`970-978-153-385-692-417-977-719-497-977-917.vlc`。
+2. 将license文件加入`assets\trackerdata\`目录下，**不要修改license文件名**。SDK初始化时，会将trackerdata下的文件拷贝到应用目录下。
+
+### 3、AndroidManifest.xml文件配置
 使用AiyaEffectsSDK，必须在App Module中添加：
 ```xml
 <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
@@ -63,7 +68,7 @@ compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.0.0'
 ```
 其他权限需要根据App自身需求添加。Android6.0需要动态申请权限，具体请参照Android官网。
 
-### 3、初始化
+### 4、初始化
 初始化调用`AiyaEffects.getInstance().init(final Context context, final String licensePath,final String appKey)`，第一个参数为App的Context，第二个参数为AiyaEffectsSDK的license文件路径，第三个参数为当前应用的appKey。在初始化过程中，会进行鉴权，若鉴权失败，则AiyaEffectsSDK无法正常运行。所以建议在开始初始化前，为AiyaEffects注册状态监听器，监听初始化状态，示例如下：
 ```java
 final StateObserver observer=new StateObserver() {
@@ -79,14 +84,14 @@ final StateObserver observer=new StateObserver() {
     }
 };
 AiyaEffects.getInstance().registerObserver(observer);
-AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath(),appKey);
+AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath()+yourLicenseFileName,appKey);
 ```
 常见状态如下：
 - INIT_SUCCESS 初始化成功
 - RESOURCE_FAILED 资源准备失败
 - INIT_FAILED 初始化失败
 
-### 4、在布局中增加CameraView
+### 5、在布局中增加CameraView
 ```xml
 <com.aiyaapp.aiya.widget.CameraView
     android:layout_width="match_parent"
@@ -94,7 +99,7 @@ AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath(),appKey);
     android:id="@+id/mSurfaceView" />
 ```
 
-### 5、CameraView实例获取及控制
+### 6、CameraView实例获取及控制
 引入AiyaEffectsSDK module、完成AiyaEffectsSDK的初始化、给应用添加相关权限后、增加CameraView视图后就可以获取CameraView实例，并进行特效处理了。处理示例代码如下：
 ```java
 private void initCameraView(){
@@ -154,7 +159,7 @@ protected void onDestroy() {
 ```
 
 ## 使用AiyaController集成
-使用AiyaController集成与使用CameraView类似，前三步完全一样。相对CameraView，AiyaController更加灵活。初始化AiyaEffectsSDK后，集成AiyaController的步骤如下:
+使用AiyaController集成与使用CameraView类似，前四步完全一样。相对CameraView，AiyaController更加灵活。初始化AiyaEffectsSDK后，集成AiyaController的步骤如下:
 
 ### 1、提供数据源
 AiyaController可以接受以SurfaceTexture共享出来的数据流，在Demo中，提供了包括Camera1 API、Camera2 API、视频流三类数据源示例，分别为Camera1Model、Camera2Model和MediaModel。用户可直接使用，也可以根据它们的实现自行定制。它们所做的工作主要为：
@@ -311,7 +316,6 @@ public void addFilter(AFilter filter,boolean isBeforeProcess);
 >只有传入正式的License和appKey才不会有一分钟的限制.
 
 # 7. License说明
-
 暂无
 
 # 8. 联系方式
