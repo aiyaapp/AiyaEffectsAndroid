@@ -54,7 +54,7 @@ compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.0.0'
 
 ### 2、获取License
 1. 联系我们以获取license，license包括：appId、appKey及license文件。appId为应用包名，appKey由服务器生成，license文件名类似于`970-978-153-385-692-417-977-719-497-977-917.vlc`。
-2. 将license文件加入`assets\trackerdata\`目录下，**不要修改license文件名**。
+2. 将license文件加入`assets\trackerdata\`目录下，**不要修改license文件名**。SDK初始化时，会将trackerdata下的文件拷贝到应用目录下。
 
 ### 3、AndroidManifest.xml文件配置
 使用AiyaEffectsSDK，必须在App Module中添加：
@@ -84,7 +84,7 @@ final StateObserver observer=new StateObserver() {
     }
 };
 AiyaEffects.getInstance().registerObserver(observer);
-AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath(),appKey);
+AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath()+yourLicenseFileName,appKey);
 ```
 常见状态如下：
 - INIT_SUCCESS 初始化成功
