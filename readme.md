@@ -15,7 +15,7 @@
 [IOS版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoIOS)
 
 # 1、版本信息
-**当前版本：AiyaEffects SDK V2.0.5** 	[查看历史版本](doc/version_info.md)
+**当前版本：AiyaEffects SDK V2.1.0** 	[查看历史版本](doc/version_info.md)
 
 **功能更新**
 - 采用rtf格式特效资源

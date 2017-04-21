@@ -1,7 +1,7 @@
 
 最新版本 V2.0.5
 
-AiyaEffects SDK V2.0.4
+AiyaEffects SDK V2.1.0
 >
 **功能更新**
 - 采用rtf格式特效资源
