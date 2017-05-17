@@ -64,5 +64,7 @@ final class AiyaCameraJni {
         System.loadLibrary("VisageVision");
         System.loadLibrary("ayeffects");
         System.loadLibrary("AiyaJniWrapper");
+        System.loadLibrary("simd");
+        System.loadLibrary("aftk");
     }
 }
