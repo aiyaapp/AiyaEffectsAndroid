@@ -43,9 +43,9 @@ public class Assets {
 
     //Todo 后面model_sticker的文件不应该放到assets文件夹下，利用外部加载的方式
     public boolean doCopy() {
-        boolean a=copyForVisage();
+        boolean a=copyFileFromAssets("config", rootDir);
         if(!a){
-            Log.e("check visage data error");
+            Log.e("check config data error");
         }
 
 //        if(!new File(getSD()+"/AiyaCamera/model_sticker").exists()||isCopyRes()){
@@ -65,14 +65,6 @@ public class Assets {
 ////            }
 //        }
         return a;
-    }
-
-
-
-    //为Visage准备资源文件
-    private boolean copyForVisage() {
-        Log.d("check data for visage");
-        return copyFileFromAssets("trackerdata", rootDir);
     }
 
     private boolean copyForSticker(){

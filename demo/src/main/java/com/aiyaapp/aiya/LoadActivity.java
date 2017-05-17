@@ -52,7 +52,7 @@ public class LoadActivity extends AppCompatActivity {
         };
         AiyaEffects.getInstance().registerObserver(observer);
         AiyaEffects.getInstance().init(LoadActivity.this,getExternalFilesDir(null)
-            .getAbsolutePath()+"/146-563-918-415-578-677-783-748-043-705-956.vlc","");
+            .getAbsolutePath()+"/config","");
     }
 
     public void onClick(View view){

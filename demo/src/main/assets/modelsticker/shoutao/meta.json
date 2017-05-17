@@ -30,8 +30,8 @@
       "untilFinish" : 1,
       "position" : "foreheadCenter",
       "anchorX" : 180,
-      "anchorY" : 124,
-      "ratio" : 1.9,
+      "anchorY" : 80,
+      "ratio" : 1.4,
       "fullscreen" : 0
     },
 	{
@@ -47,7 +47,7 @@
       "position" : "nose",
       "anchorX" : 180,
       "anchorY" : 350,
-      "ratio" : 2.0,
+      "ratio" : 1.5,
       "fullscreen" : 0
     }
   ]

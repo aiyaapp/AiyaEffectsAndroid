@@ -14,8 +14,8 @@
       "untilFinish" : 1,      
       "position" : "foreheadCenter",   
       "anchorX" : 154,       
-      "anchorY" : 82,
-      "ratio" : 1.8,          
+      "anchorY" : 50,
+      "ratio" : 1.5,          
       "fullscreen" : 0
     }
   ]

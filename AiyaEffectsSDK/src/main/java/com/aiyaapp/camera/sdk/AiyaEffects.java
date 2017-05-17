@@ -114,8 +114,9 @@ public class AiyaEffects implements ISdkManager {
     }
 
     @Override
-    public void init(final Context context,final String licensePath,final String appKey) {
+    public void init(final Context context,final String configPath,final String appKey) {
         Log.e("sdk init");
+        System.setProperty("ay.effects.debug","1");
         assetManager=context.getAssets();
         cInit();
         mWorkHandler.post(new Runnable() {
@@ -123,13 +124,10 @@ public class AiyaEffects implements ISdkManager {
             public void run() {
                 Log.e("start prepare resource");
                 boolean pb;
-                final String path=licensePath.substring(0,licensePath.lastIndexOf
-                    (File.separator)+1);
-                Log.e("path -- >"+path);
-                if(new File(licensePath).exists()){
+                if(new File(configPath).exists()){
                     pb=true;
                 }else{
-                    pb=prepareResource(context,path);
+                    pb=prepareResource(context,configPath);
                 }
                 Log.e("prepare resource success:"+pb);
                 if(pb){
@@ -140,8 +138,8 @@ public class AiyaEffects implements ISdkManager {
                     String DEVICE_ID = tm.getDeviceId();
                     if(DEVICE_ID==null)DEVICE_ID=android.os.Build.SERIAL;
                     Log.e("sticker jni init");
-                    int state=mAiyaCameraJni.init(context,path,
-                        licensePath,context.getPackageName(),DEVICE_ID,appKey);
+                    int state=mAiyaCameraJni.init(context,configPath,
+                        configPath,context.getPackageName(),DEVICE_ID,appKey);
                     Log.e("state="+state);
                     if(state==0){
                         mObservable.notifyState(new Event(Event.INIT_SUCCESS,Event.INIT_SUCCESS,"初始化成功",null));

@@ -24,13 +24,13 @@
       "number"      : 61,
       "width" : 738,
       "height" : 260,
-      "duration" : 50,
+      "duration" : 70,
       "isloop" : 1,
       "Triggertype" : 0,
       "untilFinish" : 1,
       "position" : "foreheadCenter",
       "anchorX" : 315,
-      "anchorY" : 102,
+      "anchorY" : 50,
       "ratio" : 2.7,
       "fullscreen" : 0
     }
