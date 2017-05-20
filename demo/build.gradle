@@ -7,7 +7,7 @@ android {
 
     defaultConfig {
         applicationId "com.aiyaapp.aiya"
-        minSdkVersion 16
+        minSdkVersion 18
         targetSdkVersion 25
         versionCode rootProject.ext.vCode
         versionName rootProject.ext.vName

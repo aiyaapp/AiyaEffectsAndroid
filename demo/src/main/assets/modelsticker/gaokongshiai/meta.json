@@ -2,14 +2,15 @@
   "format" : "1",
   "name":"高空示爱",
   "needtrack" : 0,
+  "resid":"300515",
   "nodes" : [
     {
       "type":"2dAnim",
       "dirname" : "gaokongshiai",
-      "number"      : 300,
-      "width" : 540,
-      "height" : 960,
-      "duration" : 40,
+      "number"      : 180,
+      "width" : 720,
+      "height" : 1280,
+      "duration" : 66,
       "isloop" : 1,
       "Triggertype" : 0,
       "untilFinish" : 1,
@@ -18,7 +19,8 @@
       "anchorY" : 20,
       "ratio" : 1.0,
       "fullscreen" : 1,
-      "keepaspect" : 0
+      "keepaspect" : 0,
+	  "PositionSwitch" : 0,
     }
   ]
 }
