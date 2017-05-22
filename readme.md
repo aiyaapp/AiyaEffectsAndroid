@@ -307,6 +307,7 @@ public void addFilter(AFilter filter,boolean isBeforeProcess);
 ## 注意事项
 1. 尽量避免在FrameCallback的回调方法中做耗时工作，以免阻塞渲染线程。
 2. 尽量避免多次初始化AiyaEffectsSDK，在不需要试用AiyaEffectsSDK时，调用release，释放掉AiyaEffectsSDK的资源。
+3. 集成文档一定要看。AiyaEffectsSDK里面的东西如果不是必要的话，尽量别改，不然出现了问题，我都不太好确定是什么问题。如果不是自己要渲染操作，AiyaController+AiyaModel讲道理99%都能满足集成。自定义滤镜、增加水印之类的AiyaController也有接口。如果在使用AiyaEffectsSDK中，一定要自己进行渲染操作，就利用AiyaEffectFilter，参照AiyaController来使用。
 
 # 5. 资源说明
 贴纸资源制作规范请参照其他相关文档。
