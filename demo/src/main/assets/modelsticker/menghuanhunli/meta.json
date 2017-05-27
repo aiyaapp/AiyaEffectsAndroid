@@ -1,13 +1,13 @@
 {
   "format" : "1",
-  "name":"甜蜜之旅",
+  "name":"梦幻婚礼",
   "needtrack" : 0,
-  "resid" : "300001",
+  "resid" : "300015",
   "nodes" : [
-    {
+	{
       "type":"2dAnim",
-      "dirname" : "tianmizhilv",
-      "number"      : 120,
+      "dirname" : "menghuanhunli",
+      "number"      : 226,
       "width" : 720,
       "height" : 1280,
       "duration" : 66,

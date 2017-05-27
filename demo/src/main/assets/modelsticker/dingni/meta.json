@@ -20,28 +20,7 @@
       "ratio" : 1.0,
       "fullscreen" : 1,
       "keepaspect" : 0,
-	  "PositionSwitch" : 0,
-    },
-    {
-      "type":"2dAnim",
-      "dirname" : "taiyanghua",
-      "number"      : 120,
-      "width" : 1000,
-      "height" : 1000,
-      "duration" : 66,
-      "isloop" : 1,
-      "Triggertype" : 0,
-      "untilFinish" : 1,
-      "position" : "foreheadCenter",
-      "anchorX" : 500,
-      "anchorY" : 0,
-      "ratio" : 1.5,
-      "fullscreen" : 0,
-      "keepaspect" : 1,
-      "defaultX" : 0.0,
-      "defaultY" : 0.3,
-      "defaultW" : 1.5,
-	  "PositionSwitch" : 0,
+	  "PositionSwitch" : 0
     }
   ]
 }

@@ -84,7 +84,7 @@ final StateObserver observer=new StateObserver() {
     }
 };
 AiyaEffects.getInstance().registerObserver(observer);
-AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath()+yourLicenseFileName,appKey);
+AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath()+"/config",appKey);
 ```
 常见状态如下：
 - INIT_SUCCESS 初始化成功
@@ -283,7 +283,6 @@ public void stopRecord();
 //回调一帧数据，拍照、截屏等使用
 public void takePhoto();
 ```
-
 
 
 ## 高级使用
