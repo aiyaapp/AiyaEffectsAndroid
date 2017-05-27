@@ -6,9 +6,13 @@
 	{"name":"花季单车","path":"huajidanche/meta.json"},
 	{"name":"顶你","path":"dingni/meta.json"},
 	{"name":"环游世界","path":"huanyoushijie/meta.json"},
-	{"name":"梦幻婚礼","path":"menghuanhunli/meta.json"},
+	{"name":"梦幻婚礼","path":"menghuanhuenli/meta.json"},
 	{"name":"老司机","path":"laosiji/meta.json"},
 	{"name":"友谊小船","path":"youyixiaochuan/meta.json"},
 	{"name":"高空示爱","path":"gaokongshiai/meta.json"},
-	{"name":"甜蜜之旅","path":"tianmizhilv/meta.json"}
+	{"name":"甜蜜之旅","path":"tianmizhilv/meta.json"},
+	{"name":"花环3D","path":"huahuan3D/meta.json"},
+	{"name":"蘑菇林","path":"mogulin/meta.json"},
+	{"name":"魔镜","path":"mojing/meta.json"},
+	{"name":"小红帽","path":"xiaohongmao/meta.json"}
 ]

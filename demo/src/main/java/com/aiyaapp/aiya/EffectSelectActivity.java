@@ -7,6 +7,12 @@
  */
 package com.aiyaapp.aiya;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
+import android.provider.MediaStore;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -68,14 +74,20 @@ public class EffectSelectActivity extends AppCompatActivity {
             public void onClick(View v, int type, int pos, int child) {
                 MenuBean m=mStickerData.get(pos);
                 String name=m.name;
-                mStickerAdapter.checkPos=pos;
-                v.setSelected(true);
-                mStickerAdapter.notifyDataSetChanged();
                 if (name.equals("原始")) {
                     AiyaEffects.getInstance().setEffect(null);
+                    mStickerAdapter.checkPos=pos;
+                    v.setSelected(true);
+                }else if(name.equals("本地")){
+                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                    intent.setType("file/*");
+                    startActivityForResult(intent,101);
                 }else{
                     AiyaEffects.getInstance().setEffect("assets/modelsticker/"+m.path);
+                    mStickerAdapter.checkPos=pos;
+                    v.setSelected(true);
                 }
+                mStickerAdapter.notifyDataSetChanged();
             }
         });
         mMenuView.setAdapter(mStickerAdapter);
@@ -116,6 +128,10 @@ public class EffectSelectActivity extends AppCompatActivity {
                 r.endObject();
             }
             r.endArray();
+            MenuBean bean=new MenuBean();
+            bean.name="本地";
+            bean.path="";
+            mStickerData.add(bean);
             mStickerAdapter.notifyDataSetChanged();
         } catch (IOException e) {
             e.printStackTrace();
@@ -157,6 +173,43 @@ public class EffectSelectActivity extends AppCompatActivity {
                 bitmap.recycle();
             }
         }).start();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==101){
+            if(resultCode==RESULT_OK){
+                android.util.Log.e("wuwang","data:"+getRealFilePath(data.getData()));
+                String dataPath=getRealFilePath(data.getData());
+                if(dataPath!=null&&dataPath.endsWith(".json")){
+                    AiyaEffects.getInstance().setEffect(dataPath);
+                }
+            }
+        }
+    }
+
+    public String getRealFilePath(final Uri uri ) {
+        if ( null == uri ) return null;
+        final String scheme = uri.getScheme();
+        String data = null;
+        if ( scheme == null )
+            data = uri.getPath();
+        else if ( ContentResolver.SCHEME_FILE.equals( scheme ) ) {
+            data = uri.getPath();
+        } else if ( ContentResolver.SCHEME_CONTENT.equals( scheme ) ) {
+            Cursor cursor = getContentResolver().query( uri, new String[] { MediaStore.Images.ImageColumns.DATA }, null, null, null );
+            if ( null != cursor ) {
+                if ( cursor.moveToFirst() ) {
+                    int index = cursor.getColumnIndex( MediaStore.Images.ImageColumns.DATA );
+                    if ( index > -1 ) {
+                        data = cursor.getString( index );
+                    }
+                }
+                cursor.close();
+            }
+        }
+        return data;
     }
 
     //图片保存
