@@ -1,0 +1,58 @@
+{
+  "format" : "1",
+  "name":"手套",
+  "resid" : "300303",
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "blush",
+      "number"      : 60,
+      "width" : 236,
+      "height" : 88,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 114,
+      "anchorY" : 40,
+      "ratio" : 1.3,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    },
+    {
+	  "type":"2dAnim",
+      "dirname" : "hat",
+      "number"      : 60,
+      "width" : 360,
+      "height" : 324,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 180,
+      "anchorY" : 80,
+      "ratio" : 1.4,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    },
+	{
+      "type":"2dAnim",
+      "dirname" : "gloves",
+      "number"      : 60,
+      "width" : 360,
+      "height" : 640,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 180,
+      "anchorY" : 350,
+      "ratio" : 1.5,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    }
+  ]
+}

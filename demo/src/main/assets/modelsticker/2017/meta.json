@@ -1,0 +1,41 @@
+{
+  "format" : "1",
+  "name":"2017",
+  "resid" : "300101",
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "face",
+      "number"      : 12,
+      "width" : 202,
+      "height" : 44,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 101,
+      "anchorY" : 15,
+      "ratio" : 0.7,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    },
+    {
+	  "type":"2dAnim",
+      "dirname" : "head",
+      "number"      : 12,
+      "width" : 160,
+      "height" : 116,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 80,
+      "anchorY" : 20,
+      "ratio" : 0.9,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    }
+  ]
+}
