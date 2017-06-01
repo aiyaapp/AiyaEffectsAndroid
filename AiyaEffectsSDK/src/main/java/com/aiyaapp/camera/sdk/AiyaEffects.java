@@ -7,6 +7,7 @@
  */
 package com.aiyaapp.camera.sdk;
 
+import android.annotation.SuppressLint;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,6 +72,8 @@ public class AiyaEffects implements ISdkManager {
 
     private Object assetManager;
 
+    private String DEVICE_ID;
+
     private Event mProcessEvent=new Event(Event.PROCESS_END,Event.PROCESS_PLAY,"",null);
 
     private AiyaEffects(){
@@ -113,13 +116,19 @@ public class AiyaEffects implements ISdkManager {
         return assets.doCopy();
     }
 
+    @SuppressLint("HardwareIds")
     @Override
     public void init(final Context context,final String configPath,final String appKey) {
         Log.e("sdk init");
+        TelephonyManager tm = (TelephonyManager)context.getSystemService(Context
+            .TELEPHONY_SERVICE);
+        DEVICE_ID = tm.getDeviceId();
+        if(DEVICE_ID==null)DEVICE_ID=android.os.Build.SERIAL;
         System.setProperty("ay.effects.debug","1");
         assetManager=context.getAssets();
         cInit();
         mWorkHandler.post(new Runnable() {
+            @SuppressLint("HardwareIds")
             @Override
             public void run() {
                 Log.e("start prepare resource");
@@ -133,10 +142,6 @@ public class AiyaEffects implements ISdkManager {
                 if(pb){
                     mObservable.notifyState(new Event(Event.RESOURCE_READY,Event.RESOURCE_READY,"资源准备完成",null));
                     isResourceReady=true;
-                    TelephonyManager tm = (TelephonyManager)context.getSystemService(Context
-                        .TELEPHONY_SERVICE);
-                    String DEVICE_ID = tm.getDeviceId();
-                    if(DEVICE_ID==null)DEVICE_ID=android.os.Build.SERIAL;
                     Log.e("sticker jni init");
                     int state=mAiyaCameraJni.init(context,configPath,
                         configPath,context.getPackageName(),DEVICE_ID,appKey);

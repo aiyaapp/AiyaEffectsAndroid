@@ -1,0 +1,41 @@
+{
+  "format" : "1",
+  "name":"毛绒",
+  "resid" : "300106",
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "shy",
+      "number"      : 41,
+      "width" : 220,
+      "height" : 104,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 109,
+      "anchorY" : 41,
+      "ratio" : 1.3,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    },
+    {
+	  "type":"2dAnim",
+      "dirname" : "hat",
+      "number"      : 41,
+      "width" : 360,
+      "height" : 272,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 180,
+      "anchorY" : 190,
+      "ratio" : 1.7,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    }
+  ]
+}
