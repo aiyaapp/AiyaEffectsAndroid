@@ -1,0 +1,41 @@
+{
+  "format" : "1",
+  "name":"狗狗",
+  "resid" : "300302",
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "face",
+      "number"      : 4,
+      "width" : 209,
+      "height" : 57,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 105,
+      "anchorY" : 29,
+      "ratio" : 1.2,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    },
+    {
+	  "type":"2dAnim",
+      "dirname" : "ears",
+      "number"      : 4,
+      "width" : 249,
+      "height" : 63,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "foreheadCenter",
+      "anchorX" : 125,
+      "anchorY" : 53,
+      "ratio" : 1.2,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    }
+  ]
+}

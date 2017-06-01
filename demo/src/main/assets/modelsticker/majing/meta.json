@@ -1,0 +1,41 @@
+{
+  "format" : "1",
+  "name":"马镜",
+  "resid" : "300105",
+  "nodes" : [
+    {
+      "type":"2dAnim",
+      "dirname" : "meimao",
+      "number"      : 40,
+      "width" : 360,
+      "height" : 46,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "browCenter",
+      "anchorX" : 180,
+      "anchorY" : 0,
+      "ratio" : 1.8,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    },
+	{
+      "type":"2dAnim",
+      "dirname" : "yanjing",
+      "number"      : 40,
+      "width" : 360,
+      "height" : 108,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "nose",
+      "anchorX" : 185,
+      "anchorY" : -20,
+      "ratio" : 1.5,
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    }
+  ]
+}

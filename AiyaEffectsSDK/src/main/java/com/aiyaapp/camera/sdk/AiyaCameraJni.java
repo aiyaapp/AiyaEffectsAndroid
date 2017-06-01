@@ -60,8 +60,9 @@ final class AiyaCameraJni {
     private native void nControl(String key,Object obj);
 
     static {
+        System.loadLibrary("simd");
+        System.loadLibrary("aftk");
         System.loadLibrary("assimp");
-        System.loadLibrary("VisageVision");
         System.loadLibrary("ayeffects");
         System.loadLibrary("AiyaJniWrapper");
     }

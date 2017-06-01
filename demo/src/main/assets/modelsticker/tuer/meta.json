@@ -1,0 +1,24 @@
+{
+  "format" : "1",
+  "name":"兔耳朵",
+  "resid" : "300204",
+  "nodes" : [
+    { 
+      "type":"2dAnim",
+	  "dirname" : "erduo",   
+      "number"      : 20,     
+      "width" : 310,         
+      "height" : 252,
+      "duration" : 66,       
+      "isloop" : 1,           
+      "Triggertype" : 0,     
+      "untilFinish" : 1,      
+      "position" : "foreheadCenter",   
+      "anchorX" : 154,       
+      "anchorY" : 50,
+      "ratio" : 1.5,          
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    }
+  ]
+}

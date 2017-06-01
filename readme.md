@@ -23,7 +23,7 @@
 - 增加BaseFilter
 
 # 2、运行环境说明
-AiyaEffectsSDK minSdkVersion为15，即Android4.0以上可用。
+AiyaEffectsSDK minSdkVersion为18，即Android4.3以上可用。
 
 # 3. SDK功能说明
 AiyaEffectsSDK可用于相机、图片处理、直播等多种情景，主要功能如下：
@@ -49,12 +49,11 @@ allprojects {
 ```
 然后在需要使用AiyaEffectsSDK的项目build.gradle中加入对AiyaEffectsSDK的依赖：
 ```gradle
-compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.0.0'
+compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.1.0'
 ```
 
-### 2、获取License
-1. 联系我们以获取license，license包括：appId、appKey及license文件。appId为应用包名，appKey由服务器生成，license文件名类似于`970-978-153-385-692-417-977-719-497-977-917.vlc`。
-2. 将license文件加入`assets\trackerdata\`目录下，**不要修改license文件名**。SDK初始化时，会将trackerdata下的文件拷贝到应用目录下。
+### 2、注册appId，获取appKey
+进入[官网](http://www.bbtexiao.com/)，申请免费使用AiyaEffectsSDK，注册appId，获取appKey。
 
 ### 3、AndroidManifest.xml文件配置
 使用AiyaEffectsSDK，必须在App Module中添加：
@@ -71,20 +70,29 @@ compile 'com.github.aiyaapp:AiyaEffectsAndroid:v2.0.0'
 ### 4、初始化
 初始化调用`AiyaEffects.getInstance().init(final Context context, final String licensePath,final String appKey)`，第一个参数为App的Context，第二个参数为AiyaEffectsSDK的license文件路径，第三个参数为当前应用的appKey。在初始化过程中，会进行鉴权，若鉴权失败，则AiyaEffectsSDK无法正常运行。所以建议在开始初始化前，为AiyaEffects注册状态监听器，监听初始化状态，示例如下：
 ```java
-final StateObserver observer=new StateObserver() {
-    @Override
-    public void onStateChange(State state) {
-        Log.e("state-->"+state.getMsg());
-        if(state==State.INIT_SUCCESS){
-            initEffectMenu();
-        }else if(state==State.INIT_FAILED){
-            Toast.makeText(CameraActivity.this, "注册失败，请检查网络", Toast.LENGTH_SHORT).show();
-        }
-        Log.e("onState Change finish");
-    }
-};
-AiyaEffects.getInstance().registerObserver(observer);
-AiyaEffects.getInstance().init(this,getFilesDir().getAbsolutePath()+yourLicenseFileName,appKey);
+ final ActionObserver observer=new ActionObserver() {
+      @Override
+      public void onAction(Event event) {
+          if(event.eventType== Event.RESOURCE_FAILED){
+              Log.e("resource failed");
+              AiyaEffects.getInstance().unRegisterObserver(this);
+          }else if(event.eventType== Event.RESOURCE_READY){
+              Log.e("resource ready");
+          }else if(event.eventType== Event.INIT_FAILED){
+              Log.e("init failed");
+              Toast.makeText(LoadActivity.this, "注册失败，请检查网络", Toast.LENGTH_SHORT)
+                  .show();
+              AiyaEffects.getInstance().unRegisterObserver(this);
+          }else if(event.eventType== Event.INIT_SUCCESS){
+              Log.e("init success");
+              setContentView(R.layout.activity_load);
+              AiyaEffects.getInstance().unRegisterObserver(this);
+          }
+      }
+  };
+  AiyaEffects.getInstance().registerObserver(observer);
+  AiyaEffects.getInstance().init(LoadActivity.this,getExternalFilesDir(null)
+      .getAbsolutePath()+"/config","");
 ```
 常见状态如下：
 - INIT_SUCCESS 初始化成功
@@ -285,7 +293,6 @@ public void takePhoto();
 ```
 
 
-
 ## 高级使用
 
 1. 自定义滤镜
@@ -307,16 +314,14 @@ public void addFilter(AFilter filter,boolean isBeforeProcess);
 ## 注意事项
 1. 尽量避免在FrameCallback的回调方法中做耗时工作，以免阻塞渲染线程。
 2. 尽量避免多次初始化AiyaEffectsSDK，在不需要试用AiyaEffectsSDK时，调用release，释放掉AiyaEffectsSDK的资源。
+3. 集成文档一定要看。AiyaEffectsSDK里面的东西如果不是必要的话，尽量别改，不然出现了问题，我们都不太好确定是什么问题。如果不是自己要渲染操作，AiyaController+AiyaModel基本都能满足集成。自定义滤镜、增加水印之类的AiyaController也有接口。如果在使用AiyaEffectsSDK中，一定要自己进行渲染操作，就利用AiyaEffectFilter，参照AiyaController来使用。
 
 # 5. 资源说明
 贴纸资源制作规范请参照其他相关文档。
 
 # 6. 常见问题
-1. **特效为什么只有一分钟？**
->只有传入正式的License和appKey才不会有一分钟的限制.
+1. **为什么选择特效后却没有特效显示？**
+>SDK使用需要传入正确的appid和appkey，其中appid为应用的applicationId,请务必保证appkey与appid的正确，否则特效无法显示，另外请确保你的应用有联网权限。
 
-# 7. License说明
-暂无
-
-# 8. 联系方式
+# 7. 联系方式
 邮箱：<liudawei@aiyaapp.com>

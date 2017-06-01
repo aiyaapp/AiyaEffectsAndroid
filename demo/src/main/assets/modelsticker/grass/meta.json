@@ -1,6 +1,7 @@
 {
   "format" : "1",
-  "name":"grass",
+  "name":"小草",
+  "resid" : "300103",
   "nodes" : [
     {
       "type":"2dAnim",
@@ -8,7 +9,7 @@
       "number"      : 61,
       "width" : 290,
       "height" : 80,
-      "duration" : 50,
+      "duration" : 66,
       "isloop" : 1,
       "Triggertype" : 0,
       "untilFinish" : 1,
@@ -16,7 +17,8 @@
       "anchorX" : 145,
       "anchorY" : 32,
       "ratio" : 1.2,
-      "fullscreen" : 0
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
     },
     {
 	  "type":"2dAnim",
@@ -24,7 +26,7 @@
       "number"      : 61,
       "width" : 738,
       "height" : 260,
-      "duration" : 50,
+      "duration" : 66,
       "isloop" : 1,
       "Triggertype" : 0,
       "untilFinish" : 1,
@@ -32,7 +34,8 @@
       "anchorX" : 315,
       "anchorY" : 102,
       "ratio" : 2.7,
-      "fullscreen" : 0
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
     }
   ]
 }
