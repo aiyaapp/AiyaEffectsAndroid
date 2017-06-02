@@ -15,12 +15,14 @@
 [IOS版集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoIOS)
 
 # 1、版本信息
-**当前版本：AiyaEffects SDK V2.1.0** 	[查看历史版本](doc/version_info.md)
+**当前版本：AiyaEffects SDK V3.0.0** 	[查看历史版本](doc/version_info.md)
 
 **功能更新**
-- 采用rtf格式特效资源
-- 增加设置顶点坐标及纹理坐标的接口以兼容GPUImage
-- 增加BaseFilter
+- 修复了部分bug
+- 资源文件打包
+- 人脸识别算法优化
+- 加入了更多特效
+- SDK免费使用，无限量炫酷特效免费使用
 
 # 2、运行环境说明
 AiyaEffectsSDK minSdkVersion为18，即Android4.3以上可用。
