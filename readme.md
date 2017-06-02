@@ -22,7 +22,6 @@
 - 资源文件打包
 - 人脸识别算法优化
 - 加入了更多特效
-- SDK免费使用，无限量炫酷特效免费使用
 
 # 2、运行环境说明
 AiyaEffectsSDK minSdkVersion为18，即Android4.3以上可用。
