@@ -1,16 +1,20 @@
-﻿[
+[
 	{"name":"原始"},
-	{"name":"手套","path":"shoutao/meta.json"},
-	{"name":"花环","path":"huahuan/meta.json"},
+
+	{"name":"2017","path":"2017/meta.json"},
+	{"name":"豹纹耳","path":"baowener/meta.json"},
+	{"name":"狗狗","path":"dog/meta.json"},
+	{"name":"发带","path":"fadai/meta.json"},
 	{"name":"小草","path":"grass/meta.json"},
-	{"name":"bunny","path":"bunny/meta.json"},
-	{"name":"大白","path":"dabai/meta.json"},
-	{"name":"顶你","path":"dingni/meta.json"},
-	{"name":"高空示爱","path":"gaokongshiai/meta.json"},
-	{"name":"海洋之心","path":"haiyangzhixin/meta.json"},
-	{"name":"卡布奇诺","path":"kabuqinuo/meta.json"},
-	{"name":"蓝色妖姬","path":"lanseyaoji/meta.json"},
-	{"name":"黑天使","path":"heitianshi/meta.json"},
-	{"name":"3D花环","path":"huahuan3D/meta.json"},
-	{"name":"老人","path":"oldman/meta.json"}
+	{"name":"花环","path":"huahuan/meta.json"},
+	{"name":"马镜","path":"majing/meta.json"},
+	{"name":"猫耳","path":"maoer/meta.json"},
+	{"name":"毛绒","path":"maorong/meta.json"},
+	{"name":"梅花鹿","path":"meihualu/meta.json"},
+	{"name":"牛","path":"niu/meta.json"},
+	{"name":"手套","path":"shoutao/meta.json"},
+	{"name":"兔耳","path":"tuer/meta.json"},
+	{"name":"魔镜","path":"mojing/meta.json"},
+	{"name":"蘑菇林","path":"mogulin/meta.json"},
+	{"name":"小红帽","path":"xiaohongmao/meta.json"}
 ]

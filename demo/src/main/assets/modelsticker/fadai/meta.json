@@ -1,0 +1,24 @@
+{
+  "format" : "1",
+  "name":"发带",
+  "resid" : "300102",
+  "nodes" : [
+    { 
+	  "type":"2dAnim",
+      "dirname" : "fadai",   
+      "number"      : 20,     
+      "width" : 276,         
+      "height" : 164,
+      "duration" : 66,       
+      "isloop" : 1,           
+      "Triggertype" : 0,     
+      "untilFinish" : 1,      
+      "position" : "foreheadCenter",   
+      "anchorX" : 130,       
+      "anchorY" : 80,
+      "ratio" : 1.1,          
+      "fullscreen" : 0,
+	  "PositionSwitch" : 2
+    }
+  ]
+}
