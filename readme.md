@@ -1,7 +1,9 @@
 <a href="http://www.bbtexiao.com/"><img src="doc/summarize1.jpg" border="0" alt="宝宝特效" /></a>
 <a href="http://www.bbtexiao.com/"><img src="doc/summarize2.jpg" border="0" alt="宝宝特效" /></a>
 
-# 宝宝特效 AiyaEffectsSDK Android 使用手册
+# 宝宝特效 AiyaEffectsSDK Android 使用手册 [English Document](readme_en.md)
+
+[![](https://jitpack.io/v/aiyaapp/AiyaEffectsAndroid.svg)](https://jitpack.io/#aiyaapp/AiyaEffectsAndroid)
 
 ## 1. 概述
 宝宝特效 AiyaEffectsSDK 涵盖Android、iOS两个平台，基于自主研发的人脸识别模块，作为一款动态贴纸和动画特效高效渲染的解决方案
@@ -15,7 +17,6 @@
 
 ## 2. AiyaEffecSDK 功能说明
 
-### 功能列表
 - [x] 支持动态贴纸
 - [x] 支持动画特效
 - [x] 支持自定义动态贴纸
