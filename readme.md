@@ -1,7 +1,9 @@
 <a href="http://www.bbtexiao.com/"><img src="doc/summarize1.jpg" border="0" alt="宝宝特效" /></a>
 <a href="http://www.bbtexiao.com/"><img src="doc/summarize2.jpg" border="0" alt="宝宝特效" /></a>
 
-# 宝宝特效 AiyaEffectsSDK Android 使用手册 [English Document](readme_en.md)
+# 宝宝特效 AiyaEffectsSDK Android 使用手册 
+
+See [English Document](readme_en.md)
 
 [![](https://jitpack.io/v/aiyaapp/AiyaEffectsAndroid.svg)](https://jitpack.io/#aiyaapp/AiyaEffectsAndroid)
 
