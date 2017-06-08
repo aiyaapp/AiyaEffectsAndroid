@@ -1,7 +1,9 @@
 <a href="http://www.bbtexiao.com/"><img src="doc/summarize1.jpg" border="0" alt="AiyaEffectsSDK" /></a>
 <a href="http://www.bbtexiao.com/"><img src="doc/summarize2.jpg" border="0" alt="AiyaEffectsSDK" /></a>
 
-# AiyaEffectsSDK Android User's Guide [Chinese Document](readme_en.md)
+# AiyaEffectsSDK Android User's Guide 
+
+See [Chinese Document](readme_en.md)
 
 [![](https://jitpack.io/v/aiyaapp/AiyaEffectsAndroid.svg)](https://jitpack.io/#aiyaapp/AiyaEffectsAndroid)
 
