@@ -7,6 +7,7 @@
  */
 package com.aiyaapp.aiya.camera;
 
+import com.aiyaapp.camera.sdk.filter.LookupFilter;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -66,6 +67,12 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             setContentView(R.layout.activity_camera);
             mCameraView = (CameraView)findViewById(R.id.mCameraView);
             mCameraView.setCameraController(mController);
+            //增加自定义美白滤镜
+            //LookupFilter filter=new LookupFilter(getResources());
+            //filter.setIntensity(0.5f);
+            //filter.setMaskImage("shader/lookup/purityLookup.png");
+            //mCameraView.addFilter(filter,true);
+
             initData();
             mCameraView.setEffect(null);
             initCamera();

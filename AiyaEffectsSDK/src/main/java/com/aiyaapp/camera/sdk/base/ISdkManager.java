@@ -15,6 +15,7 @@ import android.content.Context;
 public interface ISdkManager {
 
     String SET_BEAUTY_LEVEL="beauty_level";     //美颜等级，1-6，不在范围内表示关闭美颜
+    String SET_BEAUTY_TYPE="beauty_type";       //美颜类型，0,1,4,5
     String SET_EFFECT_ON="effects_on";          //特效开关1开0关
     String SET_OXEYE="oxeye";                   //是否大眼
     String SET_THIN_FACE="thin_face";           //是否瘦脸
