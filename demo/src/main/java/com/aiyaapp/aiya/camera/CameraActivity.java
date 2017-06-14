@@ -75,7 +75,7 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             //filter.setIntensity(0.5f);
             //filter.setMaskImage("shader/lookup/purityLookup.png");
             //mCameraView.addFilter(filter,true);
-            AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,ISdkManager.TRUE);
+            //AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,ISdkManager.TRUE);
             initData();
             mCameraView.setEffect(null);
             initCamera();
