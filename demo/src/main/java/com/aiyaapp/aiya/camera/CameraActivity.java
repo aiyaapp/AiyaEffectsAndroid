@@ -70,11 +70,12 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             setContentView(R.layout.activity_camera);
             mCameraView = (CameraView)findViewById(R.id.mCameraView);
             mCameraView.setCameraController(mController);
-            //增加自定义美白滤镜
+            //增加自定义滤镜
             //LookupFilter filter=new LookupFilter(getResources());
             //filter.setIntensity(0.5f);
             //filter.setMaskImage("shader/lookup/purityLookup.png");
             //mCameraView.addFilter(filter,true);
+            //强制关闭人脸检测
             //AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,ISdkManager.TRUE);
             initData();
             mCameraView.setEffect(null);
