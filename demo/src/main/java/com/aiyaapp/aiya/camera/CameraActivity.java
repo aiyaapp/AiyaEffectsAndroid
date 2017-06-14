@@ -7,6 +7,9 @@
  */
 package com.aiyaapp.aiya.camera;
 
+import com.aiyaapp.camera.sdk.AiyaEffects;
+import com.aiyaapp.camera.sdk.base.ISdkManager;
+import com.aiyaapp.camera.sdk.filter.AiyaEffectFilter;
 import com.aiyaapp.camera.sdk.filter.LookupFilter;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -72,7 +75,7 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             //filter.setIntensity(0.5f);
             //filter.setMaskImage("shader/lookup/purityLookup.png");
             //mCameraView.addFilter(filter,true);
-
+            AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,ISdkManager.TRUE);
             initData();
             mCameraView.setEffect(null);
             initCamera();

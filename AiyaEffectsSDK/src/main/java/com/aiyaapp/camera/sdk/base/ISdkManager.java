@@ -20,6 +20,8 @@ public interface ISdkManager {
     String SET_OXEYE="oxeye";                   //是否大眼
     String SET_THIN_FACE="thin_face";           //是否瘦脸
 
+    String SET_TRACK_FORCE_CLOSE="track_force_close";   //人脸捕获强制关闭
+
     String SET_IN_WIDTH="in_width";             //处理图片的输入宽度
     String SET_IN_HEIGHT="in_height";           //处理图片的输入高度
     String SET_TRACK_WIDTH="track_width";       //track图片的宽度
@@ -41,6 +43,9 @@ public interface ISdkManager {
 
     int MODE_ORNAMENT=0;                        //饰品
     int MODE_GIFT=1;                            //礼物
+
+    int TRUE=1;
+    int FALSE=0;
 //
 //    String SET_EFFECT="effect_path";            //设置贴纸效果
 
