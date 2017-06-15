@@ -105,6 +105,10 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
     }
 
+    public void addFilter(AFilter filter,boolean isBeforeProcess){
+        mEffectFilter.addFilter(filter,isBeforeProcess);
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         mEffectFilter.create();
