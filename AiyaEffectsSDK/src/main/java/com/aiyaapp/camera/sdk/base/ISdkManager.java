@@ -52,9 +52,9 @@ public interface ISdkManager {
     /**
      * SDK 初始化
      * @param context 上下文
-     * @param licensePath license绝对路径
+     * @param appKey appKey
      */
-    void init(final Context context, final String licensePath, String appKey);
+    void init(final Context context,  String appKey);
 
     /**
      * 设置参数配置，必须在GL环境中调用

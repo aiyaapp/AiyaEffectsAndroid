@@ -119,7 +119,7 @@ public class AiyaEffects implements ISdkManager {
     }
 
     @SuppressLint("HardwareIds")
-    @Override
+    @Deprecated
     public void init(final Context context,final String configPath,final String appKey) {
         Log.e("sdk init");
         TelephonyManager tm = (TelephonyManager)context.getSystemService(Context
@@ -159,6 +159,16 @@ public class AiyaEffects implements ISdkManager {
                 }
             }
         });
+    }
+
+    @SuppressLint("HardwareIds")
+    @Override
+    public void init(final Context context,final String appKey){
+        File cacheFilePath=context.getExternalFilesDir(null);
+        if(cacheFilePath==null){
+            cacheFilePath=context.getFilesDir();
+        }
+        init(context,cacheFilePath.getAbsolutePath()+"/config",appKey);
     }
 
     @Deprecated
