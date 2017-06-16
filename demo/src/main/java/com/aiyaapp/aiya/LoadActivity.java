@@ -21,10 +21,12 @@ import com.aiyaapp.aiya.mvc.SurfaceHolderActivity;
 import com.aiyaapp.aiya.mvc.TextureViewActivity;
 import com.aiyaapp.aiya.util.PermissionUtils;
 import com.aiyaapp.camera.sdk.AiyaEffects;
+import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 import com.aiyaapp.camera.sdk.base.Event;
 import com.aiyaapp.camera.sdk.base.ActionObserver;
 import com.aiyaapp.camera.sdk.widget.CameraView;
+import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * Description:
@@ -34,6 +36,7 @@ public class LoadActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        CrashReport.initCrashReport(this.getApplication(),"63d73edbb4",true);
         PermissionUtils.askPermission(this,new String[]{
             Manifest.permission.CAMERA,Manifest
             .permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE},10,mRunnable);
@@ -64,8 +67,8 @@ public class LoadActivity extends AppCompatActivity {
                 }
             };
             AiyaEffects.getInstance().registerObserver(observer);
-            AiyaEffects.getInstance().init(LoadActivity.this,getExternalFilesDir(null)
-                .getAbsolutePath()+"/config","");
+            AiyaEffects.getInstance().init(LoadActivity.this,"");
+            //AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,1);
 
         }
     };

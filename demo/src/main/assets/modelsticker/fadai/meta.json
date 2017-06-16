@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"发带",
-  "resid" : "300102",
+  "resid" : "400102",
   "nodes" : [
     { 
 	  "type":"2dAnim",

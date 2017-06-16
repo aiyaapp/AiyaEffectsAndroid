@@ -7,6 +7,7 @@
  */
 package com.aiyaapp.aiya.camera;
 
+import android.util.Log;
 import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.filter.AiyaEffectFilter;
@@ -61,6 +62,10 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             //设置FpsRange，应查询相机支持的fps range，然后再进行设置
             //Android 提供了这个接口，但是这个设置不一定生效，与手机有关
             //param.setPreviewFpsRange(30,30);
+            bmpHeight=param.getPreviewSize().width;
+            bmpWidth=param.getPreviewSize().height;
+            Log.e("wuwang","bitmapSize:"+bmpWidth+"/"+bmpHeight);
+            mCameraView.setFrameCallback(bmpWidth,bmpHeight,CameraActivity.this);
         }
     };
 
@@ -79,7 +84,6 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             //AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,ISdkManager.TRUE);
             initData();
             mCameraView.setEffect(null);
-            initCamera();
         }
     };
     
@@ -109,11 +113,6 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    //对CameraView的设置
-    private void initCamera(){
-        mCameraView.setFrameCallback(bmpWidth,bmpHeight,this);
     }
 
     @Override

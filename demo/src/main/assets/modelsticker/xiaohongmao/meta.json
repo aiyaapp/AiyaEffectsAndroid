@@ -2,7 +2,7 @@
   "format" : "1",
   "name":"小红帽",
   "needtrack" : 0,
-  "resid" : "300005",
+  "resid" : "400005",
   "nodes" : [
    	{
       "type":"2dAnim",

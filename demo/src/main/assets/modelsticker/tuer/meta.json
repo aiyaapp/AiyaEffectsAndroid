@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"兔耳朵",
-  "resid" : "300204",
+  "resid" : "400204",
   "nodes" : [
     { 
       "type":"2dAnim",

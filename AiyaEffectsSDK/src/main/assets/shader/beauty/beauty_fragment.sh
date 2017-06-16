@@ -1,5 +1,5 @@
-precision lowp float;
-precision lowp int;
+precision highp float;
+precision highp int;
 uniform sampler2D vTexture;
 uniform int iternum;
 uniform float aaCoef; //参数
