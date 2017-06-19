@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"毛绒",
-  "resid" : "300106",
+  "resid" : "400104",
   "nodes" : [
     {
       "type":"2dAnim",

@@ -15,9 +15,12 @@ import android.content.Context;
 public interface ISdkManager {
 
     String SET_BEAUTY_LEVEL="beauty_level";     //美颜等级，1-6，不在范围内表示关闭美颜
+    String SET_BEAUTY_TYPE="beauty_type";       //美颜类型，0,1,4,5
     String SET_EFFECT_ON="effects_on";          //特效开关1开0关
     String SET_OXEYE="oxeye";                   //是否大眼
     String SET_THIN_FACE="thin_face";           //是否瘦脸
+
+    String SET_TRACK_FORCE_CLOSE="track_force_close";   //人脸捕获强制关闭
 
     String SET_IN_WIDTH="in_width";             //处理图片的输入宽度
     String SET_IN_HEIGHT="in_height";           //处理图片的输入高度
@@ -40,15 +43,18 @@ public interface ISdkManager {
 
     int MODE_ORNAMENT=0;                        //饰品
     int MODE_GIFT=1;                            //礼物
+
+    int TRUE=1;
+    int FALSE=0;
 //
 //    String SET_EFFECT="effect_path";            //设置贴纸效果
 
     /**
      * SDK 初始化
      * @param context 上下文
-     * @param licensePath license绝对路径
+     * @param appKey appKey
      */
-    void init(final Context context, final String licensePath, String appKey);
+    void init(final Context context,  String appKey);
 
     /**
      * 设置参数配置，必须在GL环境中调用

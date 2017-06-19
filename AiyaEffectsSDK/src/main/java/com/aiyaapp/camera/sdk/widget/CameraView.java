@@ -7,6 +7,8 @@
  */
 package com.aiyaapp.camera.sdk.widget;
 
+import android.util.Log;
+import com.aiyaapp.camera.sdk.util.CamParaUtil;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -105,12 +107,15 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
         }
     }
 
+    public void addFilter(AFilter filter,boolean isBeforeProcess){
+        mEffectFilter.addFilter(filter,isBeforeProcess);
+    }
+
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
         mEffectFilter.create();
         if(!isParamSet.get()){
             openCamera(cameraId);
-            updateSdkParams();
             if(mFrameCallback!=null){
                 setFrameCallback(frameCallbackWidth,frameCallbackHeight,mFrameCallback);
             }
@@ -253,7 +258,8 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
             e.printStackTrace();
         }
         mCameraController.preview(mCamera);
-
+        isParamSet.set(false);
+        updateSdkParams();
     }
 
     private void updateSdkParams(){
@@ -296,12 +302,13 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
         private Queue<byte[]> mByteQueue=new ConcurrentLinkedQueue<>();
 
         protected void setSize(int cameraId,Camera.Parameters param){
-            Camera.Size picSize = getPropPictureSize(param.getSupportedPictureSizes(), 1.778f,
-                720);
-            Camera.Size preSize = getPropPreviewSize(param.getSupportedPreviewSizes(), 1.778f,
-                720);
+            Camera.Size picSize = CamParaUtil.getInstance().getPropSize(
+                param.getSupportedPictureSizes(), 1.778f,720);
+            Camera.Size preSize = CamParaUtil.getInstance().getPropSize(
+                param.getSupportedPreviewSizes(), 1.778f,720);
             param.setPictureSize(picSize.width, picSize.height);
             param.setPreviewSize(preSize.width, preSize.height);
+            Log.d("AiyaCamera","Preview Size:"+preSize.width+"/"+preSize.height);
         }
 
         protected void otherSetting(Camera.Parameters param){
@@ -382,55 +389,9 @@ public class CameraView extends GLSurfaceView implements GLSurfaceView.Renderer 
             }
         }
 
-        protected Camera.Size getPropPreviewSize(List<Camera.Size> list, float th, int minWidth){
-            Collections.sort(list, sizeComparator);
-
-            int i = 0;
-            for(Camera.Size s:list){
-                if((s.height >= minWidth) && equalRate(s, th)){
-                    break;
-                }
-                i++;
-            }
-            if(i == list.size()){
-                i = 0;
-            }
-            return list.get(i);
-        }
-
-        protected Camera.Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth){
-            Collections.sort(list, sizeComparator);
-            int i = 0;
-            for(Camera.Size s:list){
-                if((s.height >= minWidth) && equalRate(s, th)){
-                    break;
-                }
-                i++;
-            }
-            if(i == list.size()){
-                i = 0;
-            }
-            return list.get(i);
-        }
-
         private static boolean equalRate(Camera.Size s, float rate){
             float r = (float)(s.width)/(float)(s.height);
             return Math.abs(r - rate) <= 0.03;
         }
-
-        private Comparator<Camera.Size> sizeComparator=new Comparator<Camera.Size>(){
-            public int compare(Camera.Size lhs, Camera.Size rhs) {
-                // TODO Auto-generated method stub
-                if(lhs.height == rhs.height){
-                    return 0;
-                }
-                else if(lhs.height > rhs.height){
-                    return 1;
-                }
-                else{
-                    return -1;
-                }
-            }
-        };
     }
 }

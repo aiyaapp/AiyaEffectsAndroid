@@ -1,14 +1,14 @@
 {
   "format" : "1",
   "name":"马镜",
-  "resid" : "300105",
+  "resid" : "400103",
   "nodes" : [
     {
       "type":"2dAnim",
       "dirname" : "meimao",
       "number"      : 40,
       "width" : 360,
-      "height" : 46,
+      "height" : 40,
       "duration" : 66,
       "isloop" : 1,
       "Triggertype" : 0,

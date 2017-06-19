@@ -2,7 +2,7 @@
   "format" : "1",
   "name":"蘑菇林",
   "needtrack" : 1,
-  "resid" : "300014",
+  "resid" : "400014",
   "nodes" :  [
     {
       "type":"2dAnim",

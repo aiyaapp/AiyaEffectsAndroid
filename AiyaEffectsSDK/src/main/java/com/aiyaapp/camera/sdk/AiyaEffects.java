@@ -74,6 +74,8 @@ public class AiyaEffects implements ISdkManager {
 
     private String DEVICE_ID;
 
+    private int forceCloseTrack=FALSE;
+
     private Event mProcessEvent=new Event(Event.PROCESS_END,Event.PROCESS_PLAY,"",null);
 
     private AiyaEffects(){
@@ -117,7 +119,7 @@ public class AiyaEffects implements ISdkManager {
     }
 
     @SuppressLint("HardwareIds")
-    @Override
+    @Deprecated
     public void init(final Context context,final String configPath,final String appKey) {
         Log.e("sdk init");
         TelephonyManager tm = (TelephonyManager)context.getSystemService(Context
@@ -157,6 +159,16 @@ public class AiyaEffects implements ISdkManager {
                 }
             }
         });
+    }
+
+    @SuppressLint("HardwareIds")
+    @Override
+    public void init(final Context context,final String appKey){
+        File cacheFilePath=context.getExternalFilesDir(null);
+        if(cacheFilePath==null){
+            cacheFilePath=context.getFilesDir();
+        }
+        init(context,cacheFilePath.getAbsolutePath()+"/config",appKey);
     }
 
     @Deprecated
@@ -235,6 +247,9 @@ public class AiyaEffects implements ISdkManager {
             case SET_MODE:
                 this.mMode=value;
                 break;
+            case SET_TRACK_FORCE_CLOSE:
+                this.forceCloseTrack=value;
+                break;
             case SET_ACTION:
                 switch (value){
                     case ACTION_REFRESH_PARAMS_NOW:
@@ -261,6 +276,10 @@ public class AiyaEffects implements ISdkManager {
             mTrackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
+                    if(currentEffect==null||forceCloseTrack==TRUE){
+                        mSemaphore.release();
+                        return;
+                    }
                     long start=System.currentTimeMillis();
                     int trackCode=mAiyaCameraJni.track(trackData,mTrackWidth,mTrackHeight,info,
                         trackIndex);

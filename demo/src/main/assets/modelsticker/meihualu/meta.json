@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"梅花鹿",
-  "resid" : "300301",
+  "resid" : "400301",
   "nodes" : [
     {
       "type":"2dAnim",

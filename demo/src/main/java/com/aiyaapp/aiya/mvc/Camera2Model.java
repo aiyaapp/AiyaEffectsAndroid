@@ -7,6 +7,7 @@
  */
 package com.aiyaapp.aiya.mvc;
 
+import com.aiyaapp.camera.sdk.util.CamParaUtil;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -115,8 +116,7 @@ public class Camera2Model implements AiyaModel {
 
         protected Size setSize(int cameraId, StreamConfigurationMap map){
             List<Size> sizes=Arrays.asList(map.getOutputSizes(SurfaceTexture.class));
-            Collections.sort(sizes, sizeComparator);
-            return getPropPreviewSize(sizes,1.778f,720);
+            return CamParaUtil.getInstance().getPropSize(sizes,1.778f,720);
         }
 
         public CameraDevice openCamera(int cameraId){
@@ -238,42 +238,6 @@ public class Camera2Model implements AiyaModel {
             }
             mHandler.getLooper().quitSafely();
         }
-
-        protected Size getPropPreviewSize(List<Size> list, float th, int minWidth){
-            Collections.sort(list, sizeComparator);
-
-            int i = 0;
-            for(Size s:list){
-                if((s.getHeight() >= minWidth) && equalRate(s, th)){
-                    break;
-                }
-                i++;
-            }
-            if(i == list.size()){
-                i = 0;
-            }
-            return list.get(i);
-        }
-
-        private boolean equalRate(Size s, float rate){
-            float r = (float)(s.getWidth())/(float)(s.getHeight());
-            return Math.abs(r - rate) <= 0.03;
-        }
-
-        private Comparator<Size> sizeComparator=new Comparator<Size>(){
-            public int compare(Size lhs, Size rhs) {
-                // TODO Auto-generated method stub
-                if(lhs.getHeight() == rhs.getHeight()){
-                    return 0;
-                }
-                else if(lhs.getHeight() > rhs.getHeight()){
-                    return 1;
-                }
-                else{
-                    return -1;
-                }
-            }
-        };
 
     }
 

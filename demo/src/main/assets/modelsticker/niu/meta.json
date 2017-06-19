@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"牛",
-  "resid" : "300202",
+  "resid" : "400202",
   "nodes" : [
     {
       "type":"2dAnim",

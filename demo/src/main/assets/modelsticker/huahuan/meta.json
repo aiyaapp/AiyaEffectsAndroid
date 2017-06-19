@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"花环",
-  "resid" : "300104",
+  "resid" : "400106",
   "nodes" : [
     {
       "type":"2dAnim",

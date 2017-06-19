@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"手套",
-  "resid" : "300303",
+  "resid" : "400303",
   "nodes" : [
     {
       "type":"2dAnim",

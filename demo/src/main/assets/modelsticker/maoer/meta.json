@@ -1,7 +1,7 @@
 {
   "format" : "1",
   "name":"猫耳",
-  "resid" : "300203",
+  "resid" : "400203",
   "nodes" : [
     { 
 	  "type":"2dAnim",

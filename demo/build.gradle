@@ -12,9 +12,6 @@ android {
         versionCode rootProject.ext.vCode
         versionName rootProject.ext.vName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        ndk{
-            abiFilters 'armeabi-v7a'
-        }
     }
 
 //    sourceSets{
@@ -39,6 +36,8 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile project(':AiyaEffectsSDK')
     compile 'com.android.support:recyclerview-v7:24.2.1'
+    compile 'com.tencent.bugly:crashreport:latest.release'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
 }
 
 build{

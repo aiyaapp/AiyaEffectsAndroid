@@ -7,6 +7,7 @@
  */
 package com.aiyaapp.aiya.mvc;
 
+import com.aiyaapp.camera.sdk.util.CamParaUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -96,13 +97,14 @@ public class Camera1Model implements AiyaModel{
         }
 
         protected Camera.Size setSize(int cameraId,Camera.Parameters param){
-            Camera.Size picSize = getPropPictureSize(param.getSupportedPictureSizes(), 1.778f,
-                720);
-            Camera.Size preSize = getPropPreviewSize(param.getSupportedPreviewSizes(), 1.778f,
-                720);
+            Camera.Size picSize =CamParaUtil.getInstance().getPropSize(
+                param.getSupportedPictureSizes(), 1.778f,720);
+            Camera.Size preSize = CamParaUtil.getInstance().getPropSize(
+                param.getSupportedPreviewSizes(), 1.778f,720);
             param.setPictureSize(picSize.width, picSize.height);
             param.setPreviewSize(preSize.width, preSize.height);
-            return getPropPreviewSize(param.getSupportedPreviewSizes(),1.778f,720);
+            Log.d("Camera","Preview Size:"+preSize.width+"/"+preSize.height);
+            return preSize;
         }
 
         protected void otherSetting(Camera.Parameters param){
@@ -205,56 +207,6 @@ public class Camera1Model implements AiyaModel{
             }
         }
 
-        protected Camera.Size getPropPreviewSize(List<Camera.Size> list, float th, int minWidth){
-            Collections.sort(list, sizeComparator);
-
-            int i = 0;
-            for(Camera.Size s:list){
-                if((s.height >= minWidth) && equalRate(s, th)){
-                    break;
-                }
-                i++;
-            }
-            if(i == list.size()){
-                i = 0;
-            }
-            return list.get(i);
-        }
-
-        protected Camera.Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth){
-            Collections.sort(list, sizeComparator);
-            int i = 0;
-            for(Camera.Size s:list){
-                if((s.height >= minWidth) && equalRate(s, th)){
-                    break;
-                }
-                i++;
-            }
-            if(i == list.size()){
-                i = 0;
-            }
-            return list.get(i);
-        }
-
-        private boolean equalRate(Camera.Size s, float rate){
-            float r = (float)(s.width)/(float)(s.height);
-            return Math.abs(r - rate) <= 0.03;
-        }
-
-        private Comparator<Camera.Size> sizeComparator=new Comparator<Camera.Size>(){
-            public int compare(Camera.Size lhs, Camera.Size rhs) {
-                // TODO Auto-generated method stub
-                if(lhs.height == rhs.height){
-                    return 0;
-                }
-                else if(lhs.height > rhs.height){
-                    return 1;
-                }
-                else{
-                    return -1;
-                }
-            }
-        };
     }
 
 }

@@ -7,6 +7,8 @@
  */
 package com.aiyaapp.camera.sdk.widget;
 
+import com.aiyaapp.camera.sdk.base.Log;
+import com.aiyaapp.camera.sdk.util.CamParaUtil;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +19,6 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
-import android.util.Log;
 
 /**
  * Description:
@@ -48,10 +49,10 @@ public class AiyaCamera implements IAiyaCamera{
         mCamera=Camera.open(cameraId);
         if(mCamera!=null){
             Camera.Parameters param=mCamera.getParameters();
-            picSize=getPropPictureSize(param.getSupportedPictureSizes(),mConfig.rate,
-                mConfig.minPictureWidth);
-            preSize=getPropPreviewSize(param.getSupportedPreviewSizes(),mConfig.rate,mConfig
-                .minPreviewWidth);
+            picSize=CamParaUtil.getInstance().getPropSize(param.getSupportedPictureSizes(),
+                mConfig.rate,mConfig.minPictureWidth);
+            preSize=CamParaUtil.getInstance().getPropSize(param.getSupportedPreviewSizes(),
+                mConfig.rate,mConfig.minPreviewWidth);
             param.setPictureSize(picSize.width,picSize.height);
             param.setPreviewSize(preSize.width,preSize.height);
             if(param.getMaxNumFocusAreas() > 0){
@@ -83,6 +84,7 @@ public class AiyaCamera implements IAiyaCamera{
             Camera.Size pic=param.getPictureSize();
             mPicSize=new Point(pic.height,pic.width);
             mPreSize=new Point(pre.height,pre.width);
+            Log.d(TAG,"Preview Size:"+mPreSize.x+"/"+mPreSize.y);
         }
     }
 
@@ -180,23 +182,6 @@ public class AiyaCamera implements IAiyaCamera{
                 }
             });
         }
-    }
-
-
-    private Camera.Size getPropPreviewSize(List<Camera.Size> list, float th, int minWidth){
-        Collections.sort(list, sizeComparator);
-
-        int i = 0;
-        for(Camera.Size s:list){
-            if((s.height >= minWidth) && equalRate(s, th)){
-                break;
-            }
-            i++;
-        }
-        if(i == list.size()){
-            i = 0;
-        }
-        return list.get(i);
     }
 
     private Camera.Size getPropPictureSize(List<Camera.Size> list, float th, int minWidth){
