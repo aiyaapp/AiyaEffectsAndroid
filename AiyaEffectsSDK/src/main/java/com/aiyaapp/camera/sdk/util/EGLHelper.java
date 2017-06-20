@@ -39,13 +39,12 @@ public class EGLHelper {
             throw new RuntimeException("eglInitialize failed :"+ eglError());
         }
         int[] configAttribs = {
-            EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT,      //前台渲染
+            EGL10.EGL_SURFACE_TYPE, EGL10.EGL_PBUFFER_BIT,
             EGL10.EGL_ALPHA_SIZE, 8,
             EGL10.EGL_BLUE_SIZE, 8,
             EGL10.EGL_GREEN_SIZE, 8,
             EGL10.EGL_RED_SIZE, 8,
             EGL10.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-            EGL10.EGL_SURFACE_TYPE, EGL10.EGL_WINDOW_BIT,
             EGL10.EGL_NONE
         };
         int []numConfigs = new int[1];
@@ -67,7 +66,6 @@ public class EGLHelper {
         if (mEglSurface == EGL10.EGL_NO_SURFACE || mEglContext == EGL10.EGL_NO_CONTEXT) {
             throw new RuntimeException("eglCreateWindowSurface failed : " +eglError());
         }
-
         if (!mEgl.eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
             throw new RuntimeException("eglMakeCurrent failed : " +eglError());
         }
