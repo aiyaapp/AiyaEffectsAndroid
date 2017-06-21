@@ -21,7 +21,6 @@ import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.aiyaapp.camera.sdk.AiyaEffects;
@@ -99,14 +98,6 @@ public class AiyaController implements GLSurfaceView.Renderer {
     private void init(){
 
         mGLView=new GLView(mContext);
-
-        //避免GLView的attachToWindow和detachFromWindow崩溃
-        new ViewGroup(mContext) {
-            @Override
-            protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
-            }
-        }.addView(mGLView);
 
         mEffectFilter=new AiyaEffectFilter(mContext.getResources());
         mShowFilter=new NoFilter(mContext.getResources());
@@ -370,7 +361,7 @@ public class AiyaController implements GLSurfaceView.Renderer {
      * 方法及onDetachedFromWindow方法，取消holder的默认监听
      * onAttachedToWindow及onDetachedFromWindow必须保证view
      * 存在Parent */
-    private class GLView extends GLSurfaceView{
+    private class GLView extends GLEnvironment {
 
         public GLView(Context context) {
             super(context);
@@ -378,10 +369,9 @@ public class AiyaController implements GLSurfaceView.Renderer {
         }
 
         private void init(){
-            getHolder().addCallback(null);
-            setEGLWindowSurfaceFactory(new GLSurfaceView.EGLWindowSurfaceFactory() {
+            setEGLWindowSurfaceFactory(new EGLWindowSurfaceFactory() {
                 @Override
-                public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig
+                public EGLSurface createSurface(EGL10 egl, EGLDisplay display, EGLConfig
                     config, Object window) {
                     return egl.eglCreateWindowSurface(display,config,surface,null);
                 }
