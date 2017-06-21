@@ -1,30 +1,12 @@
 package com.aiyaapp.camera.sdk.widget;
 
-/*
- * Copyright (C) 2008 The Android Open Source Project
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
 import android.content.Context;
 import android.opengl.EGL14;
 import android.opengl.EGLExt;
 import android.opengl.GLDebugHelper;
-import android.os.Trace;
-import android.util.AttributeSet;
+import android.opengl.GLSurfaceView;
 import android.util.Log;
 import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import java.io.Writer;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -37,150 +19,7 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
-import android.content.Context;
-import android.os.Trace;
-import android.util.AttributeSet;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-
-import java.io.Writer;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-
-import javax.microedition.khronos.egl.EGL10;
-import javax.microedition.khronos.egl.EGL11;
-import javax.microedition.khronos.egl.EGLConfig;
-import javax.microedition.khronos.egl.EGLContext;
-import javax.microedition.khronos.egl.EGLDisplay;
-import javax.microedition.khronos.egl.EGLSurface;
-import javax.microedition.khronos.opengles.GL;
-import javax.microedition.khronos.opengles.GL10;
-
-/**
- * An implementation of SurfaceView that uses the dedicated surface for
- * displaying OpenGL rendering.
- * <p>
- * A GLSurfaceView provides the following features:
- * <p>
- * <ul>
- * <li>Manages a surface, which is a special piece of memory that can be
- * composited into the Android view system.
- * <li>Manages an EGL display, which enables OpenGL to render into a surface.
- * <li>Accepts a user-provided Renderer object that does the actual rendering.
- * <li>Renders on a dedicated thread to decouple rendering performance from the
- * UI thread.
- * <li>Supports both on-demand and continuous rendering.
- * <li>Optionally wraps, traces, and/or error-checks the renderer's OpenGL calls.
- * </ul>
- *
- * <div class="special reference">
- * <h3>Developer Guides</h3>
- * <p>For more information about how to use OpenGL, read the
- * <a href="{@docRoot}guide/topics/graphics/opengl.html">OpenGL</a> developer guide.</p>
- * </div>
- *
- * <h3>Using GLSurfaceView</h3>
- * <p>
- * Typically you use GLSurfaceView by subclassing it and overriding one or more of the
- * View system input event methods. If your application does not need to override event
- * methods then GLSurfaceView can be used as-is. For the most part
- * GLSurfaceView behavior is customized by calling "set" methods rather than by subclassing.
- * For example, unlike a regular View, drawing is delegated to a separate Renderer object which
- * is registered with the GLSurfaceView
- * using the {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)} call.
- * <p>
- * <h3>Initializing GLSurfaceView</h3>
- * All you have to do to initialize a GLSurfaceView is call {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}.
- * However, if desired, you can modify the default behavior of GLSurfaceView by calling one or
- * more of these methods before calling setRenderer:
- * <ul>
- * <li>{@link #setDebugFlags(int)}
- * <li>{@link #setEGLConfigChooser(boolean)}
- * <li>{@link #setEGLConfigChooser(android.opengl.GLSurfaceView.EGLConfigChooser)}
- * <li>{@link #setEGLConfigChooser(int, int, int, int, int, int)}
- * <li>{@link #setGLWrapper(android.opengl.GLSurfaceView.GLWrapper)}
- * </ul>
- * <p>
- * <h4>Specifying the android.view.Surface</h4>
- * By default GLSurfaceView will create a PixelFormat.RGB_888 format surface. If a translucent
- * surface is required, call getHolder().setFormat(PixelFormat.TRANSLUCENT).
- * The exact format of a TRANSLUCENT surface is device dependent, but it will be
- * a 32-bit-per-pixel surface with 8 bits per component.
- * <p>
- * <h4>Choosing an EGL Configuration</h4>
- * A given Android device may support multiple EGLConfig rendering configurations.
- * The available configurations may differ in how may channels of data are present, as
- * well as how many bits are allocated to each channel. Therefore, the first thing
- * GLSurfaceView has to do when starting to render is choose what EGLConfig to use.
- * <p>
- * By default GLSurfaceView chooses a EGLConfig that has an RGB_888 pixel format,
- * with at least a 16-bit depth buffer and no stencil.
- * <p>
- * If you would prefer a different EGLConfig
- * you can override the default behavior by calling one of the
- * setEGLConfigChooser methods.
- * <p>
- * <h4>Debug Behavior</h4>
- * You can optionally modify the behavior of GLSurfaceView by calling
- * one or more of the debugging methods {@link #setDebugFlags(int)},
- * and {@link #setGLWrapper}. These methods may be called before and/or after setRenderer, but
- * typically they are called before setRenderer so that they take effect immediately.
- * <p>
- * <h4>Setting a Renderer</h4>
- * Finally, you must call {@link #setRenderer} to register a {@link android.opengl.GLSurfaceView.Renderer}.
- * The renderer is
- * responsible for doing the actual OpenGL rendering.
- * <p>
- * <h3>Rendering Mode</h3>
- * Once the renderer is set, you can control whether the renderer draws
- * continuously or on-demand by calling
- * {@link #setRenderMode}. The default is continuous rendering.
- * <p>
- * <h3>Activity Life-cycle</h3>
- * A GLSurfaceView must be notified when to pause and resume rendering. GLSurfaceView clients
- * are required to call {@link #onPause()} when the activity stops and
- * {@link #onResume()} when the activity starts. These calls allow GLSurfaceView to
- * pause and resume the rendering thread, and also allow GLSurfaceView to release and recreate
- * the OpenGL display.
- * <p>
- * <h3>Handling events</h3>
- * <p>
- * To handle an event you will typically subclass GLSurfaceView and override the
- * appropriate method, just as you would with any other View. However, when handling
- * the event, you may need to communicate with the Renderer object
- * that's running in the rendering thread. You can do this using any
- * standard Java cross-thread communication mechanism. In addition,
- * one relatively easy way to communicate with your renderer is
- * to call
- * {@link #queueEvent(Runnable)}. For example:
- * <pre class="prettyprint">
- * class MyGLSurfaceView extends GLSurfaceView {
- *
- *     private MyRenderer mMyRenderer;
- *
- *     public void start() {
- *         mMyRenderer = ...;
- *         setRenderer(mMyRenderer);
- *     }
- *
- *     public boolean onKeyDown(int keyCode, KeyEvent event) {
- *         if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER) {
- *             queueEvent(new Runnable() {
- *                 // This method will be called on the rendering
- *                 // thread:
- *                 public void run() {
- *                     mMyRenderer.handleDpadCenter();
- *                 }});
- *             return true;
- *         }
- *         return super.onKeyDown(keyCode, event);
- *     }
- * }
- * </pre>
- *
- */
-class TestGV implements SurfaceHolder.Callback2 {
+class GLEnvironment implements SurfaceHolder.Callback2 {
     private final static String TAG = "GLSurfaceView";
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
@@ -189,47 +28,18 @@ class TestGV implements SurfaceHolder.Callback2 {
     private final static boolean LOG_RENDERER = false;
     private final static boolean LOG_RENDERER_DRAW_FRAME = false;
     private final static boolean LOG_EGL = false;
-    /**
-     * The renderer only renders
-     * when the surface is created, or when {@link #requestRender} is called.
-     *
-     * @see #getRenderMode()
-     * @see #setRenderMode(int)
-     * @see #requestRender()
-     */
+
     public final static int RENDERMODE_WHEN_DIRTY = 0;
-    /**
-     * The renderer is called
-     * continuously to re-render the scene.
-     *
-     * @see #getRenderMode()
-     * @see #setRenderMode(int)
-     */
+
     public final static int RENDERMODE_CONTINUOUSLY = 1;
 
-    /**
-     * Check glError() after every GL call and throw an exception if glError indicates
-     * that an error has occurred. This can be used to help track down which OpenGL ES call
-     * is causing an error.
-     *
-     * @see #getDebugFlags
-     * @see #setDebugFlags
-     */
     public final static int DEBUG_CHECK_GL_ERROR = 1;
 
-    /**
-     * Log GL calls to the system log at "verbose" level with tag "GLSurfaceView".
-     *
-     * @see #getDebugFlags
-     * @see #setDebugFlags
-     */
+
     public final static int DEBUG_LOG_GL_CALLS = 2;
 
-    /**
-     * Standard View constructor. In order to render something, you
-     * must call {@link #setRenderer} to register a renderer.
-     */
-    public TestGV(Context context) {
+
+    public GLEnvironment(Context context) {
         init();
     }
 
@@ -251,102 +61,22 @@ class TestGV implements SurfaceHolder.Callback2 {
 
     }
 
-    /**
-     * Set the glWrapper. If the glWrapper is not null, its
-     * {@link android.opengl.GLSurfaceView.GLWrapper#wrap(GL)} method is called
-     * whenever a surface is created. A GLWrapper can be used to wrap
-     * the GL object that's passed to the renderer. Wrapping a GL
-     * object enables examining and modifying the behavior of the
-     * GL calls made by the renderer.
-     * <p>
-     * Wrapping is typically used for debugging purposes.
-     * <p>
-     * The default value is null.
-     * @param glWrapper the new GLWrapper
-     */
-    public void setGLWrapper(android.opengl.GLSurfaceView.GLWrapper glWrapper) {
-        mGLWrapper = glWrapper;
-    }
-
-    /**
-     * Set the debug flags to a new value. The value is
-     * constructed by OR-together zero or more
-     * of the DEBUG_CHECK_* constants. The debug flags take effect
-     * whenever a surface is created. The default value is zero.
-     * @param debugFlags the new debug flags
-     * @see #DEBUG_CHECK_GL_ERROR
-     * @see #DEBUG_LOG_GL_CALLS
-     */
-    public void setDebugFlags(int debugFlags) {
-        mDebugFlags = debugFlags;
-    }
-
-    /**
-     * Get the current value of the debug flags.
-     * @return the current value of the debug flags.
-     */
     public int getDebugFlags() {
         return mDebugFlags;
     }
 
-    /**
-     * Control whether the EGL context is preserved when the GLSurfaceView is paused and
-     * resumed.
-     * <p>
-     * If set to true, then the EGL context may be preserved when the GLSurfaceView is paused.
-     * <p>
-     * Prior to API level 11, whether the EGL context is actually preserved or not
-     * depends upon whether the Android device can support an arbitrary number of
-     * EGL contexts or not. Devices that can only support a limited number of EGL
-     * contexts must release the EGL context in order to allow multiple applications
-     * to share the GPU.
-     * <p>
-     * If set to false, the EGL context will be released when the GLSurfaceView is paused,
-     * and recreated when the GLSurfaceView is resumed.
-     * <p>
-     *
-     * The default is false.
-     *
-     * @param preserveOnPause preserve the EGL context when paused
-     */
+
     public void setPreserveEGLContextOnPause(boolean preserveOnPause) {
         mPreserveEGLContextOnPause = preserveOnPause;
     }
 
-    /**
-     * @return true if the EGL context will be preserved when paused
-     */
+
     public boolean getPreserveEGLContextOnPause() {
         return mPreserveEGLContextOnPause;
     }
 
-    /**
-     * Set the renderer associated with this view. Also starts the thread that
-     * will call the renderer, which in turn causes the rendering to start.
-     * <p>This method should be called once and only once in the life-cycle of
-     * a GLSurfaceView.
-     * <p>The following GLSurfaceView methods can only be called <em>before</em>
-     * setRenderer is called:
-     * <ul>
-     * <li>{@link #setEGLConfigChooser(boolean)}
-     * <li>{@link #setEGLConfigChooser(android.opengl.GLSurfaceView.EGLConfigChooser)}
-     * <li>{@link #setEGLConfigChooser(int, int, int, int, int, int)}
-     * </ul>
-     * <p>
-     * The following GLSurfaceView methods can only be called <em>after</em>
-     * setRenderer is called:
-     * <ul>
-     * <li>{@link #getRenderMode()}
-     * <li>{@link #onPause()}
-     * <li>{@link #onResume()}
-     * <li>{@link #queueEvent(Runnable)}
-     * <li>{@link #requestRender()}
-     * <li>{@link #setRenderMode(int)}
-     * </ul>
-     *
-     * @param renderer the renderer to use to perform OpenGL drawing.
-     */
-    public void setRenderer(android.opengl.GLSurfaceView.Renderer renderer) {
+
+    public void setRenderer(GLSurfaceView.Renderer renderer) {
         checkRenderThreadState();
         if (mEGLConfigChooser == null) {
             mEGLConfigChooser = new SimpleEGLConfigChooser(true);
@@ -362,191 +92,67 @@ class TestGV implements SurfaceHolder.Callback2 {
         mGLThread.start();
     }
 
-    /**
-     * Install a custom EGLContextFactory.
-     * <p>If this method is
-     * called, it must be called before {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}
-     * is called.
-     * <p>
-     * If this method is not called, then by default
-     * a context will be created with no shared context and
-     * with a null attribute list.
-     */
-    public void setEGLContextFactory(android.opengl.GLSurfaceView.EGLContextFactory factory) {
+    public void setEGLContextFactory(EGLContextFactory factory) {
         checkRenderThreadState();
         mEGLContextFactory = factory;
     }
 
-    /**
-     * Install a custom EGLWindowSurfaceFactory.
-     * <p>If this method is
-     * called, it must be called before {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}
-     * is called.
-     * <p>
-     * If this method is not called, then by default
-     * a window surface will be created with a null attribute list.
-     */
-    public void setEGLWindowSurfaceFactory(android.opengl.GLSurfaceView.EGLWindowSurfaceFactory factory) {
+    public void setEGLWindowSurfaceFactory(EGLWindowSurfaceFactory factory) {
         checkRenderThreadState();
         mEGLWindowSurfaceFactory = factory;
     }
 
-    /**
-     * Install a custom EGLConfigChooser.
-     * <p>If this method is
-     * called, it must be called before {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}
-     * is called.
-     * <p>
-     * If no setEGLConfigChooser method is called, then by default the
-     * view will choose an EGLConfig that is compatible with the current
-     * android.view.Surface, with a depth buffer depth of
-     * at least 16 bits.
-     * @param configChooser
-     */
-    public void setEGLConfigChooser(android.opengl.GLSurfaceView.EGLConfigChooser configChooser) {
+
+    public void setEGLConfigChooser(EGLConfigChooser configChooser) {
         checkRenderThreadState();
         mEGLConfigChooser = configChooser;
     }
 
-    /**
-     * Install a config chooser which will choose a config
-     * as close to 16-bit RGB as possible, with or without an optional depth
-     * buffer as close to 16-bits as possible.
-     * <p>If this method is
-     * called, it must be called before {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}
-     * is called.
-     * <p>
-     * If no setEGLConfigChooser method is called, then by default the
-     * view will choose an RGB_888 surface with a depth buffer depth of
-     * at least 16 bits.
-     *
-     * @param needDepth
-     */
+
     public void setEGLConfigChooser(boolean needDepth) {
         setEGLConfigChooser(new SimpleEGLConfigChooser(needDepth));
     }
 
-    /**
-     * Install a config chooser which will choose a config
-     * with at least the specified depthSize and stencilSize,
-     * and exactly the specified redSize, greenSize, blueSize and alphaSize.
-     * <p>If this method is
-     * called, it must be called before {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}
-     * is called.
-     * <p>
-     * If no setEGLConfigChooser method is called, then by default the
-     * view will choose an RGB_888 surface with a depth buffer depth of
-     * at least 16 bits.
-     *
-     */
+
     public void setEGLConfigChooser(int redSize, int greenSize, int blueSize,
         int alphaSize, int depthSize, int stencilSize) {
         setEGLConfigChooser(new ComponentSizeChooser(redSize, greenSize,
             blueSize, alphaSize, depthSize, stencilSize));
     }
 
-    /**
-     * Inform the default EGLContextFactory and default EGLConfigChooser
-     * which EGLContext client version to pick.
-     * <p>Use this method to create an OpenGL ES 2.0-compatible context.
-     * Example:
-     * <pre class="prettyprint">
-     *     public MyView(Context context) {
-     *         super(context);
-     *         setEGLContextClientVersion(2); // Pick an OpenGL ES 2.0 context.
-     *         setRenderer(new MyRenderer());
-     *     }
-     * </pre>
-     * <p>Note: Activities which require OpenGL ES 2.0 should indicate this by
-     * setting @lt;uses-feature android:glEsVersion="0x00020000" /> in the activity's
-     * AndroidManifest.xml file.
-     * <p>If this method is called, it must be called before {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}
-     * is called.
-     * <p>This method only affects the behavior of the default EGLContexFactory and the
-     * default EGLConfigChooser. If
-     * {@link #setEGLContextFactory(android.opengl.GLSurfaceView.EGLContextFactory)} has been called, then the supplied
-     * EGLContextFactory is responsible for creating an OpenGL ES 2.0-compatible context.
-     * If
-     * {@link #setEGLConfigChooser(android.opengl.GLSurfaceView.EGLConfigChooser)} has been called, then the supplied
-     * EGLConfigChooser is responsible for choosing an OpenGL ES 2.0-compatible config.
-     * @param version The EGLContext client version to choose. Use 2 for OpenGL ES 2.0
-     */
+
     public void setEGLContextClientVersion(int version) {
         checkRenderThreadState();
         mEGLContextClientVersion = version;
     }
 
-    /**
-     * Set the rendering mode. When renderMode is
-     * RENDERMODE_CONTINUOUSLY, the renderer is called
-     * repeatedly to re-render the scene. When renderMode
-     * is RENDERMODE_WHEN_DIRTY, the renderer only rendered when the surface
-     * is created, or when {@link #requestRender} is called. Defaults to RENDERMODE_CONTINUOUSLY.
-     * <p>
-     * Using RENDERMODE_WHEN_DIRTY can improve battery life and overall system performance
-     * by allowing the GPU and CPU to idle when the view does not need to be updated.
-     * <p>
-     * This method can only be called after {@link #setRenderer(android.opengl.GLSurfaceView.Renderer)}
-     *
-     * @param renderMode one of the RENDERMODE_X constants
-     * @see #RENDERMODE_CONTINUOUSLY
-     * @see #RENDERMODE_WHEN_DIRTY
-     */
     public void setRenderMode(int renderMode) {
         mGLThread.setRenderMode(renderMode);
     }
 
-    /**
-     * Get the current rendering mode. May be called
-     * from any thread. Must not be called before a renderer has been set.
-     * @return the current rendering mode.
-     * @see #RENDERMODE_CONTINUOUSLY
-     * @see #RENDERMODE_WHEN_DIRTY
-     */
+
     public int getRenderMode() {
         return mGLThread.getRenderMode();
     }
 
-    /**
-     * Request that the renderer render a frame.
-     * This method is typically used when the render mode has been set to
-     * {@link #RENDERMODE_WHEN_DIRTY}, so that frames are only rendered on demand.
-     * May be called
-     * from any thread. Must not be called before a renderer has been set.
-     */
+
     public void requestRender() {
         mGLThread.requestRender();
     }
 
-    /**
-     * This method is part of the SurfaceHolder.Callback interface, and is
-     * not normally called or subclassed by clients of GLSurfaceView.
-     */
     public void surfaceCreated(SurfaceHolder holder) {
         mGLThread.surfaceCreated();
     }
 
-    /**
-     * This method is part of the SurfaceHolder.Callback interface, and is
-     * not normally called or subclassed by clients of GLSurfaceView.
-     */
     public void surfaceDestroyed(SurfaceHolder holder) {
         // Surface will be destroyed when we return
         mGLThread.surfaceDestroyed();
     }
 
-    /**
-     * This method is part of the SurfaceHolder.Callback interface, and is
-     * not normally called or subclassed by clients of GLSurfaceView.
-     */
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
         mGLThread.onWindowResize(w, h);
     }
 
-    /**
-     * This method is part of the SurfaceHolder.Callback interface, and is
-     * not normally called or subclassed by clients of GLSurfaceView.
-     */
     @Override
     public void surfaceRedrawNeeded(SurfaceHolder holder) {
         if (mGLThread != null) {
@@ -555,39 +161,14 @@ class TestGV implements SurfaceHolder.Callback2 {
     }
 
 
-    /**
-     * Pause the rendering thread, optionally tearing down the EGL context
-     * depending upon the value of {@link #setPreserveEGLContextOnPause(boolean)}.
-     *
-     * This method should be called when it is no longer desirable for the
-     * GLSurfaceView to continue rendering, such as in response to
-     * {@link android.app.Activity#onStop Activity.onStop}.
-     *
-     * Must not be called before a renderer has been set.
-     */
     public void onPause() {
         mGLThread.onPause();
     }
 
-    /**
-     * Resumes the rendering thread, re-creating the OpenGL context if necessary. It
-     * is the counterpart to {@link #onPause()}.
-     *
-     * This method should typically be called in
-     * {@link android.app.Activity#onStart Activity.onStart}.
-     *
-     * Must not be called before a renderer has been set.
-     */
     public void onResume() {
         mGLThread.onResume();
     }
 
-    /**
-     * Queue a runnable to be run on the GL rendering thread. This can be used
-     * to communicate with the Renderer on the rendering thread.
-     * Must not be called before a renderer has been set.
-     * @param r the runnable to be run on the GL rendering thread.
-     */
     public void queueEvent(Runnable r) {
         mGLThread.queueEvent(r);
     }
@@ -621,156 +202,12 @@ class TestGV implements SurfaceHolder.Callback2 {
         mDetached = true;
     }
 
-    // ----------------------------------------------------------------------
-
-    /**
-     * An interface used to wrap a GL interface.
-     * <p>Typically
-     * used for implementing debugging and tracing on top of the default
-     * GL interface. You would typically use this by creating your own class
-     * that implemented all the GL methods by delegating to another GL instance.
-     * Then you could add your own behavior before or after calling the
-     * delegate. All the GLWrapper would do was instantiate and return the
-     * wrapper GL instance:
-     * <pre class="prettyprint">
-     * class MyGLWrapper implements GLWrapper {
-     *     GL wrap(GL gl) {
-     *         return new MyGLImplementation(gl);
-     *     }
-     *     static class MyGLImplementation implements GL,GL10,GL11,... {
-     *         ...
-     *     }
-     * }
-     * </pre>
-     * @see #setGLWrapper(android.opengl.GLSurfaceView.GLWrapper)
-     */
-    public interface GLWrapper {
-        /**
-         * Wraps a gl interface in another gl interface.
-         * @param gl a GL interface that is to be wrapped.
-         * @return either the input argument or another GL object that wraps the input argument.
-         */
-        GL wrap(GL gl);
-    }
-
-    /**
-     * A generic renderer interface.
-     * <p>
-     * The renderer is responsible for making OpenGL calls to render a frame.
-     * <p>
-     * GLSurfaceView clients typically create their own classes that implement
-     * this interface, and then call {@link android.opengl.GLSurfaceView#setRenderer} to
-     * register the renderer with the GLSurfaceView.
-     * <p>
-     *
-     * <div class="special reference">
-     * <h3>Developer Guides</h3>
-     * <p>For more information about how to use OpenGL, read the
-     * <a href="{@docRoot}guide/topics/graphics/opengl.html">OpenGL</a> developer guide.</p>
-     * </div>
-     *
-     * <h3>Threading</h3>
-     * The renderer will be called on a separate thread, so that rendering
-     * performance is decoupled from the UI thread. Clients typically need to
-     * communicate with the renderer from the UI thread, because that's where
-     * input events are received. Clients can communicate using any of the
-     * standard Java techniques for cross-thread communication, or they can
-     * use the {@link android.opengl.GLSurfaceView#queueEvent(Runnable)} convenience method.
-     * <p>
-     * <h3>EGL Context Lost</h3>
-     * There are situations where the EGL rendering context will be lost. This
-     * typically happens when device wakes up after going to sleep. When
-     * the EGL context is lost, all OpenGL resources (such as textures) that are
-     * associated with that context will be automatically deleted. In order to
-     * keep rendering correctly, a renderer must recreate any lost resources
-     * that it still needs. The {@link #onSurfaceCreated(GL10, EGLConfig)} method
-     * is a convenient place to do this.
-     *
-     *
-     * @see #setRenderer(android.opengl.GLSurfaceView.Renderer)
-     */
-    public interface Renderer {
-        /**
-         * Called when the surface is created or recreated.
-         * <p>
-         * Called when the rendering thread
-         * starts and whenever the EGL context is lost. The EGL context will typically
-         * be lost when the Android device awakes after going to sleep.
-         * <p>
-         * Since this method is called at the beginning of rendering, as well as
-         * every time the EGL context is lost, this method is a convenient place to put
-         * code to create resources that need to be created when the rendering
-         * starts, and that need to be recreated when the EGL context is lost.
-         * Textures are an example of a resource that you might want to create
-         * here.
-         * <p>
-         * Note that when the EGL context is lost, all OpenGL resources associated
-         * with that context will be automatically deleted. You do not need to call
-         * the corresponding "glDelete" methods such as glDeleteTextures to
-         * manually delete these lost resources.
-         * <p>
-         * @param gl the GL interface. Use <code>instanceof</code> to
-         * test if the interface supports GL11 or higher interfaces.
-         * @param config the EGLConfig of the created surface. Can be used
-         * to create matching pbuffers.
-         */
-        void onSurfaceCreated(GL10 gl, EGLConfig config);
-
-        /**
-         * Called when the surface changed size.
-         * <p>
-         * Called after the surface is created and whenever
-         * the OpenGL ES surface size changes.
-         * <p>
-         * Typically you will set your viewport here. If your camera
-         * is fixed then you could also set your projection matrix here:
-         * <pre class="prettyprint">
-         * void onSurfaceChanged(GL10 gl, int width, int height) {
-         *     gl.glViewport(0, 0, width, height);
-         *     // for a fixed camera, set the projection too
-         *     float ratio = (float) width / height;
-         *     gl.glMatrixMode(GL10.GL_PROJECTION);
-         *     gl.glLoadIdentity();
-         *     gl.glFrustumf(-ratio, ratio, -1, 1, 1, 10);
-         * }
-         * </pre>
-         * @param gl the GL interface. Use <code>instanceof</code> to
-         * test if the interface supports GL11 or higher interfaces.
-         * @param width
-         * @param height
-         */
-        void onSurfaceChanged(GL10 gl, int width, int height);
-
-        /**
-         * Called to draw the current frame.
-         * <p>
-         * This method is responsible for drawing the current frame.
-         * <p>
-         * The implementation of this method typically looks like this:
-         * <pre class="prettyprint">
-         * void onDrawFrame(GL10 gl) {
-         *     gl.glClear(GL10.GL_COLOR_BUFFER_BIT | GL10.GL_DEPTH_BUFFER_BIT);
-         *     //... other gl calls to render the scene ...
-         * }
-         * </pre>
-         * @param gl the GL interface. Use <code>instanceof</code> to
-         * test if the interface supports GL11 or higher interfaces.
-         */
-        void onDrawFrame(GL10 gl);
-    }
-
-    /**
-     * An interface for customizing the eglCreateContext and eglDestroyContext calls.
-     * <p>
-     * This interface must be implemented by clients wishing to call
-     * {@link android.opengl.GLSurfaceView#setEGLContextFactory(android.opengl.GLSurfaceView.EGLContextFactory)}
-     */
     public interface EGLContextFactory {
         EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig eglConfig);
         void destroyContext(EGL10 egl, EGLDisplay display, EGLContext context);
     }
 
-    private class DefaultContextFactory implements android.opengl.GLSurfaceView.EGLContextFactory {
+    private class DefaultContextFactory implements EGLContextFactory {
         private int EGL_CONTEXT_CLIENT_VERSION = 0x3098;
 
         public EGLContext createContext(EGL10 egl, EGLDisplay display, EGLConfig config) {
@@ -793,25 +230,19 @@ class TestGV implements SurfaceHolder.Callback2 {
         }
     }
 
-    /**
-     * An interface for customizing the eglCreateWindowSurface and eglDestroySurface calls.
-     * <p>
-     * This interface must be implemented by clients wishing to call
-     * {@link android.opengl.GLSurfaceView#setEGLWindowSurfaceFactory(android.opengl.GLSurfaceView.EGLWindowSurfaceFactory)}
-     */
     public interface EGLWindowSurfaceFactory {
         /**
          *  @return null if the surface cannot be constructed.
          */
-        EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display, EGLConfig config,
+        EGLSurface createSurface(EGL10 egl, EGLDisplay display, EGLConfig config,
             Object nativeWindow);
         void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface);
     }
 
     private static class DefaultWindowSurfaceFactory implements
-        android.opengl.GLSurfaceView.EGLWindowSurfaceFactory {
+        EGLWindowSurfaceFactory {
 
-        public EGLSurface createWindowSurface(EGL10 egl, EGLDisplay display,
+        public EGLSurface createSurface(EGL10 egl, EGLDisplay display,
             EGLConfig config, Object nativeWindow) {
             EGLSurface result = null;
             try {
@@ -834,28 +265,13 @@ class TestGV implements SurfaceHolder.Callback2 {
         }
     }
 
-    /**
-     * An interface for choosing an EGLConfig configuration from a list of
-     * potential configurations.
-     * <p>
-     * This interface must be implemented by clients wishing to call
-     * {@link android.opengl.GLSurfaceView#setEGLConfigChooser(android.opengl.GLSurfaceView.EGLConfigChooser)}
-     */
     public interface EGLConfigChooser {
-        /**
-         * Choose a configuration from the list. Implementors typically
-         * implement this method by calling
-         * {@link EGL10#eglChooseConfig} and iterating through the results. Please consult the
-         * EGL specification available from The Khronos Group to learn how to call eglChooseConfig.
-         * @param egl the EGL10 for the current display.
-         * @param display the current display.
-         * @return the chosen configuration.
-         */
+
         EGLConfig chooseConfig(EGL10 egl, EGLDisplay display);
     }
 
     private abstract class BaseConfigChooser
-        implements android.opengl.GLSurfaceView.EGLConfigChooser {
+        implements EGLConfigChooser {
         public BaseConfigChooser(int[] configSpec) {
             mConfigSpec = filterConfigSpec(configSpec);
         }
@@ -912,10 +328,6 @@ class TestGV implements SurfaceHolder.Callback2 {
         }
     }
 
-    /**
-     * Choose a configuration with exactly the specified r,g,b,a sizes,
-     * and at least the specified depth and stencil sizes.
-     */
     private class ComponentSizeChooser extends BaseConfigChooser {
         public ComponentSizeChooser(int redSize, int greenSize, int blueSize,
             int alphaSize, int depthSize, int stencilSize) {
@@ -981,11 +393,6 @@ class TestGV implements SurfaceHolder.Callback2 {
         protected int mStencilSize;
     }
 
-    /**
-     * This class will choose a RGB_888 surface with
-     * or without a depth buffer.
-     *
-     */
     private class SimpleEGLConfigChooser extends ComponentSizeChooser {
         public SimpleEGLConfigChooser(boolean withDepthBuffer) {
             super(8, 8, 8, 0, withDepthBuffer ? 16 : 0, 0);
@@ -997,12 +404,8 @@ class TestGV implements SurfaceHolder.Callback2 {
         this.nativeWindow=object;
     }
 
-    /**
-     * An EGL helper class.
-     */
-
     private static class EglHelper {
-        public EglHelper(WeakReference<TestGV> glSurfaceViewWeakRef) {
+        public EglHelper(WeakReference<GLEnvironment> glSurfaceViewWeakRef) {
             mGLSurfaceViewWeakRef = glSurfaceViewWeakRef;
         }
 
@@ -1031,7 +434,7 @@ class TestGV implements SurfaceHolder.Callback2 {
             if(!mEgl.eglInitialize(mEglDisplay, version)) {
                 throw new RuntimeException("eglInitialize failed");
             }
-            TestGV view = mGLSurfaceViewWeakRef.get();
+            GLEnvironment view = mGLSurfaceViewWeakRef.get();
             if (view == null) {
                 mEglConfig = null;
                 mEglContext = null;
@@ -1055,12 +458,6 @@ class TestGV implements SurfaceHolder.Callback2 {
             mEglSurface = null;
         }
 
-        /**
-         * Create an egl surface for the current SurfaceHolder surface. If a surface
-         * already exists, destroy it before creating the new surface.
-         *
-         * @return true if the surface was created successfully.
-         */
         public boolean createSurface() {
             if (LOG_EGL) {
                 Log.w("EglHelper", "createSurface()  tid=" + Thread.currentThread().getId());
@@ -1087,9 +484,9 @@ class TestGV implements SurfaceHolder.Callback2 {
             /*
              * Create an EGL surface we can render into.
              */
-            TestGV view = mGLSurfaceViewWeakRef.get();
+            GLEnvironment view = mGLSurfaceViewWeakRef.get();
             if (view != null) {
-                mEglSurface = view.mEGLWindowSurfaceFactory.createWindowSurface(mEgl,
+                mEglSurface = view.mEGLWindowSurfaceFactory.createSurface(mEgl,
                     mEglDisplay, mEglConfig, view.nativeWindow);
             } else {
                 mEglSurface = null;
@@ -1119,18 +516,11 @@ class TestGV implements SurfaceHolder.Callback2 {
             return true;
         }
 
-        /**
-         * Create a GL object for the current EGL context.
-         * @return
-         */
         GL createGL() {
 
             GL gl = mEglContext.getGL();
-            TestGV view = mGLSurfaceViewWeakRef.get();
+            GLEnvironment view = mGLSurfaceViewWeakRef.get();
             if (view != null) {
-                if (view.mGLWrapper != null) {
-                    gl = view.mGLWrapper.wrap(gl);
-                }
 
                 if ((view.mDebugFlags & (DEBUG_CHECK_GL_ERROR | DEBUG_LOG_GL_CALLS)) != 0) {
                     int configFlags = 0;
@@ -1147,10 +537,6 @@ class TestGV implements SurfaceHolder.Callback2 {
             return gl;
         }
 
-        /**
-         * Display the current render surface.
-         * @return the EGL error code from eglSwapBuffers.
-         */
         public int swap() {
             if (! mEgl.eglSwapBuffers(mEglDisplay, mEglSurface)) {
                 return mEgl.eglGetError();
@@ -1170,7 +556,7 @@ class TestGV implements SurfaceHolder.Callback2 {
                 mEgl.eglMakeCurrent(mEglDisplay, EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_SURFACE,
                     EGL10.EGL_NO_CONTEXT);
-                TestGV view = mGLSurfaceViewWeakRef.get();
+                GLEnvironment view = mGLSurfaceViewWeakRef.get();
                 if (view != null) {
                     view.mEGLWindowSurfaceFactory.destroySurface(mEgl, mEglDisplay, mEglSurface);
                 }
@@ -1183,7 +569,7 @@ class TestGV implements SurfaceHolder.Callback2 {
                 Log.w("EglHelper", "finish() tid=" + Thread.currentThread().getId());
             }
             if (mEglContext != null) {
-                TestGV view = mGLSurfaceViewWeakRef.get();
+                GLEnvironment view = mGLSurfaceViewWeakRef.get();
                 if (view != null) {
                     view.mEGLContextFactory.destroyContext(mEgl, mEglDisplay, mEglContext);
                 }
@@ -1216,7 +602,7 @@ class TestGV implements SurfaceHolder.Callback2 {
             return function + " failed: " +error;
         }
 
-        private WeakReference<TestGV> mGLSurfaceViewWeakRef;
+        private WeakReference<GLEnvironment> mGLSurfaceViewWeakRef;
         EGL10 mEgl;
         EGLDisplay mEglDisplay;
         EGLSurface mEglSurface;
@@ -1225,17 +611,8 @@ class TestGV implements SurfaceHolder.Callback2 {
 
     }
 
-    /**
-     * A generic GL Thread. Takes care of initializing EGL and GL. Delegates
-     * to a Renderer instance to do the actual drawing. Can be configured to
-     * render continuously or on request.
-     *
-     * All potentially blocking synchronization is done through the
-     * sGLThreadManager object. This avoids multiple-lock ordering issues.
-     *
-     */
     static class GLThread extends Thread {
-        GLThread(WeakReference<TestGV> glSurfaceViewWeakRef) {
+        GLThread(WeakReference<GLEnvironment> glSurfaceViewWeakRef) {
             super();
             mWidth = 0;
             mHeight = 0;
@@ -1354,7 +731,7 @@ class TestGV implements SurfaceHolder.Callback2 {
 
                             // When pausing, optionally release the EGL Context:
                             if (pausing && mHaveEglContext) {
-                                TestGV view = mGLSurfaceViewWeakRef.get();
+                                GLEnvironment view = mGLSurfaceViewWeakRef.get();
                                 boolean preserveEglContextOnPause = view == null ?
                                     false : view.mPreserveEGLContextOnPause;
                                 if (!preserveEglContextOnPause) {
@@ -1506,7 +883,7 @@ class TestGV implements SurfaceHolder.Callback2 {
                         if (LOG_RENDERER) {
                             Log.w("GLThread", "onSurfaceCreated");
                         }
-                        TestGV view = mGLSurfaceViewWeakRef.get();
+                        GLEnvironment view = mGLSurfaceViewWeakRef.get();
                         if (view != null) {
                             view.mRenderer.onSurfaceCreated(gl, mEglHelper.mEglConfig);
                         }
@@ -1517,7 +894,7 @@ class TestGV implements SurfaceHolder.Callback2 {
                         if (LOG_RENDERER) {
                             Log.w("GLThread", "onSurfaceChanged(" + w + ", " + h + ")");
                         }
-                        TestGV view = mGLSurfaceViewWeakRef.get();
+                        GLEnvironment view = mGLSurfaceViewWeakRef.get();
                         if (view != null) {
                             view.mRenderer.onSurfaceChanged(gl, w, h);
                         }
@@ -1528,7 +905,7 @@ class TestGV implements SurfaceHolder.Callback2 {
                         Log.w("GLThread", "onDrawFrame tid=" + getId());
                     }
                     {
-                        TestGV view = mGLSurfaceViewWeakRef.get();
+                        GLEnvironment view = mGLSurfaceViewWeakRef.get();
                         if (view != null) {
                             view.mRenderer.onDrawFrame(gl);
                         }
@@ -1813,7 +1190,7 @@ class TestGV implements SurfaceHolder.Callback2 {
          * called. This weak reference allows the GLSurfaceView to be garbage collected while
          * the GLThread is still alive.
          */
-        private WeakReference<TestGV> mGLSurfaceViewWeakRef;
+        private WeakReference<GLEnvironment> mGLSurfaceViewWeakRef;
 
     }
 
@@ -1879,15 +1256,14 @@ class TestGV implements SurfaceHolder.Callback2 {
 
     private static final GLThreadManager sGLThreadManager = new GLThreadManager();
 
-    private final WeakReference<TestGV> mThisWeakRef =
-        new WeakReference<TestGV>(this);
+    private final WeakReference<GLEnvironment> mThisWeakRef =
+        new WeakReference<>(this);
     private GLThread mGLThread;
-    private android.opengl.GLSurfaceView.Renderer mRenderer;
+    private GLSurfaceView.Renderer mRenderer;
     private boolean mDetached;
-    private android.opengl.GLSurfaceView.EGLConfigChooser mEGLConfigChooser;
-    private android.opengl.GLSurfaceView.EGLContextFactory mEGLContextFactory;
-    private android.opengl.GLSurfaceView.EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
-    private android.opengl.GLSurfaceView.GLWrapper mGLWrapper;
+    private EGLConfigChooser mEGLConfigChooser;
+    private EGLContextFactory mEGLContextFactory;
+    private EGLWindowSurfaceFactory mEGLWindowSurfaceFactory;
     private int mDebugFlags;
     private int mEGLContextClientVersion;
     private boolean mPreserveEGLContextOnPause;
