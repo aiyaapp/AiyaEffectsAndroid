@@ -270,6 +270,10 @@ public class AiyaEffects implements ISdkManager {
         }
     }
 
+    public boolean isNeedTrack(){
+        return currentEffect!=null&&forceCloseTrack==FALSE;
+    }
+
     @Override
     public void track(final byte[] trackData, final float[] info, final int trackIndex) {
         if(isResourceReady){
