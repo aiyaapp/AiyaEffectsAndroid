@@ -19,7 +19,7 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
-class GLEnvironment implements SurfaceHolder.Callback2 {
+public class GLEnvironment implements SurfaceHolder.Callback2 {
     private final static String TAG = "GLSurfaceView";
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;

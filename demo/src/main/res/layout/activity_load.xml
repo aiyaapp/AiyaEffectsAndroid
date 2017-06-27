@@ -19,4 +19,9 @@
         android:onClick="onClick"
         android:id="@+id/mHolder"
         android:text="@string/open_surface" />
+    <Button android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:id="@+id/mEffect"
+        android:text="@string/open_effect" />
 </LinearLayout>

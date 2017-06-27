@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.aiyaapp.aiya.camera.CameraActivity;
+import com.aiyaapp.aiya.mvc.EffectOnlyActivity;
 import com.aiyaapp.aiya.mvc.SurfaceHolderActivity;
 import com.aiyaapp.aiya.mvc.TextureViewActivity;
 import com.aiyaapp.aiya.util.PermissionUtils;
@@ -95,6 +96,9 @@ public class LoadActivity extends AppCompatActivity {
                 break;
             case R.id.mHolder:
                 startActivity(new Intent(this, SurfaceHolderActivity.class));
+                break;
+            case R.id.mEffect:
+                startActivity(new Intent(this, EffectOnlyActivity.class));
                 break;
         }
     }

@@ -20,6 +20,8 @@ public interface ISdkManager {
     String SET_OXEYE="oxeye";                   //是否大眼
     String SET_THIN_FACE="thin_face";           //是否瘦脸
 
+    String SET_EFFECT_FLIP="EnableVFlip";       //effect是否翻转
+
     String SET_TRACK_FORCE_CLOSE="track_force_close";   //人脸捕获强制关闭
 
     String SET_IN_WIDTH="in_width";             //处理图片的输入宽度

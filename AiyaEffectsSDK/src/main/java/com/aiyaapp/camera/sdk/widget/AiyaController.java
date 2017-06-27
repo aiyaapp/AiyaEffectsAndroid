@@ -87,6 +87,10 @@ public class AiyaController implements GLSurfaceView.Renderer {
         mGLView.surfaceChanged(null,0,width,height);
     }
 
+    public void setRenderMode(int mode){
+        mGLView.setRenderMode(mode);
+    }
+
     public void surfaceDestroyed(){
         mGLView.surfaceDestroyed(null);
     }
@@ -100,7 +104,13 @@ public class AiyaController implements GLSurfaceView.Renderer {
         mGLView=new GLView(mContext);
 
         mEffectFilter=new AiyaEffectFilter(mContext.getResources());
-        mShowFilter=new NoFilter(mContext.getResources());
+        mShowFilter=new NoFilter(mContext.getResources()){
+            @Override
+            protected void onClear() {
+                GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+                GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
+            }
+        };
 
         mEffect= AiyaEffects.getInstance();
 
@@ -345,6 +355,26 @@ public class AiyaController implements GLSurfaceView.Renderer {
         mGLView.detachedFromWindow();
     }
 
+    protected void glInit(GLEnvironment env){
+        env.setEGLConfigChooser(8,8,8,8,16,8);
+        env.setEGLWindowSurfaceFactory(new GLEnvironment.EGLWindowSurfaceFactory() {
+            @Override
+            public EGLSurface createSurface(EGL10 egl, EGLDisplay display, EGLConfig
+                config, Object window) {
+                return egl.eglCreateWindowSurface(display,config,surface,null);
+            }
+
+            @Override
+            public void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface) {
+                egl.eglDestroySurface(display, surface);
+            }
+        });
+        env.setEGLContextClientVersion(2);
+        env.setRenderer(AiyaController.this);
+        env.setRenderMode(GLEnvironment.RENDERMODE_WHEN_DIRTY);
+        env.setPreserveEGLContextOnPause(true);
+    }
+
     public void requestRender(){
         mGLView.requestRender();
     }
@@ -369,22 +399,7 @@ public class AiyaController implements GLSurfaceView.Renderer {
         }
 
         private void init(){
-            setEGLWindowSurfaceFactory(new EGLWindowSurfaceFactory() {
-                @Override
-                public EGLSurface createSurface(EGL10 egl, EGLDisplay display, EGLConfig
-                    config, Object window) {
-                    return egl.eglCreateWindowSurface(display,config,surface,null);
-                }
-
-                @Override
-                public void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface) {
-                    egl.eglDestroySurface(display, surface);
-                }
-            });
-            setEGLContextClientVersion(2);
-            setRenderer(AiyaController.this);
-            setRenderMode(RENDERMODE_WHEN_DIRTY);
-            setPreserveEGLContextOnPause(true);
+            glInit(this);
         }
 
         public void attachedToWindow(){
