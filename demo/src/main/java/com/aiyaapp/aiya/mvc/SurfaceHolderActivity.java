@@ -19,7 +19,9 @@ import android.view.View;
 import com.aiyaapp.aiya.EffectSelectActivity;
 import com.aiyaapp.aiya.R;
 import com.aiyaapp.aiya.util.PermissionUtils;
+import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.FrameCallback;
+import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 import com.aiyaapp.camera.sdk.filter.WaterMarkFilter;
 import com.aiyaapp.camera.sdk.widget.AiyaController;
@@ -85,6 +87,10 @@ public class SurfaceHolderActivity extends EffectSelectActivity implements Frame
                     mNowHolder=null;
                 }
             });
+            //AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_TYPE,ISdkManager.BEAUTY_TYPE_BIGEYE|
+            //    ISdkManager.BEAUTY_TYPE_SLIMFACE);
+            //AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,99);
+            //AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,99);
         }
     };
 

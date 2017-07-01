@@ -17,8 +17,8 @@ public interface ISdkManager {
     String SET_BEAUTY_LEVEL="beauty_level";     //美颜等级，1-6，不在范围内表示关闭美颜
     String SET_BEAUTY_TYPE="beauty_type";       //美颜类型，0,1,4,5
     String SET_EFFECT_ON="effects_on";          //特效开关1开0关
-    String SET_OXEYE="oxeye";                   //是否大眼
-    String SET_THIN_FACE="thin_face";           //是否瘦脸
+    String SET_OXEYE="SetBigEyeScale";          //大眼，0-100
+    String SET_THIN_FACE="SetSlimFaceScale";    //瘦脸，0-100
 
     String SET_EFFECT_FLIP="EnableVFlip";       //effect是否翻转
 
@@ -45,6 +45,17 @@ public interface ISdkManager {
 
     int MODE_ORNAMENT=0;                        //饰品
     int MODE_GIFT=1;                            //礼物
+    
+    int BEAUTY_TYPE_NORMAL=0;
+    int BEAUTY_TYPE_SUPER =1;
+    int BEAUTY_TYPE_SNAKE =2;
+    int BEAUTY_TYPE_MASK  =3;
+    int BEAUTY_TYPE_SUPER2P =4;
+    int BEAUTY_TYPE_DXLB  =5;
+    int BEAUTY_TYPE_B612   =6;
+    int BEAUTY_TYPE_FACECUT=7;
+    int BEAUTY_TYPE_BIGEYE=0x10000;
+    int BEAUTY_TYPE_SLIMFACE=0x20000;
 
     int TRUE=1;
     int FALSE=0;
