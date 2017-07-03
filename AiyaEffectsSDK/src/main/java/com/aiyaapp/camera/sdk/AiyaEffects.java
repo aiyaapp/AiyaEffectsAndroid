@@ -67,8 +67,12 @@ public class AiyaEffects implements ISdkManager {
 
     private int mMode=0;
 
+    private int oxEye=0;
+    private int thinFace=0;
+
     private boolean isResourceReady=false;
     private Semaphore mSemaphore;
+    private boolean isBeautyNeedTrack=false;
 
     private Object assetManager;
 
@@ -250,6 +254,18 @@ public class AiyaEffects implements ISdkManager {
             case SET_TRACK_FORCE_CLOSE:
                 this.forceCloseTrack=value;
                 break;
+            case SET_OXEYE:
+                oxEye=value;
+                isBeautyNeedTrack=oxEye>0||thinFace>0;
+                mAiyaCameraJni.set(ISdkManager.SET_BEAUTY_LEVEL,isBeautyNeedTrack?1:0);
+                mAiyaCameraJni.set(key, value);
+                break;
+            case SET_THIN_FACE:
+                thinFace=value;
+                isBeautyNeedTrack=oxEye>0||thinFace>0;
+                mAiyaCameraJni.set(ISdkManager.SET_BEAUTY_LEVEL,isBeautyNeedTrack?1:0);
+                mAiyaCameraJni.set(key, value);
+                break;
             case SET_ACTION:
                 switch (value){
                     case ACTION_REFRESH_PARAMS_NOW:
@@ -271,7 +287,7 @@ public class AiyaEffects implements ISdkManager {
     }
 
     public boolean isNeedTrack(){
-        return currentEffect!=null&&forceCloseTrack==FALSE;
+        return (currentEffect!=null||isBeautyNeedTrack)&&forceCloseTrack==FALSE;
     }
 
     @Override
@@ -280,7 +296,7 @@ public class AiyaEffects implements ISdkManager {
             mTrackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if(currentEffect==null||forceCloseTrack==TRUE){
+                    if((currentEffect==null&&!isBeautyNeedTrack)||forceCloseTrack==TRUE){
                         mSemaphore.release();
                         return;
                     }
@@ -294,6 +310,11 @@ public class AiyaEffects implements ISdkManager {
                     mSemaphore.release();
                 }
             });
+            try {
+                mSemaphore.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -301,11 +322,6 @@ public class AiyaEffects implements ISdkManager {
     @Override
     public void process(int textureId, int trackIndex) {
         if(isResourceReady){
-            try {
-                mSemaphore.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             if(!isSetParam){
                 setParameters(input,output);
             }

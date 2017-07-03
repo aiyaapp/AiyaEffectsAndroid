@@ -38,6 +38,8 @@ public interface ISdkManager {
 
     String SET_ASSETS_MANAGER="assets_manager"; //AssetsManager
 
+    String SET_LOG="LogLevel";
+
     int ACTION_REFRESH_PARAMS_NOW=1;            //刷新params,需要在GL线程中执行
 
     int STATE_EFFECT_END=0x00040000;            //特效播放结束

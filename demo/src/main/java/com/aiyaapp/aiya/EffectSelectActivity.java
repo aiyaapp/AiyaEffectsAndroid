@@ -151,6 +151,13 @@ public class EffectSelectActivity extends AppCompatActivity {
             case R.id.mRight:
                 mBeautyFlag=++mBeautyFlag>=7?0:mBeautyFlag;
                 AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_LEVEL,mBeautyFlag);
+                if(mBeautyFlag>0){
+                    AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,mBeautyFlag*10+20);
+                    AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,mBeautyFlag*10+20);
+                }else{
+                    AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,0);
+                    AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,0);
+                }
                 refreshRightBtn();
                 break;
         }
