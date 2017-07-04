@@ -27,7 +27,7 @@ public class PrepareFilter extends AFilter {
     private AiyaFilter mFilter;
     private int width=0;
     private int height=0;
-    private float[] infos = new float[20];
+    private float[] infos = new float[200];
     private int nowTextureIndex=0;
 
     private int fTextureSize = 2;

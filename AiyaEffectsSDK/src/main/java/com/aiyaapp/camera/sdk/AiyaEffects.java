@@ -69,6 +69,7 @@ public class AiyaEffects implements ISdkManager {
 
     private int oxEye=0;
     private int thinFace=0;
+    private int beautyLevel=0;
 
     private boolean isResourceReady=false;
     private Semaphore mSemaphore;
@@ -248,6 +249,10 @@ public class AiyaEffects implements ISdkManager {
             case SET_TRACK_HEIGHT:
                 mTrackHeight=value;
                 break;
+            case SET_BEAUTY_LEVEL:
+                beautyLevel=value;
+                mAiyaCameraJni.set(key,value);
+                break;
             case SET_MODE:
                 this.mMode=value;
                 break;
@@ -257,13 +262,17 @@ public class AiyaEffects implements ISdkManager {
             case SET_OXEYE:
                 oxEye=value;
                 isBeautyNeedTrack=oxEye>0||thinFace>0;
-                mAiyaCameraJni.set(ISdkManager.SET_BEAUTY_LEVEL,isBeautyNeedTrack?1:0);
+                if (isBeautyNeedTrack&&beautyLevel==0){
+                    mAiyaCameraJni.set(SET_BEAUTY_LEVEL,1);
+                }
                 mAiyaCameraJni.set(key, value);
                 break;
             case SET_THIN_FACE:
                 thinFace=value;
                 isBeautyNeedTrack=oxEye>0||thinFace>0;
-                mAiyaCameraJni.set(ISdkManager.SET_BEAUTY_LEVEL,isBeautyNeedTrack?1:0);
+                if (isBeautyNeedTrack&&beautyLevel==0){
+                    mAiyaCameraJni.set(SET_BEAUTY_LEVEL,1);
+                }
                 mAiyaCameraJni.set(key, value);
                 break;
             case SET_ACTION:

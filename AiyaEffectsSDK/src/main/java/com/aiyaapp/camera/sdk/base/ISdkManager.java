@@ -56,8 +56,6 @@ public interface ISdkManager {
     int BEAUTY_TYPE_DXLB  =5;
     int BEAUTY_TYPE_B612   =6;
     int BEAUTY_TYPE_FACECUT=7;
-    int BEAUTY_TYPE_BIGEYE=0x10000;
-    int BEAUTY_TYPE_SLIMFACE=0x20000;
 
     int TRUE=1;
     int FALSE=0;
@@ -97,7 +95,7 @@ public interface ISdkManager {
     /**
      * 人脸追踪，必须在GL环境中调用
      * @param trackData 需要追踪的原始图片数据
-     * @param info 追踪结果
+     * @param info 追踪结果，69个特征点，每两个浮点表示一个特征点，info长度200
      */
     void track(byte[] trackData, float[] info, int trackIndex);
 
