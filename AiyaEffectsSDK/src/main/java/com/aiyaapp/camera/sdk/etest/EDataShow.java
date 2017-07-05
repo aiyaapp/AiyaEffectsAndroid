@@ -107,7 +107,7 @@ public class EDataShow extends SurfaceView implements Runnable,SurfaceHolder.Cal
                 EData.data.getDealTime(),EData.data.getCameraFps()),40,40, mPaint);
             try {
                 mCanvas.drawText(String.format(Locale.CHINA,"Mem=%04dM，Cpu=%.3f%%,track:%b",memSize,
-                    cpuRate,EData.data.getTrackCode()==1),
+                    cpuRate,EData.data.getTrackCode()==0),
                     40,70,mPaint);
             }catch (Exception e){
                 e.printStackTrace();

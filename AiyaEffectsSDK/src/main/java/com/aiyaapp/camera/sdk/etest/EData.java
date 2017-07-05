@@ -18,7 +18,7 @@ public class EData {
         private long drawTime=0;
         private float fps;
         private int dealTime;
-        private int trackCode;
+        private int trackCode=-1;
         private float cameraFps;
 
         private long renderRequestTime=0;
