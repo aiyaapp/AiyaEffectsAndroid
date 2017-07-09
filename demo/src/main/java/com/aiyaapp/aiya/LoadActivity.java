@@ -20,6 +20,7 @@ import com.aiyaapp.aiya.camera.CameraActivity;
 import com.aiyaapp.aiya.mvc.EffectOnlyActivity;
 import com.aiyaapp.aiya.mvc.SurfaceHolderActivity;
 import com.aiyaapp.aiya.mvc.TextureViewActivity;
+import com.aiyaapp.aiya.track.TrackActivity;
 import com.aiyaapp.aiya.util.PermissionUtils;
 import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
@@ -98,9 +99,9 @@ public class LoadActivity extends AppCompatActivity {
             case R.id.mHolder:
                 startActivity(new Intent(this, SurfaceHolderActivity.class));
                 break;
-            //case R.id.mEffect:
-            //    startActivity(new Intent(this, EffectOnlyActivity.class));
-            //    break;
+            case R.id.mTrack:
+                startActivity(new Intent(this, TrackActivity.class));
+                break;
         }
     }
 }

@@ -47,8 +47,7 @@ public interface ISdkManager {
 
     int MODE_ORNAMENT=0;                        //饰品
     int MODE_GIFT=1;                            //礼物
-    
-    int BEAUTY_TYPE_NORMAL=0;
+
     int BEAUTY_TYPE_SUPER =1;
     int BEAUTY_TYPE_SNAKE =2;
     int BEAUTY_TYPE_MASK  =3;
@@ -56,6 +55,7 @@ public interface ISdkManager {
     int BEAUTY_TYPE_DXLB  =5;
     int BEAUTY_TYPE_B612   =6;
     int BEAUTY_TYPE_FACECUT=7;
+    int BEAUTY_TYPE_NORMAL=8;
 
     int TRUE=1;
     int FALSE=0;

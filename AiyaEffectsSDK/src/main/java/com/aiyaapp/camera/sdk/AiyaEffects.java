@@ -8,6 +8,7 @@
 package com.aiyaapp.camera.sdk;
 
 import android.annotation.SuppressLint;
+import com.aiyaapp.camera.sdk.etest.EData;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -306,6 +307,7 @@ public class AiyaEffects implements ISdkManager {
                 @Override
                 public void run() {
                     if((currentEffect==null&&!isBeautyNeedTrack)||forceCloseTrack==TRUE){
+                        EData.data.setTrackCode(2);
                         mSemaphore.release();
                         return;
                     }
@@ -313,6 +315,9 @@ public class AiyaEffects implements ISdkManager {
                     int trackCode=mAiyaCameraJni.track(trackData,mTrackWidth,mTrackHeight,info,
                         trackIndex);
                     Log.e("track------------------------>"+(System.currentTimeMillis()-start));
+
+                    Log.e("info","info----:"+info[0]+"/"+info[1]+"/"+info[10]+"/"+info[11]);
+
                     if(mTrackCallback!=null){
                         mTrackCallback.onTrack(trackCode,info);
                     }

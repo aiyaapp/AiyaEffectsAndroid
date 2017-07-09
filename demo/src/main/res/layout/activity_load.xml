@@ -25,4 +25,10 @@
         android:id="@+id/mEffect"
         android:visibility="gone"
         android:text="@string/open_effect" />
+
+    <Button android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:id="@+id/mTrack"
+        android:text="@string/open_track" />
 </LinearLayout>
