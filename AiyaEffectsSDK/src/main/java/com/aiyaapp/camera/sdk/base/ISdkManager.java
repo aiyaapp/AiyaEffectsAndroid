@@ -17,8 +17,10 @@ public interface ISdkManager {
     String SET_BEAUTY_LEVEL="beauty_level";     //美颜等级，1-6，不在范围内表示关闭美颜
     String SET_BEAUTY_TYPE="beauty_type";       //美颜类型，0,1,4,5
     String SET_EFFECT_ON="effects_on";          //特效开关1开0关
-    String SET_OXEYE="oxeye";                   //是否大眼
-    String SET_THIN_FACE="thin_face";           //是否瘦脸
+    String SET_OXEYE="SetBigEyeScale";          //大眼，0-100
+    String SET_THIN_FACE="SetSlimFaceScale";    //瘦脸，0-100
+
+    String SET_EFFECT_FLIP="EnableVFlip";       //effect是否翻转
 
     String SET_TRACK_FORCE_CLOSE="track_force_close";   //人脸捕获强制关闭
 
@@ -36,6 +38,8 @@ public interface ISdkManager {
 
     String SET_ASSETS_MANAGER="assets_manager"; //AssetsManager
 
+    String SET_LOG="LogLevel";
+
     int ACTION_REFRESH_PARAMS_NOW=1;            //刷新params,需要在GL线程中执行
 
     int STATE_EFFECT_END=0x00040000;            //特效播放结束
@@ -43,6 +47,15 @@ public interface ISdkManager {
 
     int MODE_ORNAMENT=0;                        //饰品
     int MODE_GIFT=1;                            //礼物
+
+    int BEAUTY_TYPE_SUPER =1;
+    int BEAUTY_TYPE_SNAKE =2;
+    int BEAUTY_TYPE_MASK  =3;
+    int BEAUTY_TYPE_SUPER2P =4;
+    int BEAUTY_TYPE_DXLB  =5;
+    int BEAUTY_TYPE_B612   =6;
+    int BEAUTY_TYPE_FACECUT=7;
+    int BEAUTY_TYPE_NORMAL=8;
 
     int TRUE=1;
     int FALSE=0;
@@ -82,7 +95,7 @@ public interface ISdkManager {
     /**
      * 人脸追踪，必须在GL环境中调用
      * @param trackData 需要追踪的原始图片数据
-     * @param info 追踪结果
+     * @param info 追踪结果，69个特征点，每两个浮点表示一个特征点，info长度200
      */
     void track(byte[] trackData, float[] info, int trackIndex);
 

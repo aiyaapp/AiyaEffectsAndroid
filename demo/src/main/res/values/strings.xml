@@ -12,4 +12,6 @@
     <string name="open_camera1">Camera1特效</string>
     <string name="open_texture">TextureView输出</string>
     <string name="open_surface">SurfaceView输出</string>
+    <string name="open_effect">只渲染礼物</string>
+    <string name="open_track">人脸检测</string>
 </resources>

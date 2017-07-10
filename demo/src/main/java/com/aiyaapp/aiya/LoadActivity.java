@@ -17,8 +17,10 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.aiyaapp.aiya.camera.CameraActivity;
+import com.aiyaapp.aiya.mvc.EffectOnlyActivity;
 import com.aiyaapp.aiya.mvc.SurfaceHolderActivity;
 import com.aiyaapp.aiya.mvc.TextureViewActivity;
+import com.aiyaapp.aiya.track.TrackActivity;
 import com.aiyaapp.aiya.util.PermissionUtils;
 import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
@@ -68,6 +70,7 @@ public class LoadActivity extends AppCompatActivity {
             };
             AiyaEffects.getInstance().registerObserver(observer);
             AiyaEffects.getInstance().init(LoadActivity.this,"");
+            Log.debug(true);
             //AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,1);
 
         }
@@ -95,6 +98,9 @@ public class LoadActivity extends AppCompatActivity {
                 break;
             case R.id.mHolder:
                 startActivity(new Intent(this, SurfaceHolderActivity.class));
+                break;
+            case R.id.mTrack:
+                startActivity(new Intent(this, TrackActivity.class));
                 break;
         }
     }

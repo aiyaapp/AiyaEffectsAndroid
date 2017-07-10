@@ -8,6 +8,7 @@
 package com.aiyaapp.camera.sdk;
 
 import android.annotation.SuppressLint;
+import com.aiyaapp.camera.sdk.etest.EData;
 import java.io.File;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -67,8 +68,13 @@ public class AiyaEffects implements ISdkManager {
 
     private int mMode=0;
 
+    private int oxEye=0;
+    private int thinFace=0;
+    private int beautyLevel=0;
+
     private boolean isResourceReady=false;
     private Semaphore mSemaphore;
+    private boolean isBeautyNeedTrack=false;
 
     private Object assetManager;
 
@@ -244,11 +250,31 @@ public class AiyaEffects implements ISdkManager {
             case SET_TRACK_HEIGHT:
                 mTrackHeight=value;
                 break;
+            case SET_BEAUTY_LEVEL:
+                beautyLevel=value;
+                mAiyaCameraJni.set(key,value);
+                break;
             case SET_MODE:
                 this.mMode=value;
                 break;
             case SET_TRACK_FORCE_CLOSE:
                 this.forceCloseTrack=value;
+                break;
+            case SET_OXEYE:
+                oxEye=value;
+                isBeautyNeedTrack=oxEye>0||thinFace>0;
+                if (isBeautyNeedTrack&&beautyLevel==0){
+                    mAiyaCameraJni.set(SET_BEAUTY_LEVEL,1);
+                }
+                mAiyaCameraJni.set(key, value);
+                break;
+            case SET_THIN_FACE:
+                thinFace=value;
+                isBeautyNeedTrack=oxEye>0||thinFace>0;
+                if (isBeautyNeedTrack&&beautyLevel==0){
+                    mAiyaCameraJni.set(SET_BEAUTY_LEVEL,1);
+                }
+                mAiyaCameraJni.set(key, value);
                 break;
             case SET_ACTION:
                 switch (value){
@@ -270,13 +296,18 @@ public class AiyaEffects implements ISdkManager {
         }
     }
 
+    public boolean isNeedTrack(){
+        return (currentEffect!=null||isBeautyNeedTrack)&&forceCloseTrack==FALSE;
+    }
+
     @Override
     public void track(final byte[] trackData, final float[] info, final int trackIndex) {
         if(isResourceReady){
             mTrackExecutor.execute(new Runnable() {
                 @Override
                 public void run() {
-                    if(currentEffect==null||forceCloseTrack==TRUE){
+                    if((currentEffect==null&&!isBeautyNeedTrack)||forceCloseTrack==TRUE){
+                        EData.data.setTrackCode(2);
                         mSemaphore.release();
                         return;
                     }
@@ -284,12 +315,20 @@ public class AiyaEffects implements ISdkManager {
                     int trackCode=mAiyaCameraJni.track(trackData,mTrackWidth,mTrackHeight,info,
                         trackIndex);
                     Log.e("track------------------------>"+(System.currentTimeMillis()-start));
+
+                    Log.e("info","info----:"+info[0]+"/"+info[1]+"/"+info[10]+"/"+info[11]);
+
                     if(mTrackCallback!=null){
                         mTrackCallback.onTrack(trackCode,info);
                     }
                     mSemaphore.release();
                 }
             });
+            try {
+                mSemaphore.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
 
     }
@@ -297,11 +336,6 @@ public class AiyaEffects implements ISdkManager {
     @Override
     public void process(int textureId, int trackIndex) {
         if(isResourceReady){
-            try {
-                mSemaphore.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
             if(!isSetParam){
                 setParameters(input,output);
             }
@@ -313,12 +347,12 @@ public class AiyaEffects implements ISdkManager {
             if(mProcessCallback!=null){
                 mProcessCallback.onFinished();
             }
-            if(mMode==MODE_GIFT&&ret==STATE_EFFECT_END){
-                setEffect(null);
-            }
             if(ret==STATE_EFFECT_END){
                 mProcessEvent.strTag=currentEffect;
                 mObservable.notifyState(mProcessEvent);
+            }
+            if(mMode==MODE_GIFT&&ret==STATE_EFFECT_END){
+                setEffect(null);
             }
         }
     }

@@ -26,6 +26,13 @@
         <activity android:name=".mvc.SurfaceHolderActivity"
             android:screenOrientation="portrait">
         </activity>
+        <activity android:name=".mvc.EffectOnlyActivity"
+            android:hardwareAccelerated="true"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity android:name=".track.TrackActivity"
+            android:screenOrientation="portrait">
+        </activity>
         <activity android:name="com.aiyaapp.aiya.LoadActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

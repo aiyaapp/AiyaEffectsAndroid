@@ -80,8 +80,9 @@ public class EffectSelectActivity extends AppCompatActivity {
                     v.setSelected(true);
                 }else if(name.equals("本地")){
                     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setType("file/*");
-                    startActivityForResult(intent,101);
+                    intent.setType("*/*");
+                    intent.addCategory(Intent.CATEGORY_OPENABLE);
+                    startActivityForResult(Intent.createChooser(intent, "请选择一个json文件"),101);
                 }else{
                     AiyaEffects.getInstance().setEffect("assets/modelsticker/"+m.path);
                     mStickerAdapter.checkPos=pos;
@@ -149,7 +150,15 @@ public class EffectSelectActivity extends AppCompatActivity {
                 break;
             case R.id.mRight:
                 mBeautyFlag=++mBeautyFlag>=7?0:mBeautyFlag;
+                AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_TYPE,0);
                 AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_LEVEL,mBeautyFlag);
+                if(mBeautyFlag>0){
+                    AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,mBeautyFlag*10+20);
+                    AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,mBeautyFlag*10+20);
+                }else{
+                    AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,0);
+                    AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,0);
+                }
                 refreshRightBtn();
                 break;
         }
@@ -178,6 +187,7 @@ public class EffectSelectActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d("wuwang","onActivityResult:rq:"+requestCode+"/"+resultCode);
         if(requestCode==101){
             if(resultCode==RESULT_OK){
                 android.util.Log.e("wuwang","data:"+getRealFilePath(data.getData()));

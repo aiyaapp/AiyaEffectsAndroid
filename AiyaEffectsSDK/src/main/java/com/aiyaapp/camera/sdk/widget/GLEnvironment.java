@@ -1,8 +1,6 @@
 package com.aiyaapp.camera.sdk.widget;
 
 import android.content.Context;
-import android.opengl.EGL14;
-import android.opengl.EGLExt;
 import android.opengl.GLDebugHelper;
 import android.opengl.GLSurfaceView;
 import android.util.Log;
@@ -19,8 +17,8 @@ import javax.microedition.khronos.egl.EGLSurface;
 import javax.microedition.khronos.opengles.GL;
 import javax.microedition.khronos.opengles.GL10;
 
-class GLEnvironment implements SurfaceHolder.Callback2 {
-    private final static String TAG = "GLSurfaceView";
+public class GLEnvironment implements SurfaceHolder.Callback2 {
+    private final static String TAG = "GLEnvironment";
     private final static boolean LOG_ATTACH_DETACH = false;
     private final static boolean LOG_THREADS = false;
     private final static boolean LOG_PAUSE_RESUME = false;
@@ -29,20 +27,33 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
     private final static boolean LOG_RENDERER_DRAW_FRAME = false;
     private final static boolean LOG_EGL = false;
 
+    private boolean isResumeNow=false;
+
+    public static final int ERROR_EGL_START=0x0001;
+
     public final static int RENDERMODE_WHEN_DIRTY = 0;
 
     public final static int RENDERMODE_CONTINUOUSLY = 1;
 
     public final static int DEBUG_CHECK_GL_ERROR = 1;
 
-
     public final static int DEBUG_LOG_GL_CALLS = 2;
 
+    private ErrorListener mErrorListener;
 
     public GLEnvironment(Context context) {
         init();
     }
 
+    public void setOnErrorListener(ErrorListener listener){
+        this.mErrorListener=listener;
+    }
+
+    private void onError(int code,String msg){
+        if(mErrorListener!=null){
+            mErrorListener.onError(code, msg);
+        }
+    }
 
     @Override
     protected void finalize() throws Throwable {
@@ -70,6 +81,39 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
         mPreserveEGLContextOnPause = preserveOnPause;
     }
 
+    private static String getEGLConfigAttribs(EGL10 egl, EGLDisplay display, EGLConfig config) {
+        StringBuilder sb=new StringBuilder();
+        int value = findConfigAttrib(egl, display, config, EGL10.EGL_SURFACE_TYPE, -1);
+        sb.append("EGLConfig-").append("surfaceType:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_RED_SIZE, -1);
+        sb.append("redSize:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_GREEN_SIZE, -1);
+        sb.append("greenSize:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_BLUE_SIZE, -1);
+        sb.append("blueSize:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_ALPHA_SIZE, -1);
+        sb.append("alphaSize:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_DEPTH_SIZE, -1);
+        sb.append("depthSize:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_RENDERABLE_TYPE, -1);
+        sb.append("renderType:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_SAMPLE_BUFFERS, -1);
+        sb.append("sampleBuffer:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_SAMPLES, -1);
+        sb.append("samplesSize:").append(value).append("/");
+        value = findConfigAttrib(egl, display, config, EGL10.EGL_STENCIL_SIZE, -1);
+        sb.append("stencilSize:").append(value).append("/");
+        return sb.toString();
+    }
+
+    private static int findConfigAttrib(EGL10 egl, EGLDisplay display, EGLConfig config,
+        int attribute, int defaultValue) {
+        int[] val = new int[1];
+        if (egl.eglGetConfigAttrib(display, config, attribute, val)) {
+            return val[0];
+        }
+        return defaultValue;
+    }
 
     public boolean getPreserveEGLContextOnPause() {
         return mPreserveEGLContextOnPause;
@@ -102,12 +146,10 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
         mEGLWindowSurfaceFactory = factory;
     }
 
-
     public void setEGLConfigChooser(EGLConfigChooser configChooser) {
         checkRenderThreadState();
         mEGLConfigChooser = configChooser;
     }
-
 
     public void setEGLConfigChooser(boolean needDepth) {
         setEGLConfigChooser(new SimpleEGLConfigChooser(needDepth));
@@ -120,7 +162,6 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
             blueSize, alphaSize, depthSize, stencilSize));
     }
 
-
     public void setEGLContextClientVersion(int version) {
         checkRenderThreadState();
         mEGLContextClientVersion = version;
@@ -129,7 +170,6 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
     public void setRenderMode(int renderMode) {
         mGLThread.setRenderMode(renderMode);
     }
-
 
     public int getRenderMode() {
         return mGLThread.getRenderMode();
@@ -162,11 +202,17 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
 
 
     public void onPause() {
-        mGLThread.onPause();
+        if(isResumeNow){
+            isResumeNow=false;
+            mGLThread.onPause();
+        }
     }
 
     public void onResume() {
-        mGLThread.onResume();
+        if(!isResumeNow){
+            isResumeNow=true;
+            mGLThread.onResume();
+        }
     }
 
     public void queueEvent(Runnable r) {
@@ -174,7 +220,7 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
     }
 
 
-    protected void onAttachedToWindow() {
+    public void onAttachedToWindow() {
         if (LOG_ATTACH_DETACH) {
             Log.d(TAG, "onAttachedToWindow reattach =" + mDetached);
         }
@@ -192,7 +238,7 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
         mDetached = false;
     }
 
-    protected void onDetachedFromWindow() {
+    public void onDetachedFromWindow() {
         if (LOG_ATTACH_DETACH) {
             Log.d(TAG, "onDetachedFromWindow");
         }
@@ -225,7 +271,7 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
                 if (LOG_THREADS) {
                     Log.i("DefaultContextFactory", "tid=" + Thread.currentThread().getId());
                 }
-                EglHelper.throwEglException("eglDestroyContex", egl.eglGetError());
+                onError(1,"destroyContext failed");
             }
         }
     }
@@ -234,8 +280,7 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
         /**
          *  @return null if the surface cannot be constructed.
          */
-        EGLSurface createSurface(EGL10 egl, EGLDisplay display, EGLConfig config,
-            Object nativeWindow);
+        EGLSurface createSurface(EGL10 egl, EGLDisplay display, EGLConfig config, Object nativeWindow);
         void destroySurface(EGL10 egl, EGLDisplay display, EGLSurface surface);
     }
 
@@ -278,26 +323,30 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
 
         public EGLConfig chooseConfig(EGL10 egl, EGLDisplay display) {
             int[] num_config = new int[1];
+
             if (!egl.eglChooseConfig(display, mConfigSpec, null, 0,
                 num_config)) {
-                throw new IllegalArgumentException("eglChooseConfig failed");
+                Log.e(GLEnvironment.TAG,"eglChooseConfig failed");
+                return null;
             }
 
             int numConfigs = num_config[0];
 
             if (numConfigs <= 0) {
-                throw new IllegalArgumentException(
-                    "No configs match configSpec");
+                Log.e(GLEnvironment.TAG,"Error:numConfigs==0");
+                return null;
             }
 
             EGLConfig[] configs = new EGLConfig[numConfigs];
             if (!egl.eglChooseConfig(display, mConfigSpec, configs, numConfigs,
                 num_config)) {
-                throw new IllegalArgumentException("eglChooseConfig#2 failed");
+                Log.e(GLEnvironment.TAG,"eglChooseConfig#2 failed");
+                return null;
             }
             EGLConfig config = chooseConfig(egl, display, configs);
             if (config == null) {
-                throw new IllegalArgumentException("No config chosen");
+                Log.e(GLEnvironment.TAG,"No config chosen");
+                return null;
             }
             return config;
         }
@@ -319,13 +368,14 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
             System.arraycopy(configSpec, 0, newConfigSpec, 0, len-1);
             newConfigSpec[len-1] = EGL10.EGL_RENDERABLE_TYPE;
             if (mEGLContextClientVersion == 2) {
-                newConfigSpec[len] = EGL14.EGL_OPENGL_ES2_BIT;  /* EGL_OPENGL_ES2_BIT */
+                newConfigSpec[len] = 4;  /* EGL_OPENGL_ES2_BIT */
             } else {
-                newConfigSpec[len] = EGLExt.EGL_OPENGL_ES3_BIT_KHR; /* EGL_OPENGL_ES3_BIT_KHR */
+                newConfigSpec[len] = 64; /* EGL_OPENGL_ES3_BIT_KHR */
             }
             newConfigSpec[len+1] = EGL10.EGL_NONE;
             return newConfigSpec;
         }
+
     }
 
     private class ComponentSizeChooser extends BaseConfigChooser {
@@ -374,15 +424,6 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
             return null;
         }
 
-        private int findConfigAttrib(EGL10 egl, EGLDisplay display,
-            EGLConfig config, int attribute, int defaultValue) {
-
-            if (egl.eglGetConfigAttrib(display, config, attribute, mValue)) {
-                return mValue[0];
-            }
-            return defaultValue;
-        }
-
         private int[] mValue;
         // Subclasses can adjust these values:
         protected int mRedSize;
@@ -409,7 +450,7 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
             mGLSurfaceViewWeakRef = glSurfaceViewWeakRef;
         }
 
-        public void start() {
+        public boolean start() {
             if (LOG_EGL) {
                 Log.w("EglHelper", "start() tid=" + Thread.currentThread().getId());
             }
@@ -424,7 +465,8 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
             mEglDisplay = mEgl.eglGetDisplay(EGL10.EGL_DEFAULT_DISPLAY);
 
             if (mEglDisplay == EGL10.EGL_NO_DISPLAY) {
-                throw new RuntimeException("eglGetDisplay failed");
+                Log.e(GLEnvironment.TAG,"eglGetDisplay failed");
+                return false;
             }
 
             /*
@@ -432,12 +474,14 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
              */
             int[] version = new int[2];
             if(!mEgl.eglInitialize(mEglDisplay, version)) {
-                throw new RuntimeException("eglInitialize failed");
+                Log.e(GLEnvironment.TAG,"eglInitialize failed");
+                return false;
             }
             GLEnvironment view = mGLSurfaceViewWeakRef.get();
             if (view == null) {
                 mEglConfig = null;
                 mEglContext = null;
+                Log.e(GLEnvironment.TAG,"mEglConfig==null");
             } else {
                 mEglConfig = view.mEGLConfigChooser.chooseConfig(mEgl, mEglDisplay);
 
@@ -449,13 +493,16 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
             }
             if (mEglContext == null || mEglContext == EGL10.EGL_NO_CONTEXT) {
                 mEglContext = null;
-                throwEglException("createContext");
+                Log.e(GLEnvironment.TAG, "nowConfig----"+getEGLConfigAttribs(mEgl,mEglDisplay,mEglConfig));
+                Log.e(GLEnvironment.TAG,"mEglContext==null");
+                return false;
             }
             if (LOG_EGL) {
                 Log.w("EglHelper", "createContext " + mEglContext + " tid=" + Thread.currentThread().getId());
             }
 
             mEglSurface = null;
+            return true;
         }
 
         public boolean createSurface() {
@@ -466,13 +513,21 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
              * Check preconditions.
              */
             if (mEgl == null) {
-                throw new RuntimeException("egl not initialized");
+                Log.e(GLEnvironment.TAG,"egl not initialized");
+                return false;
             }
             if (mEglDisplay == null) {
-                throw new RuntimeException("eglDisplay not initialized");
+                Log.e(GLEnvironment.TAG,"eglDisplay not initialized");
+                return false;
             }
             if (mEglConfig == null) {
-                throw new RuntimeException("mEglConfig not initialized");
+                Log.e(GLEnvironment.TAG,"mEglConfig not initialized");
+                return false;
+            }
+
+            if (mEglContext == null) {
+                Log.e(GLEnvironment.TAG,"mEglContext not initialized");
+                return false;
             }
 
             /*
@@ -504,6 +559,7 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
              * Before we can issue GL commands, we need to make sure
              * the context is current and bound to a surface.
              */
+
             if (!mEgl.eglMakeCurrent(mEglDisplay, mEglSurface, mEglSurface, mEglContext)) {
                 /*
                  * Could not make the context current, probably because the underlying
@@ -579,19 +635,6 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
                 mEgl.eglTerminate(mEglDisplay);
                 mEglDisplay = null;
             }
-        }
-
-        private void throwEglException(String function) {
-            throwEglException(function, mEgl.eglGetError());
-        }
-
-        public static void throwEglException(String function, int error) {
-            String message = formatEglError(function, error);
-            if (LOG_THREADS) {
-                Log.e("EglHelper", "throwEglException tid=" + Thread.currentThread().getId() + " "
-                    + message);
-            }
-            throw new RuntimeException(message);
         }
 
         public static void logEglErrorAsWarning(String tag, String function, int error) {
@@ -782,11 +825,10 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
                                     if (askedToReleaseEglContext) {
                                         askedToReleaseEglContext = false;
                                     } else {
-                                        try {
-                                            mEglHelper.start();
-                                        } catch (RuntimeException t) {
+                                        if(!mEglHelper.start()){
+                                            GLEnvironment env = mGLSurfaceViewWeakRef.get();
+                                            env.onError(ERROR_EGL_START,"创建EGL环境失败");
                                             sGLThreadManager.releaseEglContextLocked(this);
-                                            throw t;
                                         }
                                         mHaveEglContext = true;
                                         createEglContext = true;
@@ -1232,6 +1274,10 @@ class GLEnvironment implements SurfaceHolder.Callback2 {
             throw new IllegalStateException(
                 "setRenderer has already been called for this instance.");
         }
+    }
+
+    public interface ErrorListener{
+        void onError(int errorCode, String errorMsg);
     }
 
     private static class GLThreadManager {

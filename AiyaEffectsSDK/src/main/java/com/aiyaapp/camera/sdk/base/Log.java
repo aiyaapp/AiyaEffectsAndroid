@@ -7,6 +7,8 @@
  */
 package com.aiyaapp.camera.sdk.base;
 
+import com.aiyaapp.camera.sdk.AiyaEffects;
+
 /**
  * Description:
  */
@@ -19,6 +21,7 @@ public class Log {
 
     public static void debug(boolean isDebug){
         Log.isDebug=isDebug;
+        AiyaEffects.getInstance().set(ISdkManager.SET_LOG,isDebug?0x03:0x07);
     }
 
     public static void e(String info){
