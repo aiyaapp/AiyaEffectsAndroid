@@ -83,6 +83,7 @@ public class AiyaEffects implements ISdkManager {
     private int forceCloseTrack=FALSE;
 
     private Event mProcessEvent=new Event(Event.PROCESS_END,Event.PROCESS_PLAY,"",null);
+    private Event mInfoEvent=new Event(Event.PROCESS_ERROR,0,"",null);
 
     private AiyaEffects(){
         mObservable=new ActionObservable();
@@ -350,6 +351,10 @@ public class AiyaEffects implements ISdkManager {
             if(ret==STATE_EFFECT_END){
                 mProcessEvent.strTag=currentEffect;
                 mObservable.notifyState(mProcessEvent);
+            }else if(ret<0){
+                mInfoEvent.intTag=ret;
+                mInfoEvent.strTag="process error";
+                mObservable.notifyState(mInfoEvent);
             }
             if(mMode==MODE_GIFT&&ret==STATE_EFFECT_END){
                 setEffect(null);
