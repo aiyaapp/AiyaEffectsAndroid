@@ -5,13 +5,13 @@
 
 See [Chinese Document](readme_en.md)
 
-[![](https://jitpack.io/v/aiyaapp/AiyaEffectsAndroid.svg)](https://jitpack.io/#aiyaapp/AiyaEffectsAndroid)
+[![](https://jitpack.io/v/aiyaapp/AiyaEffectsAndroid.svg)](https://jitpack.io/#aiyaapp/AiyaEffectsAndroid)[ ![Download](https://api.bintray.com/packages/doggycoder/maven/AiyaEffectsSDK/images/download.svg) ](https://bintray.com/doggycoder/maven/AiyaEffectsSDK/_latestVersion)
 
 ## 1. Summary
 AiyaEffectsSDK is a high-performance rendering solution about dynamic stickers and animation effects which based on the independent research and development of face recognition module and it can be used to Android/iOS , two platforms.
 
 ### 1.1 Version Info
-**Current Version：AiyaEffects SDK V3.2.0** [version history](doc/version_info.md)
+**Current Version：AiyaEffects SDK V3.3.0** [version history](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/VersionHistory)
 
 ### 1.2 Integration Examples
 * [AiyaEffectsSDK with KSVC Demo](https://github.com/aiyaapp/AiyaEffectsWithKSVCAndroid)
