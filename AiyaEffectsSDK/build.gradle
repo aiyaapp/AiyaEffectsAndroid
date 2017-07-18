@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.github.doggycoder'
+group='com.aiyaapp.aiya'
 
 android {
 
@@ -58,3 +58,5 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
 }
+
+apply from: "bintrayUpload.gradle"
