@@ -1,0 +1,81 @@
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+// 配置版本
+version = rootProject.ext.vName
+
+// 定义相关网站
+def siteUrl = 'https://github.com/aiyaapp/AiyaEffectsAndroid'  // 项目的主页
+def gitUrl = 'https://github.com/aiyaapp/AiyaEffectsAndroid.git'
+group = "com.aiyaapp.aiya"
+
+install {
+  repositories.mavenInstaller {
+    // This generates POM.xml with proper parameters
+    pom {
+      project {
+        packaging 'aar'
+        // Add your description here
+        name 'AiyaEffectsSDK'
+        url siteUrl
+        // Set your license
+        licenses {
+          license {
+            name 'The Apache Software License, Version 2.0'
+            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+        developers {
+          developer {
+            id 'doggycoder'        //填写的一些基本信息
+            name 'doggycoder'
+            email '158183202@qq.com' // 填写邮箱
+          }
+        }
+        scm {
+          connection gitUrl
+          developerConnection gitUrl
+          url siteUrl
+        }
+      }
+    }
+  }
+}
+
+// 打包 javadocjar 和 sourcejar
+task sourcesJar(type: Jar) {
+  from android.sourceSets.main.java.srcDirs
+  classifier = 'sources'
+}
+task javadoc(type: Javadoc) {
+  source = android.sourceSets.main.java.srcDirs
+  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+task javadocJar(type: Jar, dependsOn: javadoc) {
+  classifier = 'javadoc'
+  from javadoc.destinationDir
+}
+artifacts {
+  archives javadocJar
+  archives sourcesJar
+}
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+bintray {
+  user = properties.getProperty("bintray.user")
+  key = properties.getProperty("bintray.apikey")
+  configurations = ['archives']
+  pkg {
+    repo = "maven"
+    name = "AiyaEffectsSDK"    //发布到JCenter上的项目名字
+    websiteUrl = siteUrl
+    vcsUrl = gitUrl
+    licenses = ["Apache-2.0"]
+    publish = true
+  }
+}
+javadoc { //jav doc采用utf-8编码否则会报“GBK的不可映射字符”错误
+  options{
+    encoding "UTF-8"
+    charSet 'UTF-8'
+  }
+}

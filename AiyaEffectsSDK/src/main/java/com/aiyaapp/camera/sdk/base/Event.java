@@ -27,6 +27,7 @@ public class Event {
 
     public static final int PROCESS_PLAY=0xE002;
     public static final int PROCESS_END=0xE004;
+    public static final int PROCESS_ERROR=0xE008;
 
     public int eventType;
     public int intTag;
