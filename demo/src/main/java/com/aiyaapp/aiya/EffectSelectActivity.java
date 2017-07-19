@@ -150,7 +150,7 @@ public class EffectSelectActivity extends AppCompatActivity {
                 break;
             case R.id.mRight:
                 mBeautyFlag=++mBeautyFlag>=7?0:mBeautyFlag;
-                AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_TYPE,0);
+                AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_TYPE,1);
                 AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_LEVEL,mBeautyFlag);
                 if(mBeautyFlag>0){
                     AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,mBeautyFlag*10+20);
