@@ -212,6 +212,10 @@ public class AiyaController implements GLSurfaceView.Renderer {
         mEffectFilter.addFilter(filter,isBeforeProcess);
     }
 
+    public void removeFilter(AFilter filter){
+        mEffectFilter.removeFilter(filter);
+    }
+
     /**
      * 设置输入图像与输出视图大小不同时，图像的展示方式
      * @param type 展示方式，可选项为：
