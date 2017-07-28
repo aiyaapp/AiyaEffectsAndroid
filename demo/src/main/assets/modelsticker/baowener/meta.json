@@ -1,24 +1,10 @@
 {
   "format" : "1",
-  "name":"豹纹耳",
-  "resid" : "400201",
+  "name":"豹耳纹",
   "nodes" : [
-    { 
-      "type":"2dAnim",
-	  "dirname" : "erduo",   
-      "number"      : 25,     
-      "width" : 276,         
-      "height" : 108,
-      "duration" : 66,       
-      "isloop" : 1,           
-      "Triggertype" : 0,     
-      "untilFinish" : 1,      
-      "position" : "foreheadCenter",   
-      "anchorX" : 137,       
-      "anchorY" : 60,
-      "ratio" : 1.3,          
-      "fullscreen" : 0,
-	  "PositionSwitch" : 2
-    }
+    {
+	  "type":"3dModel",
+      "obj" : "baowener.obj",
+    },
   ]
 }

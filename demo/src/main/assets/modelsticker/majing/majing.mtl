@@ -1,0 +1,14 @@
+newmtl majing:lambert11SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd yanjing_033.png
+Ni 1.00
+newmtl majing:lambert13SG
+illum 4
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+map_Kd meimao_034.png
+Ni 1.00

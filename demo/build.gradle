@@ -34,6 +34,7 @@ dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     compile 'com.android.support:appcompat-v7:24.2.1'
     testCompile 'junit:junit:4.12'
+    compile 'com.xw.repo:bubbleseekbar:3.5'
     compile project(':AiyaEffectsSDK')
     compile 'com.android.support:recyclerview-v7:24.2.1'
     compile 'com.tencent.bugly:crashreport:latest.release'

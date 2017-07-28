@@ -63,7 +63,6 @@ final class AiyaCameraJni {
         System.loadLibrary("simd");
         System.loadLibrary("aftk");
         System.loadLibrary("assimp");
-        System.loadLibrary("gameplay");
         System.loadLibrary("ayeffects");
         System.loadLibrary("AiyaJniWrapper");
     }
