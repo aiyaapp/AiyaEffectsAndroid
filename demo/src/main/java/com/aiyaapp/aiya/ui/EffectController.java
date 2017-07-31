@@ -17,6 +17,7 @@ import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.filter.AFilter;
 import com.aiyaapp.camera.sdk.filter.LookupFilter;
+import com.aiyaapp.camera.sdk.filter.SdkBeauty;
 import com.aiyaapp.camera.sdk.widget.AiyaController;
 import com.aiyaapp.camera.sdk.widget.CameraView;
 import com.xw.repo.BubbleSeekBar;
@@ -40,10 +41,17 @@ public class EffectController implements SelectListener {
     private BubbleSeekBar mSeekBarDayan;
     private BubbleSeekBar mSeekBarShoulian;
 
+    private BubbleSeekBar mSeekBarMeibai;
+    private BubbleSeekBar mSeekBarMopi;
+    private BubbleSeekBar mSeekBarHongrun;
+
     private AiyaController mController;
     private CameraView mCameraView;
 
     private LookupFilter mLookupFilter;
+    private SdkBeauty mMeibaiFilter;
+    private SdkBeauty mMopiFilter;
+    private SdkBeauty mHongrunFilter;
 
     private SparseIntArray selectKey= new SparseIntArray();
 
@@ -73,6 +81,9 @@ public class EffectController implements SelectListener {
         mSeekBarBeauty= $(R.id.mSeekBarBeauty);
         mSeekBarDayan= $(R.id.mSeekBarDayan);
         mSeekBarShoulian=$(R.id.mSeekBarShoulian);
+        mSeekBarMeibai=$(R.id.mSeekBarMeibai);
+        mSeekBarMopi=$(R.id.mSeekBarMopi);
+        mSeekBarHongrun=$(R.id.mSeekBarHongrun);
 
         mSelectGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -150,6 +161,57 @@ public class EffectController implements SelectListener {
 
             }
         });
+        //美白程度控制，0-100
+        mSeekBarMeibai.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(int progress, float progressFloat) {
+                mMeibaiFilter.setLevel(progress);
+            }
+
+            @Override
+            public void getProgressOnActionUp(int progress, float progressFloat) {
+
+            }
+
+            @Override
+            public void getProgressOnFinally(int progress, float progressFloat) {
+
+            }
+        });
+        //磨皮程度控制，0-100
+        mSeekBarMopi.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(int progress, float progressFloat) {
+                mMopiFilter.setLevel(progress);
+            }
+
+            @Override
+            public void getProgressOnActionUp(int progress, float progressFloat) {
+
+            }
+
+            @Override
+            public void getProgressOnFinally(int progress, float progressFloat) {
+
+            }
+        });
+        //红润程度控制，0-100
+        mSeekBarHongrun.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
+            @Override
+            public void onProgressChanged(int progress, float progressFloat) {
+                mHongrunFilter.setLevel(progress);
+            }
+
+            @Override
+            public void getProgressOnActionUp(int progress, float progressFloat) {
+
+            }
+
+            @Override
+            public void getProgressOnFinally(int progress, float progressFloat) {
+
+            }
+        });
         filterInit();
     }
 
@@ -165,6 +227,17 @@ public class EffectController implements SelectListener {
         //滤镜
         mLookupFilter=new LookupFilter(getContentView().getResources());
         mLookupFilter.setIntensity(0.5f);
+        //美白磨皮红润的滤镜
+        mMeibaiFilter=new SdkBeauty(getContentView().getResources());
+        mMeibaiFilter.setType(ISdkManager.BEAUTY_WHITEN);
+        mMopiFilter=new SdkBeauty(getContentView().getResources());
+        mMopiFilter.setType(ISdkManager.BEAUTY_SMOOTH);
+        mHongrunFilter=new SdkBeauty(getContentView().getResources());
+        mHongrunFilter.setType(ISdkManager.BEAUTY_SATURATE);
+
+        addFilter(mMopiFilter);
+        addFilter(mMeibaiFilter);
+        addFilter(mHongrunFilter);
     }
 
     @Override

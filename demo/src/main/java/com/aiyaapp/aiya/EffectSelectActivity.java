@@ -26,27 +26,14 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.JsonReader;
-import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aiyaapp.aiya.camera.LogUtils;
-import com.aiyaapp.aiya.camera.MenuAdapter;
-import com.aiyaapp.aiya.camera.MenuBean;
-import com.aiyaapp.aiya.ui.BeautyPopupWindow;
 import com.aiyaapp.aiya.ui.EffectController;
-import com.aiyaapp.aiya.ui.EffectPopupWindow;
-import com.aiyaapp.aiya.ui.SelectListener;
-import com.aiyaapp.aiya.util.ClickUtils;
 import com.aiyaapp.camera.sdk.AiyaEffects;
-import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 
 /**

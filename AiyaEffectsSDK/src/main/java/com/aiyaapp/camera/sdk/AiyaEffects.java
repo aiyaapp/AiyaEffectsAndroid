@@ -169,6 +169,17 @@ public class AiyaEffects implements ISdkManager {
         });
     }
 
+    public int beauty(int type, int texId, int width, int height, int level) {
+        if (type>=ISdkManager.BEAUTY_WHITEN) {
+            return mAiyaCameraJni.Whiten(texId, width, height, level, type);
+        } else if (type>=ISdkManager.BEAUTY_SATURATE) {
+            return mAiyaCameraJni.Saturate(texId, width, height, level, type);
+        } else if (type>=ISdkManager.BEAUTY_SMOOTH) {
+            return mAiyaCameraJni.Smooth(texId, width, height, level, type);
+        }
+        return -1;
+    }
+
     @SuppressLint("HardwareIds")
     @Override
     public void init(final Context context,final String appKey){
