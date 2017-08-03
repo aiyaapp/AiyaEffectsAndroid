@@ -32,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.aiyaapp.aiya.camera.LogUtils;
+import com.aiyaapp.aiya.ui.EffectAdapter;
 import com.aiyaapp.aiya.ui.EffectController;
 import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.Log;
@@ -39,7 +40,7 @@ import com.aiyaapp.camera.sdk.base.Log;
 /**
  * Description:
  */
-public class EffectSelectActivity extends AppCompatActivity {
+public class EffectSelectActivity extends AppCompatActivity implements EffectAdapter.OnEffectCheckListener {
 
     private ImageView mBtnRight;
     private int mBeautyFlag=0;
@@ -66,7 +67,7 @@ public class EffectSelectActivity extends AppCompatActivity {
             }
         });
 
-        mEffectPopup=new EffectController(this,mEffectContainer);
+        mEffectPopup=new EffectController(this,mEffectContainer,this);
     }
 
     public View getContentView(){
@@ -198,5 +199,17 @@ public class EffectSelectActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onEffectChecked(int pos, String path) {
+        if(pos==-1){
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(Intent.createChooser(intent, "请选择一个json文件"),101);
+            return true;
+        }
+        return false;
     }
 }

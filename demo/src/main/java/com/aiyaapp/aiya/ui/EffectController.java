@@ -55,7 +55,7 @@ public class EffectController implements SelectListener {
 
     private SparseIntArray selectKey= new SparseIntArray();
 
-    public EffectController(Activity act,View container){
+    public EffectController(final Activity act, View container, EffectAdapter.OnEffectCheckListener listener){
         this.container=container;
 
         selectKey.append(0,R.id.select_group_0);
@@ -69,6 +69,7 @@ public class EffectController implements SelectListener {
         mEffectList= $(R.id.mEffectList);
         mEffectList.setLayoutManager(new GridLayoutManager(act.getApplicationContext(),5));
         mEffectList.setAdapter(mEffAdapter=new EffectAdapter(act));
+        mEffAdapter.setEffectCheckListener(listener);
         mLookupList= $(R.id.mLookupList);
         mLookupList.setLayoutManager(new LinearLayoutManager(act.getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
         mLookupList.setAdapter(mLooAdapter=new LookupAdapter(act));

@@ -27,6 +27,8 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
             R.mipmap.ic_launcher, R.mipmap.img2017, R.mipmap.baowener, R.mipmap.gougou, R.mipmap.fadai, R.mipmap.grass, R.mipmap.huahuan, R.mipmap.majing, R.mipmap.maoer, R.mipmap.maorong, R.mipmap.meihualu, R.mipmap.niu, R.mipmap.shoutao, R.mipmap.tuer, R.mipmap.gaokongshiai, R.mipmap.shiwaitaoyuan, R.mipmap.mojing, R.mipmap.mogulin, R.mipmap.xiaohongmao
     };
 
+    private OnEffectCheckListener listener;
+
     private ArrayList<MenuBean> mMenuDatas;
     private Context context;
 
@@ -79,6 +81,7 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
             MenuBean bean = new MenuBean();
             bean.name = "本地";
             bean.path = "";
+            bean.icon=R.mipmap.more;
             mMenuDatas.add(bean);
         } catch (IOException e) {
             e.printStackTrace();
@@ -90,15 +93,26 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
         return mMenuDatas.size();
     }
 
+    public void setEffectCheckListener(OnEffectCheckListener listener){
+        this.listener=listener;
+    }
+
     @Override
     public void onClick(View v) {
+        if(listener!=null&&(int)v.getTag()==effectIcons.length&&listener.onEffectChecked(-1,"")){
+            return;
+        }
         selectPos = (int) v.getTag();
         if (selectPos == 0) {
             AiyaEffects.getInstance().setEffect(null);
-        } else {
+        }else{
             AiyaEffects.getInstance().setEffect("assets/modelsticker/" + mMenuDatas.get(selectPos).path);
         }
         notifyDataSetChanged();
+    }
+
+    public interface OnEffectCheckListener{
+        boolean onEffectChecked(int pos,String path);
     }
 
 }
