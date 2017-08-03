@@ -179,7 +179,7 @@ public class EffectController implements SelectListener {
 
             }
         });
-        //磨皮程度控制，0-100
+        //磨皮程度控制，0-6
         mSeekBarMopi.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
@@ -236,9 +236,6 @@ public class EffectController implements SelectListener {
         mHongrunFilter=new SdkBeauty(getContentView().getResources());
         mHongrunFilter.setType(ISdkManager.BEAUTY_SATURATE);
 
-        addFilter(mMopiFilter);
-        addFilter(mMeibaiFilter);
-        addFilter(mHongrunFilter);
     }
 
     @Override
@@ -264,6 +261,9 @@ public class EffectController implements SelectListener {
             mController= (AiyaController) obj;
             mCameraView=null;
         }
+        addFilter(mMopiFilter);
+        addFilter(mMeibaiFilter);
+        addFilter(mHongrunFilter);
     }
 
     private void addFilter(AFilter filter){

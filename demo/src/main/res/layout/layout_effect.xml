@@ -202,6 +202,7 @@ android:layout_height="215dp">
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:bsb_progress="0"
+                app:bsb_max="6"
                 app:bsb_is_float_type="false"
                 android:id="@+id/mSeekBarMopi" />
         </LinearLayout>
