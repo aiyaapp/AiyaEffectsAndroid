@@ -23,6 +23,7 @@ import com.aiyaapp.camera.sdk.AiyaEffects;
 import com.aiyaapp.camera.sdk.base.FrameCallback;
 import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
+import com.aiyaapp.camera.sdk.filter.LookupFilter;
 import com.aiyaapp.camera.sdk.filter.WaterMarkFilter;
 import com.aiyaapp.camera.sdk.widget.AiyaController;
 import com.aiyaapp.camera.sdk.widget.AiyaModel;
@@ -53,10 +54,10 @@ public class SurfaceHolderActivity extends EffectSelectActivity implements Frame
 
     }
 
-
     private Runnable mRunnable=new Runnable() {
         @Override
         public void run() {
+
             setContentView(R.layout.activity_surfaceholder);
             initData();
             modelInit();
@@ -87,10 +88,7 @@ public class SurfaceHolderActivity extends EffectSelectActivity implements Frame
                     mNowHolder=null;
                 }
             });
-            //AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_TYPE,ISdkManager.BEAUTY_TYPE_BIGEYE|
-            //    ISdkManager.BEAUTY_TYPE_SLIMFACE);
-            //AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,99);
-            //AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,99);
+            mEffectPopup.attachTo(mAiyaController);
         }
     };
 

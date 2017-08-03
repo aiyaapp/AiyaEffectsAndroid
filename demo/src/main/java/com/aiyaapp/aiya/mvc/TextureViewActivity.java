@@ -20,6 +20,7 @@ import com.aiyaapp.aiya.R;
 import com.aiyaapp.aiya.util.PermissionUtils;
 import com.aiyaapp.camera.sdk.base.FrameCallback;
 import com.aiyaapp.camera.sdk.base.Log;
+import com.aiyaapp.camera.sdk.filter.LookupFilter;
 import com.aiyaapp.camera.sdk.widget.AiyaController;
 import com.aiyaapp.camera.sdk.widget.AiyaModel;
 
@@ -40,6 +41,7 @@ public class TextureViewActivity extends EffectSelectActivity implements FrameCa
     private SurfaceTexture mNowTexture;
     private int mWidth,mHeight;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,10 +49,10 @@ public class TextureViewActivity extends EffectSelectActivity implements FrameCa
             .permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_PHONE_STATE},10,mRunnable);
     }
 
-
     private Runnable mRunnable=new Runnable() {
         @Override
         public void run() {
+
             setContentView(R.layout.activity_textureview);
             initData();
             modelInit();
@@ -88,6 +90,8 @@ public class TextureViewActivity extends EffectSelectActivity implements FrameCa
                 public void onSurfaceTextureUpdated(SurfaceTexture surface) {
                 }
             });
+
+            mEffectPopup.attachTo(mAiyaController);
         }
     };
 

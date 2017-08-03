@@ -1,0 +1,10 @@
+{
+  "format" : "1",
+  "name":"长颈鹿",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "giraffe.obj",
+    },
+  ]
+}

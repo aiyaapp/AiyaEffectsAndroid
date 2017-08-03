@@ -71,6 +71,11 @@ public class AiyaEffectFilter extends AFilter {
         }
     }
 
+    public void removeFilter(AFilter filter){
+        mPreProcessFilter.removeFilter(filter);
+        mPostProcessFilter.removeFilter(filter);
+    }
+
     @Override
     public void setFlag(int flag) {
         super.setFlag(flag);

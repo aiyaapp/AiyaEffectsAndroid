@@ -46,6 +46,7 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
     private boolean isTakePhoto=true;
     private boolean isRecord=false;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +76,8 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             setContentView(R.layout.activity_camera);
             mCameraView = (CameraView)findViewById(R.id.mCameraView);
             mCameraView.setCameraController(mController);
+
+
             //增加自定义滤镜
             //LookupFilter filter=new LookupFilter(getResources());
             //filter.setIntensity(0.5f);
@@ -84,9 +87,11 @@ public class CameraActivity extends EffectSelectActivity implements FrameCallbac
             //AiyaEffects.getInstance().set(ISdkManager.SET_TRACK_FORCE_CLOSE,ISdkManager.TRUE);
             initData();
             mCameraView.setEffect(null);
+
+            mEffectPopup.attachTo(mCameraView);
         }
     };
-    
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

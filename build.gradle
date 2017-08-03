@@ -17,8 +17,8 @@ buildscript {
 }
 
 ext{
-    vCode=330
-    vName="v3.3.0"
+    vCode=334
+    vName="v3.4.0beta"
 }
 
 

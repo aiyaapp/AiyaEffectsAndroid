@@ -1,41 +1,10 @@
 {
   "format" : "1",
   "name":"小草",
-  "resid" : "400105",
   "nodes" : [
     {
-      "type":"2dAnim",
-      "dirname" : "circle",
-      "number"      : 61,
-      "width" : 290,
-      "height" : 80,
-      "duration" : 66,
-      "isloop" : 1,
-      "Triggertype" : 0,
-      "untilFinish" : 1,
-      "position" : "nose",
-      "anchorX" : 145,
-      "anchorY" : 32,
-      "ratio" : 1.2,
-      "fullscreen" : 0,
-	  "PositionSwitch" : 2
+	  "type":"3dModel",
+      "obj" : "grass.obj",
     },
-    {
-	  "type":"2dAnim",
-      "dirname" : "grass",
-      "number"      : 61,
-      "width" : 738,
-      "height" : 260,
-      "duration" : 66,
-      "isloop" : 1,
-      "Triggertype" : 0,
-      "untilFinish" : 1,
-      "position" : "foreheadCenter",
-      "anchorX" : 315,
-      "anchorY" : 102,
-      "ratio" : 2.7,
-      "fullscreen" : 0,
-	  "PositionSwitch" : 2
-    }
   ]
 }

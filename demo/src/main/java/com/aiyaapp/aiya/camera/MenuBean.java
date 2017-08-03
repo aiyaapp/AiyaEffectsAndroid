@@ -16,6 +16,8 @@ public class MenuBean {
     public String path;
     public String show;
 
+    public int icon;
+
     public int id;
 
 }

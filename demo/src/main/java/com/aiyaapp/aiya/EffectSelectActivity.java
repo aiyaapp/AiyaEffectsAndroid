@@ -26,32 +26,28 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.JsonReader;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.aiyaapp.aiya.camera.LogUtils;
-import com.aiyaapp.aiya.camera.MenuAdapter;
-import com.aiyaapp.aiya.camera.MenuBean;
-import com.aiyaapp.aiya.util.ClickUtils;
+import com.aiyaapp.aiya.ui.EffectAdapter;
+import com.aiyaapp.aiya.ui.EffectController;
 import com.aiyaapp.camera.sdk.AiyaEffects;
-import com.aiyaapp.camera.sdk.base.ISdkManager;
 import com.aiyaapp.camera.sdk.base.Log;
 
 /**
  * Description:
  */
-public class EffectSelectActivity extends AppCompatActivity {
+public class EffectSelectActivity extends AppCompatActivity implements EffectAdapter.OnEffectCheckListener {
 
-    private ArrayList<MenuBean> mStickerData;
-    private RecyclerView mMenuView;
-    private MenuAdapter mStickerAdapter;
-    private TextView mBtnStick,mBtnBeauty;
+    private ImageView mBtnRight;
     private int mBeautyFlag=0;
+
+    protected EffectController mEffectPopup;
+    private View mBtnContainer;
+    private View mEffectContainer;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -60,110 +56,59 @@ public class EffectSelectActivity extends AppCompatActivity {
     }
 
     protected void initData(){
-        mMenuView= (RecyclerView)findViewById(R.id.mMenuView);
-        mBtnStick= (TextView)findViewById(R.id.mLeft);
-        mBtnBeauty= (TextView)findViewById(R.id.mRight);
-        mBtnStick.setSelected(true);
-        refreshRightBtn();
-
-        mStickerData=new ArrayList<>();
-        mMenuView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL,false));
-        mStickerAdapter=new MenuAdapter(this,mStickerData);
-        mStickerAdapter.setOnClickListener(new ClickUtils.OnClickListener() {
+        mBtnRight= (ImageView) findViewById(R.id.mRight);
+        mBtnContainer=findViewById(R.id.mOtherMenu);
+        mEffectContainer=findViewById(R.id.mEffectContainer);
+        mEffectContainer.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v, int type, int pos, int child) {
-                MenuBean m=mStickerData.get(pos);
-                String name=m.name;
-                if (name.equals("原始")) {
-                    AiyaEffects.getInstance().setEffect(null);
-                    mStickerAdapter.checkPos=pos;
-                    v.setSelected(true);
-                }else if(name.equals("本地")){
-                    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-                    intent.setType("*/*");
-                    intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    startActivityForResult(Intent.createChooser(intent, "请选择一个json文件"),101);
-                }else{
-                    AiyaEffects.getInstance().setEffect("assets/modelsticker/"+m.path);
-                    mStickerAdapter.checkPos=pos;
-                    v.setSelected(true);
-                }
-                mStickerAdapter.notifyDataSetChanged();
+            public void onClick(View v) {
+                mEffectContainer.setVisibility(View.GONE);
+                mBtnContainer.setVisibility(View.VISIBLE);
             }
         });
-        mMenuView.setAdapter(mStickerAdapter);
-        initEffectMenu("modelsticker/stickers.json");
+
+        mEffectPopup=new EffectController(this,mEffectContainer,this);
     }
 
-    //刷新美颜按钮
-    public void refreshRightBtn(){
-        if(mBeautyFlag==0){
-            mBtnBeauty.setText("美颜关");
-            mBtnBeauty.setSelected(false);
-        }else{
-            mBtnBeauty.setText("美颜"+mBeautyFlag);
-            mBtnBeauty.setSelected(true);
-        }
-    }
-
-    //初始化特效按钮菜单
-    protected void initEffectMenu(String menuPath) {
-        try {
-            Log.e( "解析菜单->" +menuPath);
-            JsonReader r = new JsonReader(new InputStreamReader(getAssets().open(menuPath)));
-            r.beginArray();
-            while (r.hasNext()) {
-                MenuBean menu = new MenuBean();
-                r.beginObject();
-                String name;
-                while (r.hasNext()) {
-                    name = r.nextName();
-                    if (name.equals("name")) {
-                        menu.name = r.nextString();
-                    } else if (name.equals("path")) {
-                        menu.path = r.nextString();
-                    }
-                }
-                mStickerData.add(menu);
-                Log.e( "增加菜单->" + menu.name);
-                r.endObject();
-            }
-            r.endArray();
-            MenuBean bean=new MenuBean();
-            bean.name="本地";
-            bean.path="";
-            mStickerData.add(bean);
-            mStickerAdapter.notifyDataSetChanged();
-        } catch (IOException e) {
-            e.printStackTrace();
-            mStickerAdapter.notifyDataSetChanged();
-        }
+    public View getContentView(){
+        return findViewById(android.R.id.content);
     }
 
     //View的点击事件处理
     public void onClick(View view){
         switch (view.getId()){
             case R.id.mLeft:
-                mMenuView.setVisibility(mMenuView.getVisibility()==View.VISIBLE?
-                    View.GONE:View.VISIBLE);
-                view.setSelected(mMenuView.getVisibility()==View.VISIBLE);
+//                mMenuView.setVisibility(mMenuView.getVisibility()==View.VISIBLE?
+//                    View.GONE:View.VISIBLE);
+//                view.setSelected(mMenuView.getVisibility()==View.VISIBLE);
+                mEffectContainer.setVisibility(View.VISIBLE);
+                mBtnContainer.setVisibility(View.GONE);
                 break;
             case R.id.mRight:
-                mBeautyFlag=++mBeautyFlag>=7?0:mBeautyFlag;
-                AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_TYPE,1);
-                AiyaEffects.getInstance().set(ISdkManager.SET_BEAUTY_LEVEL,mBeautyFlag);
-                if(mBeautyFlag>0){
-                    AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,mBeautyFlag*10+20);
-                    AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,mBeautyFlag*10+20);
-                }else{
-                    AiyaEffects.getInstance().set(ISdkManager.SET_OXEYE,0);
-                    AiyaEffects.getInstance().set(ISdkManager.SET_THIN_FACE,0);
-                }
-                refreshRightBtn();
+                mEffectContainer.setVisibility(View.VISIBLE);
+                mBtnContainer.setVisibility(View.GONE);
                 break;
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if(mEffectContainer.getVisibility()==View.VISIBLE){
+            mEffectContainer.setVisibility(View.GONE);
+            mBtnContainer.setVisibility(View.VISIBLE);
+        }else{
+            super.onBackPressed();
+            finish();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(mEffectPopup!=null){
+            mEffectPopup.release();
+        }
+    }
 
     protected String getSD(){
         return Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -254,5 +199,17 @@ public class EffectSelectActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    @Override
+    public boolean onEffectChecked(int pos, String path) {
+        if(pos==-1){
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            startActivityForResult(Intent.createChooser(intent, "请选择一个json文件"),101);
+            return true;
+        }
+        return false;
     }
 }

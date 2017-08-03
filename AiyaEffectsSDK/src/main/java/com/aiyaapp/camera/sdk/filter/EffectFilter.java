@@ -66,6 +66,11 @@ public class EffectFilter extends AFilter {
         }
     }
 
+    public void removeFilter(AFilter filter){
+        mPreProcessFilter.removeFilter(filter);
+        mPostProcessFilter.removeFilter(filter);
+    }
+
     /**
      * flag为1时，EffectFilter通过outputTextureId向外面提供数据，
      * flag为0时，EffectFilter通过draw直接将数据渲染到外部指定的地方。

@@ -40,9 +40,9 @@ public class GroupFilter extends AFilter{
     }
 
     public boolean removeFilter(AFilter filter){
-        MatrixUtils.flip(filter.getMatrix(),false,true);
         boolean b=mFilters.remove(filter);
         if(b){
+            MatrixUtils.flip(filter.getMatrix(),false,true);
             size--;
         }
         return b;
