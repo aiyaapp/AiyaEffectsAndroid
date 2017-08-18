@@ -48,5 +48,6 @@ The document of user-defined stickers and animations is not officially opened ye
 - Homepage: [AiyaEffects](http://www.bbtexiao.com)
 - Email: <liudawei@aiyaapp.com>
 - Issues: [issues](https://github.com/aiyaapp/AiyaEffectsAndroid/issues)
+- QQ: 650242833
 
 <a href="http://www.bbtexiao.com/"><img src="doc/logo.png" border="0" alt="AiyaEffectsSDK" /></a>
