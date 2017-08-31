@@ -47,6 +47,6 @@ Android版AiyaEffectsSDK minSdkVersion为18，即Android4.3以上可用。
 ## 8. 反馈与建议
 - 主页: [宝宝特效](http://www.bbtexiao.com)
 - 邮箱: <liudawei@aiyaapp.com>
-- QQ讨论群: 建设中
+- QQ讨论群: 650242833
 
 <a href="http://www.bbtexiao.com/"><img src="doc/logo.png" border="0" alt="宝宝特效" /></a>
