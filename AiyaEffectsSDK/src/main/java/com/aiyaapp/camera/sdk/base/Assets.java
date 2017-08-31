@@ -67,6 +67,10 @@ public class Assets {
         return a;
     }
 
+    public void clearCache(){
+        deleteFile(rootDir);
+    }
+
     private boolean copyForSticker(){
         Log.d("check data for sticker");
         return copyFileFromAssets("modelsticker",getSD()+"/AiyaCamera/model_sticker");
