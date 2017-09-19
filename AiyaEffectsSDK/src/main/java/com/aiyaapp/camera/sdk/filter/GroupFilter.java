@@ -10,6 +10,7 @@ package com.aiyaapp.camera.sdk.filter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import android.content.res.Resources;
@@ -25,7 +26,7 @@ public class GroupFilter extends AFilter{
 
     public GroupFilter(Resources res) {
         super(res);
-        mFilters=new ArrayList<>();
+        mFilters=new Vector<>();
         mFilterQueue=new ConcurrentLinkedQueue<>();
     }
 
@@ -67,7 +68,8 @@ public class GroupFilter extends AFilter{
         updateFilter();
         textureIndex=0;
         GLES20.glViewport(0,0,width,height);
-        for (AFilter filter:mFilters){
+        for (int i=0;i<mFilters.size();i++){
+            AFilter filter=mFilters.get(i);
             GLES20.glBindFramebuffer(GLES20.GL_FRAMEBUFFER, fFrame[0]);
             GLES20.glFramebufferTexture2D(GLES20.GL_FRAMEBUFFER, GLES20.GL_COLOR_ATTACHMENT0,
                 GLES20.GL_TEXTURE_2D, fTexture[textureIndex%2], 0);
