@@ -64,6 +64,8 @@ public class AiyaCameraView extends GLSurfaceView implements GLSurfaceView.Rende
     private int[] fFrame = new int[1];
     private int[] fTexture = new int[1];
 
+    private Runnable callbackIfCameraOpenFailed;
+
     public AiyaCameraView(Context context) {
         this(context,null);
     }
@@ -101,6 +103,10 @@ public class AiyaCameraView extends GLSurfaceView implements GLSurfaceView.Rende
         }
     }
 
+    public void setCameraOpenFaildCallback(Runnable runnable){
+        callbackIfCameraOpenFailed=runnable;
+    }
+
     public AiyaCamera getCamera(){
         return mCamera;
     }
@@ -124,36 +130,42 @@ public class AiyaCameraView extends GLSurfaceView implements GLSurfaceView.Rende
 
     private void open(final int cameraId){
         mCamera.close();
-        mCamera.open(cameraId);
-        mEffectFilter.setFlag(cameraId);
-        final Point previewSize=mCamera.getPreviewSize();
-        dataWidth=previewSize.x;
-        dataHeight=previewSize.y;
-        //预览大小被更改时，回调不为空，需要重新计算最后的导出矩阵
-        if(mFrameCallback!=null){
-            setFrameCallback(frameCallbackWidth,frameCallbackHeight,mFrameCallback);
-        }
-        if(cameraBuffer==null){
-            cameraBuffer=new byte[3][dataWidth*dataHeight*4];
-        }
-        for (int i=0;i<3;i++){
-            mCamera.addBuffer(cameraBuffer[i]);
-        }
-        mCamera.setOnPreviewFrameCallbackWithBuffer(new AiyaCamera.PreviewFrameCallback() {
-
-            @Override
-            public void onPreviewFrame(byte[] bytes, int width, int height) {
-                EData.data.setCameraCallbackTime(System.currentTimeMillis());
-                if(isSetParm){
-                    mBytesQueue.add(bytes);
-                    requestRender();
-                }else{
-                    mCamera.addBuffer(bytes);
-                }
+        try {
+            mCamera.open(cameraId);
+            mEffectFilter.setFlag(cameraId);
+            final Point previewSize=mCamera.getPreviewSize();
+            dataWidth=previewSize.x;
+            dataHeight=previewSize.y;
+            //预览大小被更改时，回调不为空，需要重新计算最后的导出矩阵
+            if(mFrameCallback!=null){
+                setFrameCallback(frameCallbackWidth,frameCallbackHeight,mFrameCallback);
             }
-        });
-        mCamera.setPreviewTexture(mEffectFilter.getTexture());
-        mCamera.preview();
+            if(cameraBuffer==null){
+                cameraBuffer=new byte[3][dataWidth*dataHeight*4];
+            }
+            for (int i=0;i<3;i++){
+                mCamera.addBuffer(cameraBuffer[i]);
+            }
+            mCamera.setOnPreviewFrameCallbackWithBuffer(new AiyaCamera.PreviewFrameCallback() {
+
+                @Override
+                public void onPreviewFrame(byte[] bytes, int width, int height) {
+                    EData.data.setCameraCallbackTime(System.currentTimeMillis());
+                    if(isSetParm){
+                        mBytesQueue.add(bytes);
+                        requestRender();
+                    }else{
+                        mCamera.addBuffer(bytes);
+                    }
+                }
+            });
+            mCamera.setPreviewTexture(mEffectFilter.getTexture());
+            mCamera.preview();
+        }catch (Exception e){
+            if(callbackIfCameraOpenFailed!=null){
+                callbackIfCameraOpenFailed.run();
+            }
+        }
     }
 
     public void switchCamera(){

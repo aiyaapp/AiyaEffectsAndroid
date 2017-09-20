@@ -14,7 +14,7 @@ android {
         versionName rootProject.ext.vName
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        buildConfigField("String","AiyaSDKVersionName","\""+rootProject.ext.vName+"\"")
     }
     buildTypes {
         release {

@@ -15,6 +15,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.telephony.TelephonyManager;
@@ -29,6 +30,7 @@ import com.aiyaapp.camera.sdk.base.Event;
 import com.aiyaapp.camera.sdk.base.ActionObservable;
 import com.aiyaapp.camera.sdk.base.ActionObserver;
 import com.aiyaapp.camera.sdk.base.TrackCallback;
+import com.aiyaapp.sticker.sdk.BuildConfig;
 
 /**
  *  Sdk的核心接口，将工作线程、GL线程、人脸追踪线程分开，
@@ -120,10 +122,17 @@ public class AiyaEffects implements ISdkManager {
         mTrackExecutor= Executors.newFixedThreadPool(1);
     }
 
-    private boolean prepareResource(Context context,String licensePath){
-        Log.d("prepare Resource");
-        Assets assets=new Assets(context,licensePath);
-        return assets.doCopy();
+    private boolean prepareResource(Context context,String licensePath) {
+        Assets assets = new Assets(context, licensePath);
+        SharedPreferences sp = context.getSharedPreferences("AiyaSDKVersion", Context.MODE_PRIVATE);
+        Log.d("last sdk version:"+sp.getString("v","none"));
+        Log.d("now sdk version:"+BuildConfig.AiyaSDKVersionName);
+        if (!sp.getString("v", "").equals(BuildConfig.AiyaSDKVersionName)) {
+            assets.clearCache();
+            sp.edit().putString("v", BuildConfig.AiyaSDKVersionName).apply();
+        }
+        return new File(licensePath).exists() || assets.doCopy();
+
     }
 
     @SuppressLint("HardwareIds")
@@ -142,12 +151,7 @@ public class AiyaEffects implements ISdkManager {
             @Override
             public void run() {
                 Log.e("start prepare resource");
-                boolean pb;
-                if(new File(configPath).exists()){
-                    pb=true;
-                }else{
-                    pb=prepareResource(context,configPath);
-                }
+                boolean pb=prepareResource(context,configPath);
                 Log.e("prepare resource success:"+pb);
                 if(pb){
                     mObservable.notifyState(new Event(Event.RESOURCE_READY,Event.RESOURCE_READY,"资源准备完成",null));
