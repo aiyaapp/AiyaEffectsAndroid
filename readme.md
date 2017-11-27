@@ -21,8 +21,7 @@
 **当前版本：AiyaEffects SDK V4.0.0** [查看历史版本](历史版本)
 
 ### 1.2 集成示例
-* [集成到金山云的示例](https://github.com/aiyaapp/AiyaEffectsWithKSVCAndroid)
-* [集成到ZegoLive的示例](https://github.com/aiyaapp/AiyaEffectsWithZegoAndroid)
+* [集成到腾讯云的示例](https://github.com/aiyaapp/AiyaEffectsWithTengxunyunAndroid)
 
 ## 2. AiyaEffecSDK 功能说明
 
