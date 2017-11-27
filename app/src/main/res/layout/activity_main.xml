@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_gift"
+        android:id="@+id/mBtnGift"
+        android:onClick="onClick"/>
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_face"
+        android:id="@+id/mBtnFace"
+        android:onClick="onClick"/>
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/btn_short_video"-->
+        <!--android:id="@+id/mBtnShortVideo"-->
+        <!--android:onClick="onClick"/>-->
+    <!--<Button-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="@string/btn_scene_cut"-->
+        <!--android:id="@+id/mBtnSceneCut"-->
+        <!--android:onClick="onClick"/>-->
+</LinearLayout>
