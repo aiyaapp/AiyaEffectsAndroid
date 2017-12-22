@@ -19,15 +19,19 @@ import java.util.ArrayList;
 
 public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements View.OnClickListener {
 
+
     public int[] effectIcons = new int[]{
-            R.mipmap.no_eff, R.mipmap.img2017, R.mipmap.baowener, R.mipmap.gougou, R.mipmap.fadai, R.mipmap.grass, R.mipmap.huahuan, R.mipmap.majing, R.mipmap.maoer, R.mipmap.maorong, R.mipmap.meihualu, R.mipmap.niu, R.mipmap.shoutao, R.mipmap.tuer, R.mipmap.gaokongshiai, R.mipmap.shiwaitaoyuan, R.mipmap.mojing, R.mipmap.mogulin, R.mipmap.xiaohongmao
+            R.mipmap.no_eff, R.mipmap.img2017, R.mipmap.baowener, R.mipmap.gougou,
+            R.mipmap.fadai, R.mipmap.grass, R.mipmap.huahuan, R.mipmap.majing, R.mipmap.maoer,
+            R.mipmap.maorong, R.mipmap.meihualu, R.mipmap.niu, R.mipmap.shoutao, R.mipmap.tuer,
+            R.mipmap.gaokongshiai, R.mipmap.shiwaitaoyuan, R.mipmap.mojing, R.mipmap.mogulin,
+            R.mipmap.xiaohongmao, R.mipmap.baxi, R.mipmap.arg, R.mipmap.england, R.mipmap.germany,
+            R.mipmap.italy, R.mipmap.japan, R.mipmap.lcfc, R.mipmap.russia, R.mipmap.spain, R.mipmap.usa
     };
 
     private EffectListener.OnEffectChangedListener mListener;
-
     private ArrayList<MenuBean> mMenuDatas;
     private Context context;
-
     private int selectPos = 0;
 
     public EffectAdapter(Context context) {
@@ -41,8 +45,9 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
 
     @Override
     public ImageHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-        return new ImageHolder((LayoutInflater.from(context).inflate(R.layout.item_image, viewGroup, false)),this);
+        return new ImageHolder((LayoutInflater.from(context).inflate(R.layout.item_image, viewGroup, false)), this);
     }
+
 
     @Override
     public void onBindViewHolder(ImageHolder effectHolder, int i) {
@@ -75,7 +80,7 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
             MenuBean bean = new MenuBean();
             bean.name = "本地";
             bean.path = "";
-            bean.icon= R.mipmap.more;
+            bean.icon = R.mipmap.more;
             mMenuDatas.add(bean);
         } catch (IOException e) {
             e.printStackTrace();
@@ -87,22 +92,24 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
         return mMenuDatas.size();
     }
 
-    public void setEffectCheckListener(EffectListener.OnEffectChangedListener listener){
-        this.mListener=listener;
+    public void setEffectCheckListener(EffectListener.OnEffectChangedListener listener) {
+        this.mListener = listener;
     }
 
     @Override
     public void onClick(View v) {
 
         selectPos = (int) v.getTag();
-        if(mListener!=null){
-            String path=selectPos==0?null:("assets/modelsticker/" + mMenuDatas.get(selectPos).path);
-            mListener.onEffectChanged(selectPos,path);
+        if (mListener != null) {
+            String path = selectPos == 0 ? null : ("assets/modelsticker/" + mMenuDatas.get(selectPos).path);
+            mListener.onEffectChanged(selectPos, path);
         }
         notifyDataSetChanged();
     }
 
-    public interface OnEffectCheckListener{
+
+
+    public interface OnEffectCheckListener {
         boolean onEffectChecked(int pos, String path);
     }
 

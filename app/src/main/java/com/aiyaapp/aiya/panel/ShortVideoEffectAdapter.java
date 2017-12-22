@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.aiyaapp.aavt.gl.LazyFilter;
 import com.aiyaapp.aiya.R;
 import com.aiyaapp.aiya.filter.SvBlackMagicFilter;
 import com.aiyaapp.aiya.filter.SvBlackWhiteTwinkleFilter;
@@ -31,7 +32,8 @@ import com.aiyaapp.aiya.filter.SvSplitScreenFilter;
 import com.aiyaapp.aiya.filter.SvThreeScreenFilter;
 import com.aiyaapp.aiya.filter.SvTimeTunnelFilter;
 import com.aiyaapp.aiya.filter.SvVirtualMirrorFilter;
-import com.wuwang.aavt.gl.LazyFilter;
+
+
 
 /**
  * Description:

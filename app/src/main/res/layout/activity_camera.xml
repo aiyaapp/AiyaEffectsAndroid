@@ -20,7 +20,6 @@
             android:layout_height="70dp"
             android:background="@drawable/btn_shutter_background"
             android:id="@+id/mShutter"
-            android:onClick="onClick"
             android:layout_centerInParent="true"/>
         <ImageView
             style="@style/NormalMenu"

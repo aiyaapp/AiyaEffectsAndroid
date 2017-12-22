@@ -87,7 +87,6 @@
                 android:gravity="center"
                 android:padding="@dimen/min_space"
                 android:text="美型"
-                android:visibility="gone"
                 android:textColor="@color/select_group_text_selector"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -309,6 +308,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:bsb_progress="0"
+                    app:bsb_max="1"
                     app:bsb_is_float_type="false"
                     android:id="@+id/mSeekBarDayan" />
             </LinearLayout>
@@ -337,6 +337,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:bsb_progress="0"
+                    app:bsb_max="1"
                     app:bsb_is_float_type="false"
                     android:id="@+id/mSeekBarShoulian" />
             </LinearLayout>

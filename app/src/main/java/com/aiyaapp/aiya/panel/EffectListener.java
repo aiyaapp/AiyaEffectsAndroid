@@ -13,7 +13,8 @@
  */
 package com.aiyaapp.aiya.panel;
 
-import com.wuwang.aavt.gl.BaseFilter;
+
+import com.aiyaapp.aavt.gl.BaseFilter;
 
 /**
  * EffectListener
@@ -34,7 +35,7 @@ public class EffectListener {
          * @param key index
          * @param path 滤镜图片路径
          */
-        void onLookUpFilterChanged(int key,String path);
+        void onLookUpFilterChanged(int key, String path);
     }
 
     interface OnEffectChangedListener{
@@ -43,7 +44,7 @@ public class EffectListener {
          * @param key index
          * @param path 特效资源路径
          */
-        void onEffectChanged(int key,String path);
+        void onEffectChanged(int key, String path);
     }
 
     interface OnBeautyChangedListener{
@@ -56,6 +57,11 @@ public class EffectListener {
         void onBeautyDegreeChanged(float degree);
     }
 
+    interface OnGroomingChangedListener{
+        void onBigEyeDegreeChanged(float degree);
+        void onThinFaceDegreeChanged(float degree);
+    }
+
     interface OnShortVideoEffectChangedListener{
         /**
          * 短视频特效被更改时的监听
@@ -63,12 +69,12 @@ public class EffectListener {
          * @param name 短视频特效名称
          * @param clazz 特效滤镜类
          */
-        void onShortVideoEffectChanged(int key,String name,Class<? extends BaseFilter> clazz);
+        void onShortVideoEffectChanged(int key, String name, Class<? extends BaseFilter> clazz);
 
     }
 
     public interface EffectFlinger extends OnLookupFilterChangeListener,OnEffectChangedListener,OnBeautyChangedListener,
-    OnShortVideoEffectChangedListener{
+    OnShortVideoEffectChangedListener,OnGroomingChangedListener{
 
     }
 

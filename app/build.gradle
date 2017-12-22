@@ -4,17 +4,19 @@ android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "com.aiyaapp.aiya"
+
+        applicationId "com.aiyaapp.aiya.test"
+
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 4000
-        versionName "v4.0.0alpha"
+        versionCode 4002
+        versionName "v4.0.2"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
         }
-        ndk{
-            abiFilters 'armeabi',"armeabi-v7a",'x86'
+        ndk {
+            abiFilters 'armeabi', "armeabi-v7a", 'x86'
         }
         enforceUniquePackageName = false
     }
@@ -24,9 +26,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    sourceSets{
-        main{
-            jniLibs.srcDirs+=['../libs/core','../libs/aiyagift','../libs/aiyatrack','../libs/shortvideo','../libs/beauty']
+    sourceSets {
+        main {
+            jniLibs.srcDirs += ['../libs/core', '../libs/aiyagift', '../libs/aiyatrack', '../libs/shortvideo', '../libs/beauty']
         }
     }
     compileOptions {
@@ -37,11 +39,13 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile files('../libs/core/AySdkCore.jar')
-    compile files('../libs/aiyagift/AyGift.jar')
-    compile files('../libs/aiyatrack/AyTrack.jar')
-    compile files('../libs/shortvideo/AyShaderEffect.jar')
-    compile files('../libs/beauty/AyBeauty.jar')
+
+    compile 'com.aiyaapp.aiya:AyCore:v4.0.2'
+    compile 'com.aiyaapp.aiya:AyEffect:v4.0.2'
+    compile 'com.aiyaapp.aiya:AyBeauty:v4.0.2'
+    compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.2'
+    compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.2'
+
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
@@ -51,6 +55,6 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     testCompile 'junit:junit:4.12'
     compile 'com.xw.repo:bubbleseekbar:3.5'
-    compile 'com.wuwang.aavt:aavt:a0.1.5'
     compile 'com.squareup.leakcanary:leakcanary-android:1.5.3'
+
 }

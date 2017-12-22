@@ -14,23 +14,20 @@
 package com.aiyaapp.aiya;
 
 import android.content.Context;
-import android.opengl.GLES20;
 
+import com.aiyaapp.aavt.core.Renderer;
+import com.aiyaapp.aavt.gl.BaseFilter;
+import com.aiyaapp.aavt.gl.LazyFilter;
+import com.aiyaapp.aavt.log.AvLog;
 import com.aiyaapp.aiya.filter.AyBeautyFilter;
-import com.aiyaapp.aiya.filter.SvCutSceneFilter;
+import com.aiyaapp.aiya.filter.AyBigEyeFilter;
+import com.aiyaapp.aiya.filter.AyThinFaceFilter;
+import com.aiyaapp.aiya.filter.AyTrackFilter;
 import com.aiyaapp.aiya.panel.EffectListener;
 import com.aiyaapp.aiya.render.AiyaGiftFilter;
 import com.aiyaapp.aiya.render.AnimListener;
-import com.wuwang.aavt.core.Renderer;
-import com.wuwang.aavt.gl.BaseFilter;
-import com.wuwang.aavt.gl.GroupFilter;
-import com.wuwang.aavt.gl.LazyFilter;
-import com.wuwang.aavt.log.AvLog;
-import com.wuwang.aavt.utils.MatrixUtils;
 
-import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * DefaultEffectFlinger
@@ -38,46 +35,58 @@ import java.util.concurrent.LinkedBlockingQueue;
  * @author wuwang
  * @version v1.0 2017:11:09 10:43
  */
-public class DefaultEffectFlinger implements EffectListener.EffectFlinger,Renderer {
+public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Renderer {
+
 
     private AiyaGiftFilter mEffectFilter;
     private Context mContext;
     private AyBeautyFilter mAiyaBeautyFilter;
-    private SluggardSvEffectTool mSvTool=SluggardSvEffectTool.getInstance();
-    private LinkedList<Runnable> mTask=new LinkedList<>();
+    private SluggardSvEffectTool mSvTool = SluggardSvEffectTool.getInstance();
+    private LinkedList<Runnable> mTask = new LinkedList<>();
     private Class<? extends BaseFilter> mNowSvClazz;
+
     private BaseFilter mShowFilter;
-    private float mBeautyDegree=0.0f;
+    private AyTrackFilter mTrackFilter;
+    private AyBigEyeFilter mBigEyeFilter;
+    private AyThinFaceFilter mThinFaceFilter;
+    private float mBeautyDegree = 0.0f;
+    private float mBigEyeDegree = 0.0f;
+    private float mThinFaceDegree = 0.0f;
+    private int mWidth, mHeight;
 
-    private int mWidth,mHeight;
+    public DefaultEffectFlinger(Context context) {
+        this.mContext = context;
 
-    public DefaultEffectFlinger(Context context){
-        this.mContext=context;
-        mEffectFilter=new AiyaGiftFilter(mContext,new AiyaTracker(mContext));
+        mEffectFilter = new AiyaGiftFilter(mContext, null);
+
         mEffectFilter.setAnimListener(new AnimListener() {
             @Override
             public void onAnimEvent(int i, int i1, String s) {
-                AvLog.d("EffectFlingerInfo","-->"+i+"/"+i1+s);
+                AvLog.d("EffectFlingerInfo", "-->" + i + "/" + i1 + s);
             }
         });
-        mShowFilter=new LazyFilter();
-//        MatrixUtils.flip(mFilter.getVertexMatrix(),false,true);
+        mShowFilter = new LazyFilter();
+        mBigEyeFilter = new AyBigEyeFilter();
+        mThinFaceFilter = new AyThinFaceFilter();
+        mTrackFilter = new AyTrackFilter(context);
+
+//      MatrixUtils.flip(mFilter.getVertexMatrix(),false,true);
     }
 
-    public void runOnRender(Runnable runnable){
+
+    public void runOnRender(Runnable runnable) {
         mTask.add(runnable);
     }
 
     @Override
     public void onLookUpFilterChanged(int key, String path) {
-
     }
 
     @Override
     public void onEffectChanged(int key, String path) {
-        if(key==0){
+        if (key == 0) {
             mEffectFilter.setEffect(null);
-        }else{
+        } else {
             mEffectFilter.setEffect(path);
         }
     }
@@ -85,84 +94,124 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger,Render
     @Override
     public void onBeautyChanged(int key) {
         runOnRender(() -> {
-            if(mAiyaBeautyFilter!=null){
+            if (mAiyaBeautyFilter != null) {
                 mAiyaBeautyFilter.destroy();
             }
-            mAiyaBeautyFilter=new AyBeautyFilter(key);
+            mAiyaBeautyFilter = new AyBeautyFilter(key);
             mAiyaBeautyFilter.create();
-            mAiyaBeautyFilter.sizeChanged(mWidth,mHeight);
+            mAiyaBeautyFilter.sizeChanged(mWidth, mHeight);
             mAiyaBeautyFilter.setDegree(mBeautyDegree);
         });
-
     }
+
 
     @Override
     public void onBeautyDegreeChanged(float degree) {
-        runOnRender(()->{
-            if(mAiyaBeautyFilter!=null){
-                this.mBeautyDegree=degree;
+        runOnRender(() -> {
+            if (mAiyaBeautyFilter != null) {
+                this.mBeautyDegree = degree;
                 mAiyaBeautyFilter.setDegree(degree);
             }
         });
     }
 
+
     @Override
     public void onShortVideoEffectChanged(int key, String name, Class<? extends BaseFilter> clazz) {
         runOnRender(() -> {
-            if(key==0){
-                mNowSvClazz=null;
-            }else{
-                mNowSvClazz=clazz;
+            if (key == 0) {
+                mNowSvClazz = null;
+            } else {
+                mNowSvClazz = clazz;
             }
         });
     }
 
     @Override
     public void create() {
+        mTrackFilter.create();
         mEffectFilter.create();
         mShowFilter.create();
+        mBigEyeFilter.create();
+        mThinFaceFilter.create();
     }
 
     @Override
     public void sizeChanged(int width, int height) {
-        this.mWidth=width;
-        this.mHeight=height;
+        this.mWidth = width;
+        this.mHeight = height;
+        mTrackFilter.sizeChanged(width, height);
         mEffectFilter.sizeChanged(width, height);
         mShowFilter.sizeChanged(width, height);
+        mBigEyeFilter.sizeChanged(width, height);
+        mThinFaceFilter.sizeChanged(width, height);
     }
 
     @Override
     public void draw(int texture) {
-        while (!mTask.isEmpty()){
+        while (!mTask.isEmpty()) {
             mTask.removeFirst().run();
         }
+        mTrackFilter.drawToTexture(texture);
         //礼物特效处理
-        texture=mEffectFilter.drawToTexture(texture);
-
+        mEffectFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+        texture = mEffectFilter.drawToTexture(texture);
         //美颜处理
-        if(mAiyaBeautyFilter!=null){
-            texture=mAiyaBeautyFilter.drawToTexture(texture);
+        if (mAiyaBeautyFilter != null) {
+            texture = mAiyaBeautyFilter.drawToTexture(texture);
+        }
+
+
+        //大眼处理
+        if (mBigEyeDegree > 0) {
+            mBigEyeFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+            texture = mBigEyeFilter.drawToTexture(texture);
+        }
+
+        //瘦脸处理
+        if (mThinFaceDegree > 0) {
+            mThinFaceFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+            texture = mThinFaceFilter.drawToTexture(texture);
         }
 
         //短视频特效处理
-        if(mNowSvClazz!=null){
-            texture=mSvTool.processTexture(texture,mWidth,mHeight,mNowSvClazz);
+        if (mNowSvClazz != null) {
+            texture = mSvTool.processTexture(texture, mWidth, mHeight, mNowSvClazz);
         }
         mShowFilter.draw(texture);
     }
 
+
     @Override
     public void destroy() {
-        AvLog.d("wuwang","-->flinger destroy");
+        AvLog.d("wuwang", "-->flinger destroy");
+        mTrackFilter.destroy();
         mEffectFilter.destroy();
         mShowFilter.destroy();
         mSvTool.onGlDestroy();
     }
 
-    public void release(){
-        if(mEffectFilter!=null){
+    public void release() {
+        if (mEffectFilter != null) {
             mEffectFilter.release();
         }
+
     }
+
+
+
+    @Override
+    public void onBigEyeDegreeChanged(float degree) {
+        this.mBigEyeDegree = degree;
+        mBigEyeFilter.setDegree(degree);
+    }
+
+
+    @Override
+    public void onThinFaceDegreeChanged(float degree) {
+        this.mThinFaceDegree = degree;
+        mThinFaceFilter.setDegree(degree);
+    }
+
 
 }

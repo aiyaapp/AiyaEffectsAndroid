@@ -21,13 +21,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.View;
-import android.widget.PopupWindow;
 import android.widget.RadioGroup;
-import android.widget.SimpleAdapter;
 import android.widget.ViewAnimator;
 
+import com.aiyaapp.aavt.gl.BaseFilter;
 import com.aiyaapp.aiya.R;
-import com.wuwang.aavt.gl.BaseFilter;
 import com.xw.repo.BubbleSeekBar;
 
 /**
@@ -36,7 +34,7 @@ import com.xw.repo.BubbleSeekBar;
  * @author wuwang
  * @version v1.0 2017:11:09 09:42
  */
-public class EffectController implements EffectListener.EffectFlinger{
+public class EffectController implements EffectListener.EffectFlinger {
 
     private View container;
     private RecyclerView mEffectList;
@@ -60,79 +58,77 @@ public class EffectController implements EffectListener.EffectFlinger{
 
     private EffectListener.EffectFlinger mFlinger;
 
-    private SparseIntArray selectKey= new SparseIntArray();
+    private SparseIntArray selectKey = new SparseIntArray();
 
-    public EffectController(final Activity act, View container, EffectListener.EffectFlinger flinger){
-        this.container=container;
-        this.mFlinger=flinger;
+    public EffectController(final Activity act, View container, EffectListener.EffectFlinger flinger) {
+        this.container = container;
+        this.mFlinger = flinger;
         selectKey.append(0, R.id.select_group_0);
-        selectKey.append(1,R.id.select_group_1);
-        selectKey.append(2,R.id.select_group_2);
-        selectKey.append(3,R.id.select_group_3);
-        selectKey.append(4,R.id.select_group_4);
-        selectKey.append(5,R.id.select_group_5);
+        selectKey.append(1, R.id.select_group_1);
+        selectKey.append(2, R.id.select_group_2);
+        selectKey.append(3, R.id.select_group_3);
+        selectKey.append(4, R.id.select_group_4);
+        selectKey.append(5, R.id.select_group_5);
 
-        mSelectGroup= $(R.id.select_group);
-        mViewAnim= $(R.id.mSelectAnim);
+        mSelectGroup = $(R.id.select_group);
+        mViewAnim = $(R.id.mSelectAnim);
 
-        mEffectList= $(R.id.mEffectList);
-        mEffectList.setLayoutManager(new GridLayoutManager(act.getApplicationContext(),5));
-        mEffectList.setAdapter(mEffAdapter=new EffectAdapter(act));
+        mEffectList = $(R.id.mEffectList);
+        mEffectList.setLayoutManager(new GridLayoutManager(act.getApplicationContext(), 5));
+        mEffectList.setAdapter(mEffAdapter = new EffectAdapter(act));
         mEffAdapter.setEffectCheckListener(this);
 
-        mLookupList= $(R.id.mLookupList);
-        mLookupList.setLayoutManager(new LinearLayoutManager(act.getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        mLookupList.setAdapter(mLooAdapter=new LookupAdapter(act));
+        mLookupList = $(R.id.mLookupList);
+        mLookupList.setLayoutManager(new LinearLayoutManager(act.getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+        mLookupList.setAdapter(mLooAdapter = new LookupAdapter(act));
         mLooAdapter.setSelectListener(this);
 
-        mBeautyList= $(R.id.mBeautyList);
-        mBeautyList.setLayoutManager(new LinearLayoutManager(act.getApplicationContext(),LinearLayoutManager.HORIZONTAL,false));
-        BeautyAdapter adapter=new BeautyAdapter(act);
+        mBeautyList = $(R.id.mBeautyList);
+        mBeautyList.setLayoutManager(new LinearLayoutManager(act.getApplicationContext(), LinearLayoutManager.HORIZONTAL, false));
+        BeautyAdapter adapter = new BeautyAdapter(act);
         adapter.setOnBeautyChangedListener(this);
         mBeautyList.setAdapter(adapter);
 
-        mShortVideoEffect=$(R.id.mShortVideoEffect);
-        mShortVideoEffect.setLayoutManager(new GridLayoutManager(act.getApplicationContext(),5));
-        mShoAdapter=new ShortVideoEffectAdapter(act.getApplicationContext());
+        mShortVideoEffect = $(R.id.mShortVideoEffect);
+        mShortVideoEffect.setLayoutManager(new GridLayoutManager(act.getApplicationContext(), 5));
+        mShoAdapter = new ShortVideoEffectAdapter(act.getApplicationContext());
         mShoAdapter.setOnBeautyChangedListener(this);
         mShortVideoEffect.setAdapter(mShoAdapter);
 
 
-        mSeekBarFilter= $(R.id.mSeekBarFilter);
-        mSeekBarBeauty= $(R.id.mSeekBarBeauty);
-        mSeekBarDayan= $(R.id.mSeekBarDayan);
-        mSeekBarShoulian=$(R.id.mSeekBarShoulian);
-        mSeekBarMeibai=$(R.id.mSeekBarMeibai);
-        mSeekBarMopi=$(R.id.mSeekBarMopi);
-        mSeekBarHongrun=$(R.id.mSeekBarHongrun);
+        mSeekBarFilter = $(R.id.mSeekBarFilter);
+        mSeekBarBeauty = $(R.id.mSeekBarBeauty);
+        mSeekBarDayan = $(R.id.mSeekBarDayan);
+        mSeekBarShoulian = $(R.id.mSeekBarShoulian);
+        mSeekBarMeibai = $(R.id.mSeekBarMeibai);
+        mSeekBarMopi = $(R.id.mSeekBarMopi);
+        mSeekBarHongrun = $(R.id.mSeekBarHongrun);
 
         mSelectGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
-                Log.e("doggycoder","choose checkid:"+checkedId);
+                Log.e("doggycoder", "choose checkid:" + checkedId);
                 mViewAnim.setDisplayedChild(selectKey.indexOfValue(checkedId));
             }
         });
+
         //滤镜程度控制
         mSeekBarFilter.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
-
             }
         });
-        //美颜等级控制，小数0-1
-        mSeekBarBeauty.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener(){
 
+        //美颜等级控制，小数0-1
+        mSeekBarBeauty.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
                 onBeautyDegreeChanged(progressFloat);
@@ -140,119 +136,108 @@ public class EffectController implements EffectListener.EffectFlinger{
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
-
             }
         });
         //大眼程度控制，0-100
         mSeekBarDayan.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
-
+                onBigEyeDegreeChanged(progressFloat);
             }
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
-
             }
         });
+
         //瘦脸程度控制，0-100
         mSeekBarShoulian.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
-
+                onThinFaceDegreeChanged(progressFloat);
             }
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
-
             }
         });
+
         //美白程度控制，0-100
         mSeekBarMeibai.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
-
             }
         });
+
         //磨皮程度控制，0-6
         mSeekBarMopi.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
-
             }
         });
+
         //红润程度控制，0-100
         mSeekBarHongrun.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-
             }
 
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
-
             }
         });
     }
 
-    public View getContentView(){
+    public View getContentView() {
         return container;
     }
 
-    public void show(){
+    public void show() {
         container.setVisibility(View.VISIBLE);
     }
 
-    public void hide(){
+    public void hide() {
         container.setVisibility(View.GONE);
     }
 
-    public <T> T $(int id){
+    public <T> T $(int id) {
         return (T) getContentView().findViewById(id);
     }
 
-    public void release(){
-        mViewAnim=null;
+    public void release() {
+        mViewAnim = null;
     }
 
     @Override
@@ -270,14 +255,26 @@ public class EffectController implements EffectListener.EffectFlinger{
         mFlinger.onBeautyChanged(key);
     }
 
+
     @Override
     public void onBeautyDegreeChanged(float degree) {
         mFlinger.onBeautyDegreeChanged(degree);
     }
 
+
     @Override
     public void onShortVideoEffectChanged(int key, String name, Class<? extends BaseFilter> clazz) {
         mFlinger.onShortVideoEffectChanged(key, name, clazz);
+    }
+
+    @Override
+    public void onBigEyeDegreeChanged(float degree) {
+        mFlinger.onBigEyeDegreeChanged(degree);
+    }
+
+    @Override
+    public void onThinFaceDegreeChanged(float degree) {
+        mFlinger.onThinFaceDegreeChanged(degree);
     }
 
 }
