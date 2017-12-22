@@ -1,1 +1,1 @@
-include ':AiyaEffectsSDK',":demo"
+include ':app'

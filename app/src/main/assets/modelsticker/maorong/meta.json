@@ -1,0 +1,11 @@
+{
+  "format" : "1",
+  "name":"毛绒耳",
+  "resid" : "500104",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "mr.obj",
+    },
+  ]
+}
