@@ -40,7 +40,6 @@ Android版AiyaEffectsSDK minSdkVersion为16，即Android4.1及以上可用。
 本SDK提供如下两种获取方式:
 
 * 从[github下载](https://github.com/aiyaapp/AiyaEffectsAndroid)
-master
 
 ## 5. 快速集成
 [集成文档](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/%E9%9B%86%E6%88%90%E6%96%87%E6%A1%A3)中提供了集成 Android版AiyaEffectsSDK 的方法
