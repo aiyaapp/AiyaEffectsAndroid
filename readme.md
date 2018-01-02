@@ -32,6 +32,7 @@
 - [x] 支持美颜
 - [x] 支持短视频特效 （参考抖音特效）
 
+
 ## 3. 运行环境
 Android版AiyaEffectsSDK minSdkVersion为16，即Android4.1及以上可用。
 
