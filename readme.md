@@ -22,6 +22,9 @@
 
 ### 1.2 集成示例
 * [集成到腾讯云的示例](https://github.com/aiyaapp/AiyaEffectsWithTengxunyunAndroid)
+* [集成到金山云的示例](https://github.com/aiyaapp/AiyaEffectsWithKSVCAndroid)
+* [集成到阿里云短视频的示例](https://github.com/ruanrongding/AiyaEffectsWithALiyunAndroid)
+* [集成到声网的示例](https://github.com/ruanrongding/AiyaEffectsWithAgoraAndroid)
 
 ## 2. AiyaEffecSDK 功能说明
 

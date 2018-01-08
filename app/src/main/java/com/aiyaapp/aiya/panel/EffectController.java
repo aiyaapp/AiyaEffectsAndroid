@@ -57,7 +57,6 @@ public class EffectController implements EffectListener.EffectFlinger {
     private BubbleSeekBar mSeekBarHongrun;
 
     private EffectListener.EffectFlinger mFlinger;
-
     private SparseIntArray selectKey = new SparseIntArray();
 
     public EffectController(final Activity act, View container, EffectListener.EffectFlinger flinger) {
@@ -111,6 +110,7 @@ public class EffectController implements EffectListener.EffectFlinger {
                 mViewAnim.setDisplayedChild(selectKey.indexOfValue(checkedId));
             }
         });
+
 
         //滤镜程度控制
         mSeekBarFilter.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {

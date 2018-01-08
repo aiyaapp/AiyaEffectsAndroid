@@ -33,7 +33,6 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
     private ArrayList<MenuBean> mMenuDatas;
     private Context context;
     private int selectPos = 0;
-
     public EffectAdapter(Context context) {
         this.context = context;
         mMenuDatas = new ArrayList<>();
@@ -92,13 +91,16 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
         return mMenuDatas.size();
     }
 
+
+
     public void setEffectCheckListener(EffectListener.OnEffectChangedListener listener) {
         this.mListener = listener;
     }
 
+
+
     @Override
     public void onClick(View v) {
-
         selectPos = (int) v.getTag();
         if (mListener != null) {
             String path = selectPos == 0 ? null : ("assets/modelsticker/" + mMenuDatas.get(selectPos).path);

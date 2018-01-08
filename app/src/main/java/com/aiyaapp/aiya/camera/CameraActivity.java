@@ -51,8 +51,8 @@ public class CameraActivity extends AppCompatActivity {
         surface.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-            }
 
+            }
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
                 mRecord.open();
@@ -60,20 +60,16 @@ public class CameraActivity extends AppCompatActivity {
                 mRecord.setPreviewSize(width, height);
                 mRecord.startPreview();
             }
-
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
                 mRecord.stopPreview();
                 mRecord.close();
             }
         });
-
-
         mContainer = findViewById(R.id.mEffectView);
         mFlinger = new DefaultEffectFlinger(getApplicationContext());
         mRecord.setRenderer(mFlinger);
         mEffectController = new EffectController(this, mContainer, mFlinger);
-
 
         findViewById(R.id.mShutter).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,6 +92,7 @@ public class CameraActivity extends AppCompatActivity {
 
     private String tempPath = Environment.getExternalStorageDirectory().getAbsolutePath() + "/test.mp4";
 
+
     public void onEffect(View view) {
         mEffectController.show();
     }
@@ -103,7 +100,6 @@ public class CameraActivity extends AppCompatActivity {
     public void onHidden(View view) {
         mEffectController.hide();
     }
-
 
     @Override
     protected void onDestroy() {

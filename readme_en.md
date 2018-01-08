@@ -15,7 +15,7 @@ AiyaEffectsSDK is a high-performance rendering solution about dynamic stickers a
 
 ### 1.2 Integration Examples
 * [AiyaEffectsSDK with KSVC Demo](https://github.com/aiyaapp/AiyaEffectsWithKSVCAndroid)
-* [AiyaEffectsSDK with ZegoLive Demo](https://github.com/aiyaapp/AiyaEffectsWithZegoAndroid)
+
 
 ## 2. SDK Function Declaration
 

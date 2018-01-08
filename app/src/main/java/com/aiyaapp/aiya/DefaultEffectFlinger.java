@@ -56,20 +56,18 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
 
     public DefaultEffectFlinger(Context context) {
         this.mContext = context;
-
-        mEffectFilter = new AiyaGiftFilter(mContext, null);
-
+        mEffectFilter = new AiyaGiftFilter(mContext,new AiyaTracker(mContext));
         mEffectFilter.setAnimListener(new AnimListener() {
             @Override
             public void onAnimEvent(int i, int i1, String s) {
                 AvLog.d("EffectFlingerInfo", "-->" + i + "/" + i1 + s);
             }
         });
+
         mShowFilter = new LazyFilter();
         mBigEyeFilter = new AyBigEyeFilter();
         mThinFaceFilter = new AyThinFaceFilter();
         mTrackFilter = new AyTrackFilter(context);
-
 //      MatrixUtils.flip(mFilter.getVertexMatrix(),false,true);
     }
 
@@ -78,9 +76,11 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         mTask.add(runnable);
     }
 
+
     @Override
     public void onLookUpFilterChanged(int key, String path) {
     }
+
 
     @Override
     public void onEffectChanged(int key, String path) {
@@ -153,14 +153,15 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
             mTask.removeFirst().run();
         }
         mTrackFilter.drawToTexture(texture);
+
         //礼物特效处理
         mEffectFilter.setFaceDataID(mTrackFilter.getFaceDataID());
         texture = mEffectFilter.drawToTexture(texture);
+
         //美颜处理
         if (mAiyaBeautyFilter != null) {
             texture = mAiyaBeautyFilter.drawToTexture(texture);
         }
-
 
         //大眼处理
         if (mBigEyeDegree > 0) {
@@ -191,13 +192,13 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         mSvTool.onGlDestroy();
     }
 
+
     public void release() {
         if (mEffectFilter != null) {
             mEffectFilter.release();
         }
 
     }
-
 
 
     @Override

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -32,15 +31,12 @@ public class MainActivity extends AppCompatActivity {
             AiyaEffects.setEventListener(new IEventListener() {
                 @Override
                 public int onEvent(int i, int i1, String s) {
-                    Log.e("wuwang", "MSG(type/ret/info):" + i + "/" + i1 + "/" + s);
                     return 0;
                 }
             });
-
             AiyaEffects.init(getApplicationContext(), "477de67d19ba39fb656a4806c803b552");
         }
     };
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -54,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.mBtnGift:
@@ -65,11 +62,8 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
-
 }
