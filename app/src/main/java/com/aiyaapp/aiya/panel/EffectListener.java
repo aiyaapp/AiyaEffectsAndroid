@@ -47,6 +47,11 @@ public class EffectListener {
         void onEffectChanged(int key, String path);
     }
 
+     interface OnEffectCheckListener {
+        boolean onEffectChecked(int pos, String path);
+    }
+
+
     interface OnBeautyChangedListener{
         /**
          * 美颜等级调节监听
@@ -55,6 +60,12 @@ public class EffectListener {
         void onBeautyChanged(int key);
 
         void onBeautyDegreeChanged(float degree);
+
+        void onBeautySmoothDegreeChanged(float degree);
+        void onBeautySaturateDegreeChanged(float degree);
+        void onBeautyBrightenDegreeChanged(float degree);
+
+
     }
 
     interface OnGroomingChangedListener{

@@ -23,66 +23,70 @@ import com.aiyaapp.aiya.R;
 public class BeautyAdapter extends RecyclerView.Adapter<BeautyAdapter.MenuHolder> implements View.OnClickListener {
 
     private Context mContext;
-    public String[] beautys=new String[]{
-            "无美颜","美颜一","美颜二","美颜三"
+    public String[] beautys = new String[]{
+            "无美颜", "美颜一", "美颜二", "美颜三", "美颜四", "美颜五", "美颜六"
     };
 
-    public int[] beanutyId=new int[]{
-            0, AiyaBeauty.TYPE1,AiyaBeauty.TYPE2,AiyaBeauty.TYPE3
+    public int[] beanutyId = new int[]{
+            0, AiyaBeauty.TYPE1, AiyaBeauty.TYPE2, AiyaBeauty.TYPE3, AiyaBeauty.TYPE4, AiyaBeauty.TYPE5, AiyaBeauty.TYPE6
     };
-    public int checkPos=0;
 
+    public int checkPos = 0;
     private EffectListener.OnBeautyChangedListener mListener;
 
-    public BeautyAdapter(Context context){
-        this.mContext=context;
+    public BeautyAdapter(Context context) {
+        this.mContext = context;
     }
 
-    public void setOnBeautyChangedListener(EffectListener.OnBeautyChangedListener listener){
-        this.mListener=listener;
+    public void setOnBeautyChangedListener(EffectListener.OnBeautyChangedListener listener) {
+        this.mListener = listener;
     }
+
 
     @Override
     public MenuHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new MenuHolder(LayoutInflater.from(mContext).inflate(R.layout.item_menu,parent,false));
+        return new MenuHolder(LayoutInflater.from(mContext).inflate(R.layout.item_menu, parent, false));
     }
+
 
     @Override
     public void onBindViewHolder(MenuHolder holder, int position) {
-        holder.setData(beautys[position],position);
+        holder.setData(beautys[position], position);
     }
+
 
     @Override
     public int getItemCount() {
         return beautys.length;
     }
 
+
     @Override
     public void onClick(View v) {
-        checkPos=ClickUtils.getPos(v);
+        checkPos = ClickUtils.getPos(v);
         notifyDataSetChanged();
-        if(mListener!=null){
+        if (mListener != null) {
             mListener.onBeautyChanged(beanutyId[checkPos]);
         }
     }
 
-    public class MenuHolder extends RecyclerView.ViewHolder{
 
+    public class MenuHolder extends RecyclerView.ViewHolder {
         private TextView tv;
 
         public MenuHolder(View itemView) {
             super(itemView);
-            tv= (TextView)itemView.findViewById(R.id.mMenu);
+            tv = (TextView) itemView.findViewById(R.id.mMenu);
             ClickUtils.addClickTo(tv, BeautyAdapter.this, R.id.mMenu);
         }
 
-        public void setData(String name,int pos){
+        public void setData(String name, int pos) {
             tv.setText(name);
-            tv.setSelected(pos==checkPos);
-            ClickUtils.setPos(tv,pos);
+            tv.setSelected(pos == checkPos);
+            ClickUtils.setPos(tv, pos);
         }
 
-        public void select(boolean isSelect){
+        public void select(boolean isSelect) {
             tv.setSelected(isSelect);
         }
     }

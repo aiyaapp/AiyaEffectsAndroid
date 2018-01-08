@@ -13,13 +13,20 @@
  */
 package com.aiyaapp.aiya.camera;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.aiyaapp.aavt.av.CameraRecorder2;
@@ -43,7 +50,8 @@ public class CameraActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_camera);
         mRecord = new CameraRecorder2();
         mRecord.setOutputPath(tempPath);
@@ -51,8 +59,8 @@ public class CameraActivity extends AppCompatActivity {
         surface.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
-
             }
+
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
                 mRecord.open();
@@ -60,6 +68,7 @@ public class CameraActivity extends AppCompatActivity {
                 mRecord.setPreviewSize(width, height);
                 mRecord.startPreview();
             }
+
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
                 mRecord.stopPreview();
@@ -70,7 +79,6 @@ public class CameraActivity extends AppCompatActivity {
         mFlinger = new DefaultEffectFlinger(getApplicationContext());
         mRecord.setRenderer(mFlinger);
         mEffectController = new EffectController(this, mContainer, mFlinger);
-
         findViewById(R.id.mShutter).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,6 +94,15 @@ public class CameraActivity extends AppCompatActivity {
                 isRecordOpen = !isRecordOpen;
             }
         });
+
+
+        //切换相机
+        findViewById(R.id.mIbFlip).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRecord.swithCamera();
+            }
+        });
     }
 
     private boolean isRecordOpen = false;
@@ -97,6 +114,7 @@ public class CameraActivity extends AppCompatActivity {
         mEffectController.show();
     }
 
+
     public void onHidden(View view) {
         mEffectController.hide();
     }
@@ -107,5 +125,43 @@ public class CameraActivity extends AppCompatActivity {
         if (mFlinger != null) {
             mFlinger.release();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d("wuwang", "onActivityResult:rq:" + requestCode + "/" + resultCode);
+        if (requestCode == 101) {
+            if (resultCode == RESULT_OK) {
+                Log.e("wuwang", "data:" + getRealFilePath(data.getData()));
+                String dataPath = getRealFilePath(data.getData());
+                if (dataPath != null && dataPath.endsWith(".json")) {
+                    mFlinger.setEffect(dataPath);
+                }
+            }
+        }
+    }
+
+    public String getRealFilePath(final Uri uri) {
+        if (null == uri) return null;
+        final String scheme = uri.getScheme();
+        String data = null;
+        if (scheme == null)
+            data = uri.getPath();
+        else if (ContentResolver.SCHEME_FILE.equals(scheme)) {
+            data = uri.getPath();
+        } else if (ContentResolver.SCHEME_CONTENT.equals(scheme)) {
+            Cursor cursor = getContentResolver().query(uri, new String[]{MediaStore.Images.ImageColumns.DATA}, null, null, null);
+            if (null != cursor) {
+                if (cursor.moveToFirst()) {
+                    int index = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+                    if (index > -1) {
+                        data = cursor.getString(index);
+                    }
+                }
+                cursor.close();
+            }
+        }
+        return data;
     }
 }

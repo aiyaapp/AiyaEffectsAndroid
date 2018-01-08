@@ -14,6 +14,7 @@
 package com.aiyaapp.aiya.panel;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.support.annotation.IdRes;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -34,7 +35,7 @@ import com.xw.repo.BubbleSeekBar;
  * @author wuwang
  * @version v1.0 2017:11:09 09:42
  */
-public class EffectController implements EffectListener.EffectFlinger {
+public class EffectController implements EffectListener.EffectFlinger, EffectListener.OnEffectCheckListener {
 
     private View container;
     private RecyclerView mEffectList;
@@ -44,9 +45,9 @@ public class EffectController implements EffectListener.EffectFlinger {
     private EffectAdapter mEffAdapter;
     private LookupAdapter mLooAdapter;
     private ShortVideoEffectAdapter mShoAdapter;
-
     private ViewAnimator mViewAnim;
     private RadioGroup mSelectGroup;
+
     private BubbleSeekBar mSeekBarFilter;
     private BubbleSeekBar mSeekBarBeauty;
     private BubbleSeekBar mSeekBarDayan;
@@ -57,9 +58,12 @@ public class EffectController implements EffectListener.EffectFlinger {
     private BubbleSeekBar mSeekBarHongrun;
 
     private EffectListener.EffectFlinger mFlinger;
+
     private SparseIntArray selectKey = new SparseIntArray();
+    private Activity act;
 
     public EffectController(final Activity act, View container, EffectListener.EffectFlinger flinger) {
+        this.act = act;
         this.container = container;
         this.mFlinger = flinger;
         selectKey.append(0, R.id.select_group_0);
@@ -75,6 +79,7 @@ public class EffectController implements EffectListener.EffectFlinger {
         mEffectList = $(R.id.mEffectList);
         mEffectList.setLayoutManager(new GridLayoutManager(act.getApplicationContext(), 5));
         mEffectList.setAdapter(mEffAdapter = new EffectAdapter(act));
+        mEffAdapter.setEffectChangedListener(this);
         mEffAdapter.setEffectCheckListener(this);
 
         mLookupList = $(R.id.mLookupList);
@@ -94,11 +99,13 @@ public class EffectController implements EffectListener.EffectFlinger {
         mShoAdapter.setOnBeautyChangedListener(this);
         mShortVideoEffect.setAdapter(mShoAdapter);
 
-
         mSeekBarFilter = $(R.id.mSeekBarFilter);
         mSeekBarBeauty = $(R.id.mSeekBarBeauty);
+
+
         mSeekBarDayan = $(R.id.mSeekBarDayan);
         mSeekBarShoulian = $(R.id.mSeekBarShoulian);
+
         mSeekBarMeibai = $(R.id.mSeekBarMeibai);
         mSeekBarMopi = $(R.id.mSeekBarMopi);
         mSeekBarHongrun = $(R.id.mSeekBarHongrun);
@@ -110,8 +117,6 @@ public class EffectController implements EffectListener.EffectFlinger {
                 mViewAnim.setDisplayedChild(selectKey.indexOfValue(checkedId));
             }
         });
-
-
         //滤镜程度控制
         mSeekBarFilter.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
@@ -133,51 +138,46 @@ public class EffectController implements EffectListener.EffectFlinger {
             public void onProgressChanged(int progress, float progressFloat) {
                 onBeautyDegreeChanged(progressFloat);
             }
-
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
             }
-
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
             }
         });
+
         //大眼程度控制，0-100
         mSeekBarDayan.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
                 onBigEyeDegreeChanged(progressFloat);
             }
-
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
             }
-
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
             }
         });
-
         //瘦脸程度控制，0-100
         mSeekBarShoulian.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
                 onThinFaceDegreeChanged(progressFloat);
             }
-
             @Override
             public void getProgressOnActionUp(int progress, float progressFloat) {
-            }
 
+            }
             @Override
             public void getProgressOnFinally(int progress, float progressFloat) {
             }
         });
-
-        //美白程度控制，0-100
+        //美白程度控制，0-1
         mSeekBarMeibai.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
+                onBeautyBrightenDegreeChanged(progressFloat);
             }
 
             @Override
@@ -188,11 +188,11 @@ public class EffectController implements EffectListener.EffectFlinger {
             public void getProgressOnFinally(int progress, float progressFloat) {
             }
         });
-
-        //磨皮程度控制，0-6
+        //磨皮程度控制，0-1
         mSeekBarMopi.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
+                onBeautySmoothDegreeChanged(progressFloat);
             }
 
             @Override
@@ -204,10 +204,11 @@ public class EffectController implements EffectListener.EffectFlinger {
             }
         });
 
-        //红润程度控制，0-100
+        //红润程度控制，0-1
         mSeekBarHongrun.setOnProgressChangedListener(new BubbleSeekBar.OnProgressChangedListener() {
             @Override
             public void onProgressChanged(int progress, float progressFloat) {
+                onBeautySaturateDegreeChanged(progressFloat);
             }
 
             @Override
@@ -250,17 +251,42 @@ public class EffectController implements EffectListener.EffectFlinger {
         mFlinger.onLookUpFilterChanged(key, path);
     }
 
+
     @Override
     public void onBeautyChanged(int key) {
+        if (key == 0) {//没有美颜
+            mSeekBarBeauty.setProgress(0);
+            mSeekBarMeibai.setProgress(0);
+            mSeekBarHongrun.setProgress(0);
+            mSeekBarMopi.setProgress(0);
+        } else {
+            mSeekBarBeauty.setProgress(0.4f);
+            mSeekBarMeibai.setProgress(0.4f);
+            mSeekBarHongrun.setProgress(0.4f);
+            mSeekBarMopi.setProgress(0.4f);
+        }
         mFlinger.onBeautyChanged(key);
     }
-
 
     @Override
     public void onBeautyDegreeChanged(float degree) {
         mFlinger.onBeautyDegreeChanged(degree);
     }
 
+    @Override
+    public void onBeautySmoothDegreeChanged(float degree) {
+        mFlinger.onBeautySmoothDegreeChanged(degree);
+    }
+
+    @Override
+    public void onBeautySaturateDegreeChanged(float degree) {
+        mFlinger.onBeautySaturateDegreeChanged(degree);
+    }
+
+    @Override
+    public void onBeautyBrightenDegreeChanged(float degree) {
+        mFlinger.onBeautySaturateDegreeChanged(degree);
+    }
 
     @Override
     public void onShortVideoEffectChanged(int key, String name, Class<? extends BaseFilter> clazz) {
@@ -277,4 +303,16 @@ public class EffectController implements EffectListener.EffectFlinger {
         mFlinger.onThinFaceDegreeChanged(degree);
     }
 
+
+    @Override
+    public boolean onEffectChecked(int pos, String path) {
+        if (pos == -1) {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            act.startActivityForResult(Intent.createChooser(intent, "请选择一个json文件"), 101);
+            return true;
+        }
+        return false;
+    }
 }

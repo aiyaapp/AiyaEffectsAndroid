@@ -1,0 +1,26 @@
+{
+"format":1,
+"name":"飘雪",
+"needtrack":0,
+"resid":"111305",
+"nodes":[
+ {
+"type":"2dAnim",
+"dirname":"default",
+"number":48,
+"width":720,
+"height":1280,
+"duration":66,
+"isloop":1,
+"Triggertype":0,
+"untilFinish":1,
+"position":"default",
+"anchorX":101,
+"anchorY":20,
+"ratio":1.00,
+"fullscreen":1,
+"keepaspect":0,
+"PositionSwitch":0
+}
+]
+}

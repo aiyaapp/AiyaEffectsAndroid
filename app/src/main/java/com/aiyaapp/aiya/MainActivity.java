@@ -2,15 +2,17 @@ package com.aiyaapp.aiya;
 
 import android.Manifest;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
 import com.aiyaapp.aiya.camera.CameraActivity;
 import com.aiyaapp.aiya.gift.GiftActivity;
 import com.aiyaapp.aiya.panel.PermissionUtils;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +25,6 @@ public class MainActivity extends AppCompatActivity {
         }, 10, start);
     }
 
-
     private Runnable start = new Runnable() {
         @Override
         public void run() {
@@ -31,12 +32,15 @@ public class MainActivity extends AppCompatActivity {
             AiyaEffects.setEventListener(new IEventListener() {
                 @Override
                 public int onEvent(int i, int i1, String s) {
+                    Log.e("wuwang", "MSG(type/ret/info):" + i + "/" + i1 + "/" + s);
                     return 0;
                 }
             });
-            AiyaEffects.init(getApplicationContext(), "477de67d19ba39fb656a4806c803b552");
+            int id = AiyaEffects.init(getApplicationContext(), "477de67d19ba39fb656a4806c803b552");
+            Log.e("wuwang", "id:" + id);
         }
     };
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -49,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     public void onClick(View view) {
         switch (view.getId()) {

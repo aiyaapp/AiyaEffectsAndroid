@@ -2,9 +2,7 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *  
  *      http://www.apache.org/licenses/LICENSE-2.0
- *  
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,10 +17,12 @@ import com.aiyaapp.aavt.core.Renderer;
 import com.aiyaapp.aavt.gl.BaseFilter;
 import com.aiyaapp.aavt.gl.LazyFilter;
 import com.aiyaapp.aavt.log.AvLog;
+
 import com.aiyaapp.aiya.filter.AyBeautyFilter;
 import com.aiyaapp.aiya.filter.AyBigEyeFilter;
 import com.aiyaapp.aiya.filter.AyThinFaceFilter;
 import com.aiyaapp.aiya.filter.AyTrackFilter;
+
 import com.aiyaapp.aiya.panel.EffectListener;
 import com.aiyaapp.aiya.render.AiyaGiftFilter;
 import com.aiyaapp.aiya.render.AnimListener;
@@ -37,40 +37,43 @@ import java.util.LinkedList;
  */
 public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Renderer {
 
-
     private AiyaGiftFilter mEffectFilter;
     private Context mContext;
     private AyBeautyFilter mAiyaBeautyFilter;
     private SluggardSvEffectTool mSvTool = SluggardSvEffectTool.getInstance();
+
     private LinkedList<Runnable> mTask = new LinkedList<>();
     private Class<? extends BaseFilter> mNowSvClazz;
-
     private BaseFilter mShowFilter;
     private AyTrackFilter mTrackFilter;
+
     private AyBigEyeFilter mBigEyeFilter;
     private AyThinFaceFilter mThinFaceFilter;
+
     private float mBeautyDegree = 0.0f;
     private float mBigEyeDegree = 0.0f;
     private float mThinFaceDegree = 0.0f;
+    private float mSmoothDegree = 0.0f;
+    private float mSaturateDegree = 0.0f;
+    private float mBrightenDegree = 0.0f;
     private int mWidth, mHeight;
+
 
     public DefaultEffectFlinger(Context context) {
         this.mContext = context;
-        mEffectFilter = new AiyaGiftFilter(mContext,new AiyaTracker(mContext));
+        mEffectFilter = new AiyaGiftFilter(mContext, null);
         mEffectFilter.setAnimListener(new AnimListener() {
             @Override
             public void onAnimEvent(int i, int i1, String s) {
                 AvLog.d("EffectFlingerInfo", "-->" + i + "/" + i1 + s);
             }
         });
-
         mShowFilter = new LazyFilter();
         mBigEyeFilter = new AyBigEyeFilter();
         mThinFaceFilter = new AyThinFaceFilter();
         mTrackFilter = new AyTrackFilter(context);
-//      MatrixUtils.flip(mFilter.getVertexMatrix(),false,true);
+        //MatrixUtils.flip(mFilter.getVertexMatrix(),false,true);
     }
-
 
     public void runOnRender(Runnable runnable) {
         mTask.add(runnable);
@@ -79,8 +82,8 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
 
     @Override
     public void onLookUpFilterChanged(int key, String path) {
-    }
 
+    }
 
     @Override
     public void onEffectChanged(int key, String path) {
@@ -91,9 +94,18 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         }
     }
 
+    public void setEffect(String path) {
+        mEffectFilter.setEffect(path);
+    }
+
+
+    private int mBeautyType = AiyaBeauty.TYPE1;
+
     @Override
     public void onBeautyChanged(int key) {
         runOnRender(() -> {
+            System.out.println("key ==" + key);
+            mBeautyType = key;
             if (mAiyaBeautyFilter != null) {
                 mAiyaBeautyFilter.destroy();
             }
@@ -101,6 +113,18 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
             mAiyaBeautyFilter.create();
             mAiyaBeautyFilter.sizeChanged(mWidth, mHeight);
             mAiyaBeautyFilter.setDegree(mBeautyDegree);
+
+            if (mBeautyType != AiyaBeauty.TYPE2) {
+                if (mSmoothDegree > 0) {
+                    mAiyaBeautyFilter.setSmoothDegree(mSmoothDegree);
+                }
+                if (mSaturateDegree > 0) {
+                    mAiyaBeautyFilter.setSaturateDegree(mSaturateDegree);
+                }
+                if (mBrightenDegree > 0) {
+                    mAiyaBeautyFilter.setBrightenDegree(mBrightenDegree);
+                }
+            }
         });
     }
 
@@ -111,6 +135,41 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
             if (mAiyaBeautyFilter != null) {
                 this.mBeautyDegree = degree;
                 mAiyaBeautyFilter.setDegree(degree);
+            }
+        });
+    }
+
+
+    @Override
+    public void onBeautySmoothDegreeChanged(float degree) {
+        if (mBeautyType == AiyaBeauty.TYPE2) return;
+        runOnRender(() -> {
+            if (mAiyaBeautyFilter != null) {
+                this.mSmoothDegree = degree;
+                mAiyaBeautyFilter.setSmoothDegree(degree);
+            }
+        });
+    }
+
+
+    @Override
+    public void onBeautySaturateDegreeChanged(float degree) {
+        if (mBeautyType == AiyaBeauty.TYPE2) return;
+        runOnRender(() -> {
+            if (mAiyaBeautyFilter != null) {
+                this.mSaturateDegree = degree;
+                mAiyaBeautyFilter.setSaturateDegree(degree);
+            }
+        });
+    }
+
+    @Override
+    public void onBeautyBrightenDegreeChanged(float degree) {
+        if (mBeautyType == AiyaBeauty.TYPE2) return;
+        runOnRender(() -> {
+            if (mAiyaBeautyFilter != null) {
+                this.mBrightenDegree = degree;
+                mAiyaBeautyFilter.setBrightenDegree(degree);
             }
         });
     }
@@ -134,6 +193,7 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         mShowFilter.create();
         mBigEyeFilter.create();
         mThinFaceFilter.create();
+
     }
 
     @Override
@@ -147,31 +207,36 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         mThinFaceFilter.sizeChanged(width, height);
     }
 
+
     @Override
     public void draw(int texture) {
         while (!mTask.isEmpty()) {
             mTask.removeFirst().run();
         }
         mTrackFilter.drawToTexture(texture);
-
         //礼物特效处理
-        mEffectFilter.setFaceDataID(mTrackFilter.getFaceDataID());
-        texture = mEffectFilter.drawToTexture(texture);
 
+        mEffectFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+
+
+        texture = mEffectFilter.drawToTexture(texture);
         //美颜处理
         if (mAiyaBeautyFilter != null) {
             texture = mAiyaBeautyFilter.drawToTexture(texture);
         }
-
         //大眼处理
         if (mBigEyeDegree > 0) {
-            mBigEyeFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+            if (mTrackFilter != null) {
+                mBigEyeFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+            }
             texture = mBigEyeFilter.drawToTexture(texture);
         }
 
         //瘦脸处理
         if (mThinFaceDegree > 0) {
-            mThinFaceFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+            if (mTrackFilter != null) {
+                mThinFaceFilter.setFaceDataID(mTrackFilter.getFaceDataID());
+            }
             texture = mThinFaceFilter.drawToTexture(texture);
         }
 
@@ -182,22 +247,22 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         mShowFilter.draw(texture);
     }
 
-
     @Override
     public void destroy() {
         AvLog.d("wuwang", "-->flinger destroy");
-        mTrackFilter.destroy();
         mEffectFilter.destroy();
         mShowFilter.destroy();
         mSvTool.onGlDestroy();
+        mTrackFilter.destroy();
     }
-
 
     public void release() {
         if (mEffectFilter != null) {
             mEffectFilter.release();
         }
-
+        if (mTrackFilter != null) {
+            mTrackFilter.release();
+        }
     }
 
 
@@ -207,12 +272,9 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         mBigEyeFilter.setDegree(degree);
     }
 
-
     @Override
     public void onThinFaceDegreeChanged(float degree) {
         this.mThinFaceDegree = degree;
         mThinFaceFilter.setDegree(degree);
     }
-
-
 }
