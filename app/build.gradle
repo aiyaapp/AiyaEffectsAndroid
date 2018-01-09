@@ -9,8 +9,8 @@ android {
 
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 4002
-        versionName "v4.0.2"
+        versionCode 4004
+        versionName "v4.0.4"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
@@ -40,16 +40,16 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'com.aiyaapp.aiya:AyCore:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyEffect:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyBeauty:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.2'
-
+    compile 'com.aiyaapp.aiya:AyCore:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyEffect:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyBeauty:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.4'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'

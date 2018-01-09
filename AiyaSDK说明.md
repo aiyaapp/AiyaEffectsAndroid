@@ -28,13 +28,13 @@
   
 - 添加引用
 ```java
-    compile 'com.aiyaapp.aiya:AyCore:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyEffect:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyBeauty:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.2'
-    compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.2'
+    compile 'com.aiyaapp.aiya:AyCore:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyEffect:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyBeauty:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.4'
+    compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.4'
     compile 'com.aiyaapp.aavt:aavt:a0.2.2'
 
 ```
 
-**另外，aiyagift、shadereffect及beauty这几个库都依赖aavt项目(com.aiyaapp.aavt:aavt:a0.2.2，渲染框架)，用于渲染用。**
+**另外，aiyagift、shadereffect及beauty这几个库都依赖aavt项目(com.aiyaapp.aavt:aavt:a0.2.3，渲染框架)，用于渲染用。**

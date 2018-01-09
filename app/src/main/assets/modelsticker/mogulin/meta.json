@@ -24,7 +24,7 @@
     },
 	{
 	  "type":"3dAnim",
-      "obj" : "huahuan.fbx",
+      "obj" : "huahuan.fbx"
     }
   ]
 }

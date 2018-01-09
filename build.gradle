@@ -13,14 +13,12 @@ buildscript {
 }
 
 allprojects {
-
     repositories {
         jcenter()
         maven { url "https://dl.bintray.com/aiyaapp/sdk" }
     }
-
-
 }
+
 
 task clean(type: Delete) {
     delete rootProject.buildDir

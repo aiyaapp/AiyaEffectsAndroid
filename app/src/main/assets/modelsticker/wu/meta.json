@@ -1,0 +1,11 @@
+﻿{
+  "format" : "1",
+  "name":"圣诞帽",
+  "resid" : "400701",
+  "nodes" : [
+    {
+    "type":"3dAnim",
+	"obj" : "two.fbx"
+    }
+  ]
+}

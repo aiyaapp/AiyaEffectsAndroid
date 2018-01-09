@@ -1,0 +1,27 @@
+{
+  "format" : "1",
+  "name":"yanhua2018",
+  "nodes" : [
+    	{
+      "type":"2dAnim",
+      "dirname" : "yanhua2018",
+      "number"      : 30,
+      "width" : 540,
+      "height" : 960,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "default",
+      "anchorX" : 101,
+      "anchorY" : 20,
+      "ratio" : 0.8,
+      "fullscreen" : 1,
+      "keepaspect" : 0
+    },
+	{
+	  "type":"3dModel",
+      "obj" : "yanhua.obj"
+    }
+  ]
+}

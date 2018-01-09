@@ -6,6 +6,18 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/mSurface" />
+
+
+    <ImageButton
+        android:id="@+id/mIbFlip"
+        android:layout_width="42dp"
+        android:layout_height="32dp"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="10dp"
+        android:background="@drawable/bt_flip"
+        android:contentDescription="@string/app_name"
+        />
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

@@ -72,7 +72,7 @@
                 android:gravity="center"
                 android:padding="@dimen/min_space"
                 android:text="美白磨皮"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:textColor="@color/select_group_text_selector"
                 android:textSize="16sp"
                 android:textStyle="bold" />
@@ -106,6 +106,7 @@
                 android:textStyle="bold" />
         </RadioGroup>
     </HorizontalScrollView>
+
     <ViewAnimator
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -114,6 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/mEffectList" />
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -218,7 +220,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:bsb_progress="0"
-                    app:bsb_max="6"
+                    app:bsb_max="1"
                     app:bsb_is_float_type="false"
                     android:id="@+id/mSeekBarMopi" />
             </LinearLayout>
@@ -247,6 +249,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:bsb_progress="0"
+                    app:bsb_max="1"
                     app:bsb_is_float_type="false"
                     android:id="@+id/mSeekBarMeibai" />
             </LinearLayout>
@@ -276,6 +279,7 @@
                     android:layout_height="wrap_content"
                     app:bsb_progress="0"
                     app:bsb_is_float_type="false"
+                    app:bsb_max="1"
                     android:id="@+id/mSeekBarHongrun" />
             </LinearLayout>
         </LinearLayout>

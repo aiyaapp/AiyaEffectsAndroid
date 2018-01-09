@@ -11,11 +11,14 @@ See [Chinese Document](readme_en.md)
 AiyaEffectsSDK is a high-performance rendering solution about dynamic stickers and animation effects which based on the independent research and development of face recognition module and it can be used to Android/iOS , two platforms.
 
 ### 1.1 Version Info
-**Current Version：AiyaEffects SDK V4.0.2** [version history](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/VersionHistory)
+
+**Current Version：AiyaEffects SDK V4.0.4** [version history](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/VersionHistory)
+
+
 
 ### 1.2 Integration Examples
 * [AiyaEffectsSDK with KSVC Demo](https://github.com/aiyaapp/AiyaEffectsWithKSVCAndroid)
-* [AiyaEffectsSDK with ZegoLive Demo](https://github.com/aiyaapp/AiyaEffectsWithZegoAndroid)
+
 
 ## 2. SDK Function Declaration
 
