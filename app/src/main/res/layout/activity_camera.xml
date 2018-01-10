@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
+
     <SurfaceView
+        android:id="@+id/mSurface"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/mSurface" />
+        android:layout_height="match_parent" />
 
 
     <ImageButton
@@ -16,39 +17,57 @@
         android:layout_margin="10dp"
         android:background="@drawable/bt_flip"
         android:contentDescription="@string/app_name"
-        />
+        android:onClick="onClick" />
+
 
     <RelativeLayout
+        android:id="@+id/mOtherMenu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
         android:layout_marginTop="40dp"
         android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:id="@+id/mOtherMenu" >
-        <ImageButton
+        android:paddingRight="20dp">
+
+        <!--<ImageButton-->
+        <!--android:layout_width="70dp"-->
+        <!--android:layout_height="70dp"-->
+        <!--android:background="@drawable/btn_shutter_background"-->
+        <!--android:id="@+id/mShutter"-->
+        <!--android:layout_centerInParent="true"/>-->
+
+        <com.aiyaapp.aiya.camera.CircularProgressView
+            android:id="@+id/mCapture"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="@drawable/btn_shutter_background"
-            android:id="@+id/mShutter"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:background="@drawable/bt_capture"
+            android:clickable="true" />
+
+
         <ImageView
+            android:id="@+id/mRight"
             style="@style/NormalMenu"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@mipmap/bt_camera_face"
             android:onClick="onEffect"
-            android:id="@+id/mRight" />
+            android:src="@mipmap/bt_camera_face" />
+
     </RelativeLayout>
-    <RelativeLayout android:layout_width="match_parent"
-        android:layout_height="match_parent"
+
+
+    <RelativeLayout
         android:id="@+id/mEffectView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
         android:clickable="true"
-        android:onClick="onHidden"
-        android:layout_alignParentBottom="true">
-        <include layout="@layout/window_effect"
+        android:onClick="onHidden">
+
+        <include
+            layout="@layout/window_effect"
             android:layout_width="match_parent"
             android:layout_height="215dp"
             android:layout_alignParentBottom="true" />
