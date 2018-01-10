@@ -35,7 +35,7 @@ public class EffectListener {
          * @param key index
          * @param path 滤镜图片路径
          */
-        void onLookUpFilterChanged(int key, String path);
+        void onLookUpFilterChanged(int key,String path);
     }
 
     interface OnEffectChangedListener{
@@ -44,7 +44,7 @@ public class EffectListener {
          * @param key index
          * @param path 特效资源路径
          */
-        void onEffectChanged(int key, String path);
+        void onEffectChanged(int key,String path);
     }
 
      interface OnEffectCheckListener {
@@ -80,7 +80,7 @@ public class EffectListener {
          * @param name 短视频特效名称
          * @param clazz 特效滤镜类
          */
-        void onShortVideoEffectChanged(int key, String name, Class<? extends BaseFilter> clazz);
+        void onShortVideoEffectChanged(int key,String name,Class<? extends BaseFilter> clazz);
 
     }
 

@@ -16,7 +16,9 @@
         android:layout_margin="10dp"
         android:background="@drawable/bt_flip"
         android:contentDescription="@string/app_name"
+        android:onClick="onClick"
         />
+
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -27,12 +29,24 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         android:id="@+id/mOtherMenu" >
-        <ImageButton
+
+        <!--<ImageButton-->
+            <!--android:layout_width="70dp"-->
+            <!--android:layout_height="70dp"-->
+            <!--android:background="@drawable/btn_shutter_background"-->
+            <!--android:id="@+id/mShutter"-->
+            <!--android:layout_centerInParent="true"/>-->
+
+        <com.aiyaapp.aiya.camera.CircularProgressView
+            android:id="@+id/mCapture"
             android:layout_width="70dp"
             android:layout_height="70dp"
-            android:background="@drawable/btn_shutter_background"
-            android:id="@+id/mShutter"
-            android:layout_centerInParent="true"/>
+            android:layout_centerInParent="true"
+            android:background="@drawable/bt_capture"
+            android:clickable="true" />
+
+
+
         <ImageView
             style="@style/NormalMenu"
             android:layout_alignParentRight="true"

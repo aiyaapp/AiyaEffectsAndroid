@@ -22,7 +22,6 @@ public class EffectAdapter extends RecyclerView.Adapter<ImageHolder> implements 
     public int[] effectIcons = new int[]{
             R.mipmap.no_eff, R.mipmap.img2017, R.mipmap.baowener, R.mipmap.gougou, R.mipmap.fadai, R.mipmap.grass, R.mipmap.huahuan, R.mipmap.majing, R.mipmap.maoer, R.mipmap.maorong, R.mipmap.meihualu, R.mipmap.niu, R.mipmap.shoutao, R.mipmap.tuer, R.mipmap.gaokongshiai, R.mipmap.shiwaitaoyuan, R.mipmap.mojing, R.mipmap.mogulin, R.mipmap.xiaohongmao
             , R.mipmap.arg
-//            , R.mipmap.bg, R.mipmap.bg, R.mipmap.bg, R.mipmap.bg
     };
 
     private EffectListener.OnEffectChangedListener mListener;
