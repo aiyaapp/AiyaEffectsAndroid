@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
         }, 10, start);
     }
 
+
+
     private Runnable start = new Runnable() {
         @Override
         public void run() {
@@ -53,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
 
     public void onClick(View view) {
         switch (view.getId()) {

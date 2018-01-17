@@ -71,6 +71,7 @@ public class CameraActivity extends AppCompatActivity {
         surface.getHolder().addCallback(new SurfaceHolder.Callback() {
             @Override
             public void surfaceCreated(SurfaceHolder holder) {
+
             }
 
             @Override
@@ -93,8 +94,6 @@ public class CameraActivity extends AppCompatActivity {
         mEffectController = new EffectController(this, mContainer, mFlinger);
 
         initRecordView();
-
-
         findViewById(R.id.mIbFlip).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -263,7 +262,6 @@ public class CameraActivity extends AppCompatActivity {
         return bmp;
     }
 
-
     private boolean recordFlag;
     //录像的Runnable
     private Runnable captureTouchRunnable = new Runnable() {
@@ -273,6 +271,7 @@ public class CameraActivity extends AppCompatActivity {
             mExecutor.execute(recordRunnable);
         }
     };
+
     private long timeStep = 50;
     private Runnable recordRunnable = new Runnable() {
 

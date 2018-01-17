@@ -53,7 +53,7 @@ Android版AiyaEffectsSDK minSdkVersion为16，即Android4.1及以上可用。
 
 ## 7. License说明
 * 宝宝特效 AiyaEffectsSDK 可以用于商业应用
-* 申请appKey请访问[宝宝特效 免费使用](http://bbtexiao.aiyaapp.com/site/free)
+* 申请appKey请访问[宝宝特效 免费使用](http://www.bbtexiao.com)
 
 ## 8. 反馈与建议
 - 主页: [宝宝特效](http://www.bbtexiao.com)
