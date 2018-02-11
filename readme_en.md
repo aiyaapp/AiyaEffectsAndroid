@@ -29,7 +29,7 @@ AiyaEffectsSDK is a high-performance rendering solution about dynamic stickers a
 
 
 ## 3. Runtime Environment
-AiyaEffectsSDK minSdkVersion 18(Android4.3+).
+AiyaEffectsSDK minSdkVersion 19(Android4.4+).
 
 ## 4. Get SDK
 There are two ways to get out sdk:
