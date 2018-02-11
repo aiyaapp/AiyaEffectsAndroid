@@ -39,7 +39,7 @@
 
 
 ## 3. 运行环境
-Android版AiyaEffectsSDK minSdkVersion为16，即Android4.1及以上可用。
+Android版AiyaEffectsSDK minSdkVersion为16，即Android4.4及以上可用。
 
 ## 4. 下载工程
 本SDK提供如下两种获取方式:
