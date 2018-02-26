@@ -53,9 +53,9 @@ dependencies {
 
 
     compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.4'
+
     compile 'com.aiyaapp.aavt:aavt:a0.3.5'
 
-//    compile (name:'aavt-debug',ext:'aar')
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
