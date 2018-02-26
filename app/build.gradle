@@ -9,8 +9,8 @@ android {
 
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 4004
-        versionName "v4.0.4"
+        versionCode 4005
+        versionName "v4.0.5"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
