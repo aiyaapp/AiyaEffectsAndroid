@@ -55,7 +55,6 @@ import java.util.concurrent.Executors;
  */
 public class CameraActivity extends AppCompatActivity {
 
-
     private EffectController mEffectController;
     private DefaultEffectFlinger mFlinger;
     private View mContainer;
@@ -68,6 +67,7 @@ public class CameraActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_camera);
+
         mRecord = new CameraRecorder2();
         mRecord.setOutputPath(tempPath);
         SurfaceView surface = (SurfaceView) findViewById(R.id.mSurface);
@@ -83,6 +83,7 @@ public class CameraActivity extends AppCompatActivity {
                 mRecord.setPreviewSize(width, height);
                 mRecord.startPreview();
             }
+
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
                 mRecord.stopPreview();

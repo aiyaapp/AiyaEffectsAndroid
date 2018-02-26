@@ -50,6 +50,8 @@ dependencies {
     compile 'com.aiyaapp.aiya:AyEffect:v4.0.4'
     compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.4'
 
+
+
     compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.4'
     compile 'com.aiyaapp.aavt:aavt:a0.3.5'
 
