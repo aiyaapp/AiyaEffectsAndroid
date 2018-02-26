@@ -319,6 +319,7 @@ public class CameraActivity extends AppCompatActivity {
     };
 
 
+  
     /**
      * 录制结束
      *
@@ -330,21 +331,37 @@ public class CameraActivity extends AppCompatActivity {
         //打开相册或图库
         if (type == 0) {//视频
             Intent v = new Intent(Intent.ACTION_VIEW);
-            v.setDataAndType(Uri.parse(tempPath), "video/mp4");
-            if (v.resolveActivity(getPackageManager()) != null) {
+            v.setDataAndType(Uri.parse(tempPath), "video/*");
+            try {
                 startActivity(v);
-            } else {
-                Toast.makeText(this,
-                        "无法找到默认媒体软件打开:" + tempPath, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "无法找到默认媒体软件打开:" + tempPath, Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
         } else {//打开图库
             Intent intent = new Intent(Intent.ACTION_VIEW);    //打开图片得启动ACTION_VIEW意图
-            Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));    //将bitmap转换为uri
-            intent.setDataAndType(uri, "image/*");    //设置intent数据和图片格式
-            startActivity(intent);
-
+            String imagePath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null);
+            if (imagePath == null) {
+                Log.e("wangyang", "save image error : imagePath == null");
+                // imagePaht == null resloution --> https://stackoverflow.com/questions/12230942/why-images-media-insertimage-return-null
+                File file = new File("/sdcard/DCIM/Camera");
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                imagePath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null);
+            }
+            if (TextUtils.isEmpty(imagePath)) {
+                Toast.makeText(getApplicationContext(), "image failed to be stored", Toast.LENGTH_LONG).show();
+            } else {
+                Uri uri = Uri.parse(imagePath);    //将bitmap转换为uri
+                intent.setDataAndType(uri, "image/*");    //设置intent数据和图片格式
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "没有找到图片管理器", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
-
 }
