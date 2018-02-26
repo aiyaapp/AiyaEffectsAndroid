@@ -109,6 +109,7 @@ public class CameraActivity extends AppCompatActivity {
     }
 
     public void onHidden(View view) {
+        
         mEffectController.hide();
     }
 
