@@ -66,6 +66,7 @@ public class EffectController implements EffectListener.EffectFlinger, EffectLis
         this.act = act;
         this.container = container;
         this.mFlinger = flinger;
+
         selectKey.append(0, R.id.select_group_0);
         selectKey.append(1, R.id.select_group_1);
         selectKey.append(2, R.id.select_group_2);

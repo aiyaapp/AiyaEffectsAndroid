@@ -26,6 +26,7 @@ import android.os.Looper;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
@@ -41,6 +42,8 @@ import com.aiyaapp.aavt.media.SurfaceShower;
 import com.aiyaapp.aiya.DefaultEffectFlinger;
 import com.aiyaapp.aiya.R;
 import com.aiyaapp.aiya.panel.EffectController;
+
+import java.io.File;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -65,6 +68,7 @@ public class CameraActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_camera);
+
         mRecord = new CameraRecorder2();
         mRecord.setOutputPath(tempPath);
         SurfaceView surface = (SurfaceView) findViewById(R.id.mSurface);
@@ -87,14 +91,13 @@ public class CameraActivity extends AppCompatActivity {
                 mRecord.close();
             }
         });
+
         mContainer = findViewById(R.id.mEffectView);
         mFlinger = new DefaultEffectFlinger(getApplicationContext());
         mRecord.setRenderer(mFlinger);
         mEffectController = new EffectController(this, mContainer, mFlinger);
 
         initRecordView();
-
-
         findViewById(R.id.mIbFlip).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -158,7 +161,6 @@ public class CameraActivity extends AppCompatActivity {
         return data;
     }
 
-
     /**
      * 拍照和录制
      */
@@ -205,7 +207,6 @@ public class CameraActivity extends AppCompatActivity {
                     mOutputFilter.sizeChanged(picX, picY);
                     mOutputFilter.setInputTextureSize(bean.sourceWidth, bean.sourceHeight);
                     tempBuffer = new byte[picX * picY * 3 / 2];
-
                     mOutputFilter.drawToTexture(bean.textureId);
                     mOutputFilter.getOutput(tempBuffer, 0, picX * picY * 3 / 2);
                     runOnUiThread(new Runnable() {
@@ -218,16 +219,13 @@ public class CameraActivity extends AppCompatActivity {
                             mBitmap = rawByteArray2RGBABitmap2(tempBuffer, picX, picY);
                             //保存图片
                             recordComplete(type, "", mBitmap);
-
                         }
                     });
                     exportFlag = false;
                 }
             }
         });
-
     }
-
 
     /**
      * 拍照
@@ -236,8 +234,8 @@ public class CameraActivity extends AppCompatActivity {
     private byte[] tempBuffer;
     private boolean exportFlag = false;
     private Bitmap mBitmap;
-    private int picX = 720;
-    private int picY = 1280;
+    private final int picX = 720;
+    private final int picY = 1280;
     private ExecutorService mExecutor;
 
     public Bitmap rawByteArray2RGBABitmap2(byte[] data, int width, int height) {
@@ -263,7 +261,6 @@ public class CameraActivity extends AppCompatActivity {
         return bmp;
     }
 
-
     private boolean recordFlag;
     //录像的Runnable
     private Runnable captureTouchRunnable = new Runnable() {
@@ -273,6 +270,7 @@ public class CameraActivity extends AppCompatActivity {
             mExecutor.execute(recordRunnable);
         }
     };
+
     private long timeStep = 50;
     private Runnable recordRunnable = new Runnable() {
 
@@ -330,21 +328,37 @@ public class CameraActivity extends AppCompatActivity {
         //打开相册或图库
         if (type == 0) {//视频
             Intent v = new Intent(Intent.ACTION_VIEW);
-            v.setDataAndType(Uri.parse(tempPath), "video/mp4");
-            if (v.resolveActivity(getPackageManager()) != null) {
+            v.setDataAndType(Uri.parse(tempPath), "video/*");
+            try {
                 startActivity(v);
-            } else {
-                Toast.makeText(this,
-                        "无法找到默认媒体软件打开:" + tempPath, Toast.LENGTH_SHORT).show();
+            } catch (Exception e) {
+                Toast.makeText(this, "无法找到默认媒体软件打开:" + tempPath, Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
             }
         } else {//打开图库
             Intent intent = new Intent(Intent.ACTION_VIEW);    //打开图片得启动ACTION_VIEW意图
-            Uri uri = Uri.parse(MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null));    //将bitmap转换为uri
-            intent.setDataAndType(uri, "image/*");    //设置intent数据和图片格式
-            startActivity(intent);
-
+            String imagePath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null);
+            if (imagePath == null) {
+                Log.e("wangyang", "save image error : imagePath == null");
+                // imagePaht == null resloution --> https://stackoverflow.com/questions/12230942/why-images-media-insertimage-return-null
+                File file = new File("/sdcard/DCIM/Camera");
+                if (!file.exists()) {
+                    file.mkdirs();
+                }
+                imagePath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmap, null, null);
+            }
+            if (TextUtils.isEmpty(imagePath)) {
+                Toast.makeText(getApplicationContext(), "image failed to be stored", Toast.LENGTH_LONG).show();
+            } else {
+                Uri uri = Uri.parse(imagePath);    //将bitmap转换为uri
+                intent.setDataAndType(uri, "image/*");    //设置intent数据和图片格式
+                try {
+                    startActivity(intent);
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "没有找到图片管理器", Toast.LENGTH_LONG).show();
+                    e.printStackTrace();
+                }
+            }
         }
     }
-
-
 }

@@ -71,7 +71,11 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
         mShowFilter = new LazyFilter();
         mBigEyeFilter = new AyBigEyeFilter();
         mThinFaceFilter = new AyThinFaceFilter();
+
+
         mTrackFilter = new AyTrackFilter(context);
+
+
         //MatrixUtils.flip(mFilter.getVertexMatrix(),false,true);
     }
 
