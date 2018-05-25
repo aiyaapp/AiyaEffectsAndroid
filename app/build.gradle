@@ -9,14 +9,14 @@ android {
 
         minSdkVersion 19
         targetSdkVersion 25
-        versionCode 4005
-        versionName "v4.0.5"
+        versionCode 4007
+        versionName "v4.0.7"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         jackOptions {
             enabled true
         }
         ndk {
-            abiFilters 'armeabi', "armeabi-v7a", 'x86'
+            abiFilters "armeabi-v7a", 'arm64-v8a'
         }
         enforceUniquePackageName = false
     }
@@ -24,11 +24,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
-    sourceSets {
-        main {
-            jniLibs.srcDirs += ['../libs/core', '../libs/aiyagift', '../libs/aiyatrack', '../libs/shortvideo', '../libs/beauty']
         }
     }
     compileOptions {
@@ -40,12 +35,12 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    compile 'com.aiyaapp.aiya:AyCore:v4.0.4'
-    compile 'com.aiyaapp.aiya:AyEffect:v4.0.4'
-    compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.4'
-    compile 'com.aiyaapp.aiya:AyBeauty:v4.0.4'
-    compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.4'
-    compile 'com.aiyaapp.aavt:aavt:a0.3.5'
+    compile 'com.aiyaapp.aiya:AyCore:v4.0.7'
+    compile 'com.aiyaapp.aiya:AyFaceTrack:v4.0.7'
+    compile 'com.aiyaapp.aiya:AyBeauty:v4.0.7'
+    compile 'com.aiyaapp.aiya:AyShortVideoEffect:v4.0.7'
+    compile 'com.aiyaapp.aiya:AyEffect:v4.0.7'
+    compile 'com.aiyaapp.aavt:aavt:v4.0.7'
 
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'

@@ -19,7 +19,7 @@
 
 ### 1.1 版本信息
 
-**当前版本：AiyaEffects SDK V4.0.4** [查看历史版本](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC)
+**当前版本：AiyaEffects SDK V4.0.7** [查看历史版本](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/%E5%8E%86%E5%8F%B2%E7%89%88%E6%9C%AC)
 
 
 ### 1.2 集成示例
