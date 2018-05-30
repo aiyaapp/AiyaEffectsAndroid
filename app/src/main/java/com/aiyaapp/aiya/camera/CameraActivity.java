@@ -17,6 +17,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Camera;
 import android.net.Uri;
 import android.opengl.EGLSurface;
 import android.os.Bundle;
@@ -77,6 +78,11 @@ public class CameraActivity extends AppCompatActivity {
 
             @Override
             public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+                mFlinger = new DefaultEffectFlinger(getApplicationContext());
+                mRecord.setRenderer(mFlinger);
+                mEffectController = new EffectController(CameraActivity.this, mContainer, mFlinger);
+                mEffectController.show();
+
                 mRecord.open();
                 mRecord.setSurface(holder.getSurface());
                 mRecord.setPreviewSize(width, height);
@@ -87,15 +93,14 @@ public class CameraActivity extends AppCompatActivity {
             public void surfaceDestroyed(SurfaceHolder holder) {
                 mRecord.stopPreview();
                 mRecord.close();
+
+                mFlinger.release();
             }
         });
+
         mContainer = findViewById(R.id.mEffectView);
-        mFlinger = new DefaultEffectFlinger(getApplicationContext());
-        mRecord.setRenderer(mFlinger);
-        mEffectController = new EffectController(this, mContainer, mFlinger);
 
         initRecordView();
-
 
         findViewById(R.id.mIbFlip).setOnClickListener(new View.OnClickListener() {
             @Override

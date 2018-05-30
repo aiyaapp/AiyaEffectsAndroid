@@ -57,7 +57,7 @@ public class EffectController implements EffectListener.EffectFlinger, EffectLis
     private BubbleSeekBar mSeekBarMopi;
     private BubbleSeekBar mSeekBarHongrun;
 
-    private EffectListener.EffectFlinger mFlinger;
+    public EffectListener.EffectFlinger mFlinger;
 
     private SparseIntArray selectKey = new SparseIntArray();
     private Activity act;
