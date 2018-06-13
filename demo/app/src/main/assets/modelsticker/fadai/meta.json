@@ -1,0 +1,11 @@
+{
+  "format" : "1",
+  "name":"发带",
+  "resid" : "500102",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "fadai_blue.obj",
+    },
+  ]
+}

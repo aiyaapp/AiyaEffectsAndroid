@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FFff5500</color>
+
+    <color name="color_normal_btn">#22000000</color>
+    <color name="color_normal_btn_focus">#66ff5500</color>
+    <color name="color_normal_btn_border">#FFff5500</color>
+    <color name="color_normal_btn_text">#FFFFFFFF</color>
+
+    <color name="colorTranslucent">#00000000</color>
+    <color name="colorWhite">#ffffffff</color>
+
+    <color name="egg_yellow">#ffcb15</color>
+    <color name="faceu_green">#2ddbb1</color>
+
+    <color name="c80000000">#80000000</color> <!--50%-->
+    <color name="percent60translucentBlack">#99000000</color>
+
+    <!-- Whites -->
+    <color name="white">#ffffff</color>
+
+    <color name="unselect_gray">#48ffffff</color>
+</resources>

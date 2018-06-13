@@ -1,0 +1,10 @@
+{
+  "format" : "1",
+  "name":"pinkhb_aug",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "pinkhb_aug.obj"
+    },
+  ]
+}

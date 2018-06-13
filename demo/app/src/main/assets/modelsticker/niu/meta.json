@@ -1,0 +1,11 @@
+{
+  "format" : "1",
+  "name":"牛",
+  "resid" : "500202",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "niu.obj",
+    },
+  ]
+}

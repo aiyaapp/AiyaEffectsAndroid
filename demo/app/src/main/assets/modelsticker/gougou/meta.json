@@ -1,0 +1,10 @@
+{
+  "format" : "1",
+  "name":"狗狗",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "gougou.obj",
+    },
+  ]
+}

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/bg" />
+    <com.aiyaapp.aiya.render.AiyaMutilEffectView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/mGift"/>
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="30dp"
+        android:background="@drawable/normal_btn"
+        android:text="@string/btn_replay"
+        android:textColor="@color/color_normal_btn_text"
+        android:textSize="12sp"
+        android:layout_margin="20dp"
+        android:id="@+id/mBtnReplay"
+        android:onClick="onClick"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/edit_test"
+        android:textColor="@color/color_normal_btn_focus"
+        android:textSize="12sp"
+        android:gravity="center"
+        android:layout_toLeftOf="@id/mBtnReplay"
+        android:layout_toStartOf="@id/mBtnReplay"
+        android:layout_marginBottom="20dp"
+        android:layout_alignParentBottom="true" />
+</RelativeLayout>

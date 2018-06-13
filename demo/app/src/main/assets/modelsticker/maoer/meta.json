@@ -1,0 +1,10 @@
+{
+  "format" : "1",
+  "name":"猫儿",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "maoer.obj",
+    },
+  ]
+}

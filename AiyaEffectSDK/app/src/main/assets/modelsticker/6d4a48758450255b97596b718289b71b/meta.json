@@ -1,0 +1,28 @@
+{
+  "format" : "1",
+  "name":"蓝色2018",
+  "resid" : "500110",
+  "nodes" : [
+    	{
+      "type":"2dAnim",
+      "dirname" : "languang",
+      "number"      : 45,
+      "width" : 540,
+      "height" : 960,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "default",
+      "anchorX" : 101,
+      "anchorY" : 20,
+      "ratio" : 1.0,
+      "fullscreen" : 1,
+      "keepaspect" : 0
+    },
+	{
+	  "type":"3dModel",
+      "obj" : "2018languang.obj"
+    }
+  ]
+}

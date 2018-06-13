@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/AiyaEffectSDK.iml" filepath="$PROJECT_DIR$/AiyaEffectSDK.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AyBeauty/AyBeauty.iml" filepath="$PROJECT_DIR$/AyBeauty/AyBeauty.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AyCore/AyCore.iml" filepath="$PROJECT_DIR$/AyCore/AyCore.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AyEffect/AyEffect.iml" filepath="$PROJECT_DIR$/AyEffect/AyEffect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AyFaceTrack/AyFaceTrack.iml" filepath="$PROJECT_DIR$/AyFaceTrack/AyFaceTrack.iml" />
+      <module fileurl="file://$PROJECT_DIR$/AyShortVideoEffect/AyShortVideoEffect.iml" filepath="$PROJECT_DIR$/AyShortVideoEffect/AyShortVideoEffect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/aavt/aavt.iml" filepath="$PROJECT_DIR$/aavt/aavt.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+    </modules>
+  </component>
+</project>

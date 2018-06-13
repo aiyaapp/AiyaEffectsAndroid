@@ -1,0 +1,10 @@
+{
+  "format" : "1",
+  "name":"mao",
+  "nodes" : [
+    {
+      "type":"3dModel",
+      "obj" : "mao.obj"
+    }
+  ]
+}

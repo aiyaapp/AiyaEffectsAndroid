@@ -1,0 +1,3 @@
+//include  ':AiyaDemo4'
+include ':app', ':AyCore', ':AyEffect', ':AyFaceTrack', ':AyBeauty', ':aavt'
+include ':AyShortVideoEffect'

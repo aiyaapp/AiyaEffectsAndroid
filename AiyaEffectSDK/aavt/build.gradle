@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+group='com.aiyaapp.aavt'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        versionCode rootProject.ext.vCode
+        versionName rootProject.ext.vName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+task buildMyJar(type: Jar, dependsOn: ['build']) {
+    //导出的jar文件名称
+    archiveName = 'Aavt.jar'
+    //从哪个目录打包jar
+    from('build/intermediates/classes/release/')
+    destinationDir = file('output')
+    //去掉不要的类
+    exclude('**/BuildConfig.class')
+    exclude('**/BuildConfig\$*.class')
+    exclude('**/R.class')
+    exclude('**/R\$*.class')
+    include('com/aiyaapp/aavt/**')
+
+//    doLast{
+//        copy {
+//            from('libs/','build/intermediates/cmake/release/obj/')
+//            into('output/')
+//        }
+//    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+}
+
+apply from: "bintrayUpload.gradle"
