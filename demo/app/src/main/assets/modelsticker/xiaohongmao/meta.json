@@ -1,0 +1,30 @@
+{
+  "format" : "1",
+  "name":"小红帽",
+  "needtrack" : 0,
+  "resid" : "400005",
+  "nodes" : [
+   	{
+      "type":"2dAnim",
+      "dirname" : "xiaohongmao",
+      "number"      : 270,
+      "width" : 720,
+      "height" : 1280,
+      "duration" : 66,
+      "isloop" : 1,
+      "Triggertype" : 0,
+      "untilFinish" : 1,
+      "position" : "default",
+      "anchorX" : 101,
+      "anchorY" : 20,
+      "ratio" : 1.0,
+      "fullscreen" : 1,
+      "keepaspect" : 0,
+	  "PositionSwitch" : 0
+    },
+	{
+      "type":"3dAnim",
+	  "obj" : "xhm.fbx"
+    }
+  ]
+}

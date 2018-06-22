@@ -1,0 +1,87 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 27
+        versionCode rootProject.ext.vCode
+        versionName rootProject.ext.vName
+
+        ndk{
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86"
+        }
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=c++11 -frtti -fexceptions"
+                arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+        }
+    }
+    sourceSets{
+        main{
+            jniLibs.srcDirs+="libs"
+        }
+    }
+
+}
+
+
+task buildMyJar(type: Jar, dependsOn: ['build']) {
+    //导出的jar文件名称
+    archiveName = 'AyTrack.jar'
+    //从哪个目录打包jar
+    from('build/intermediates/classes/release/')
+    from('src/main/')
+
+    destinationDir = file('../output/aiyatrack/')
+    //去掉不要的类
+    exclude('**/BuildConfig.class')
+    exclude('**/BuildConfig\$*.class')
+    exclude('**/R.class')
+    exclude('**/R\$*.class')
+    include('com/aiyaapp/aiya/**')
+    include('assets/**')
+
+    doLast{
+        copy {
+            from('build/intermediates/cmake/release/obj')
+            into('../output/aiyatrack/')
+        }
+        copy {
+            from('libs')
+            into('../output/aiyatrack/')
+        }
+    }
+}
+
+task buildJavaDoc(type:Javadoc){
+    options.encoding = "UTF-8"
+    options.charSet = "UTF-8"
+    source 'src/main/java'
+}
+
+dependencies {
+    //compile fileTree(include: ['*.jar'], dir: 'libs')
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    //    compile files('../output/core/AySdkCore.jar')
+    implementation project(':AyCore')
+    implementation project(':aavt')
+}
+
+apply from: "buTrack.gradle"

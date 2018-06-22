@@ -1,0 +1,20 @@
+# This file uses centimeters as units for non-parametric coordinates.
+
+mtllib fadai_blue.mtl
+g default
+v -0.084437 0.061274 -0.040172
+v 0.099236 0.061274 -0.040172
+v -0.084437 0.170142 -0.040172
+v 0.099236 0.170142 -0.040172
+vt 0.000000 0.000000
+vt 1.000000 0.000000
+vt 1.000000 1.000000
+vt 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+vn 0.000000 0.000000 1.000000
+s off
+g fadai_blue:pPlane3
+usemtl fadai_blue:lambert8SG
+f 1/1/1 2/2/2 4/3/3 3/4/4

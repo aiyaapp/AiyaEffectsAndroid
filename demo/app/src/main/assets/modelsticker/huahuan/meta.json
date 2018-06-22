@@ -1,0 +1,10 @@
+{
+  "format" : "1",
+  "name":"花环",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "huahuan.obj",
+    },
+  ]
+}

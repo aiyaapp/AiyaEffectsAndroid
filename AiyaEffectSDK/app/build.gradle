@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
+    defaultConfig {
+        applicationId "com.aiyaapp.aiya.test"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode rootProject.ext.vCode
+        versionName rootProject.ext.vName
+//        jackOptions {
+//            enabled true
+//        }
+        ndk {
+//          abiFilters 'armeabi',"armeabi-v7a",'x86'
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+//        enforceUniquePackageName = false
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+//    sourceSets {
+//        main {
+//            jniLibs.srcDirs += ['../libs/core', '../libs/aiyagift', '../libs/aiyatrack', '../libs/shortvideo', '../libs/beauty']
+//        }
+//    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(':AyCore')
+    implementation project(':AyFaceTrack')
+    implementation project(':AyEffect')
+    implementation project(':AyShortVideoEffect')
+    implementation project(':AyBeauty')
+    implementation project(path: ':aavt')
+
+    implementation 'com.android.support:appcompat-v7:27.1.1'
+    implementation 'com.android.support:recyclerview-v7:27.1.1'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+
+    implementation 'com.xw.repo:bubbleseekbar:3.5'
+    implementation 'com.squareup.leakcanary:leakcanary-android:1.5.3'
+}

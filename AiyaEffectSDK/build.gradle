@@ -1,0 +1,32 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.2'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.7.3'
+
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+        maven { url "https://dl.bintray.com/aiyaapp/sdk" }
+    }
+}
+
+ext {
+    vCode = 4008
+    vName = "v4.0.8"
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

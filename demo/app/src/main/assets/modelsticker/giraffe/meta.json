@@ -1,0 +1,11 @@
+{
+  "format" : "1",
+  "name":"长颈鹿",
+  "resid" : "500301",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "giraffe.obj",
+    },
+  ]
+}

@@ -1,0 +1,11 @@
+
+javadocSet{
+    options{
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+    }
+}
+
+task buildJavaDoc(type:Javadoc,dependsOn:javadocSet){
+    source 'src/main/java'
+}

@@ -1,0 +1,10 @@
+{
+  "format" : "1",
+  "name":"手套",
+  "nodes" : [
+    {
+	  "type":"3dModel",
+      "obj" : "shoutao.obj",
+    },
+  ]
+}
