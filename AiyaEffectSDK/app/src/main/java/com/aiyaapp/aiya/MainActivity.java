@@ -3,6 +3,7 @@ package com.aiyaapp.aiya;
 import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -12,6 +13,8 @@ import android.widget.Toast;
 import com.aiyaapp.aiya.camera.CameraActivity;
 import com.aiyaapp.aiya.gift.GiftActivity;
 import com.aiyaapp.aiya.panel.PermissionUtils;
+
+import java.io.File;
 
 
 public class MainActivity extends AppCompatActivity {

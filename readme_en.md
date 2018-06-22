@@ -12,7 +12,7 @@ AiyaEffectsSDK is a high-performance rendering solution about dynamic stickers a
 
 ### 1.1 Version Info
 
-**Current Version：AiyaEffects SDK V4.0.7** [version history](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/VersionHistory)
+**Current Version：AiyaEffects SDK V4.0.8** [version history](https://github.com/aiyaapp/AiyaEffectsAndroid/wiki/VersionHistory)
 
 
 
