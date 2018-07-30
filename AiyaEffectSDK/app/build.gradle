@@ -42,7 +42,7 @@ dependencies {
     implementation project(':AyEffect')
     implementation project(':AyShortVideoEffect')
     implementation project(':AyBeauty')
-    implementation project(path: ':aavt')
+    implementation project(':aavt')
 
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support:recyclerview-v7:27.1.1'

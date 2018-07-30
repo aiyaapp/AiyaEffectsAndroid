@@ -15,6 +15,7 @@ package com.aiyaapp.aiya.filter;
 
 import android.content.Context;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import com.aiyaapp.aavt.gl.LazyFilter;
 import com.aiyaapp.aiya.AiyaTracker;
@@ -66,6 +67,9 @@ public class AyTrackFilter extends LazyFilter {
         super.draw(texture);
         GLES20.glReadPixels(0, 0, mTrackWidth, mTrackHeight, GLES20.GL_RGBA, GLES20.GL_UNSIGNED_BYTE, mTrackBuffer);
         GLES20.glViewport(viewPort[0], viewPort[1], viewPort[2], viewPort[3]);
+
+        Log.d("wangyang","size" + mTrackBuffer.array().length);
+
         mTracker.track(AiyaTracker.IMAGE_TYPE_RGBA, mTrackBuffer.array(), mTrackWidth, mTrackHeight);
     }
 
