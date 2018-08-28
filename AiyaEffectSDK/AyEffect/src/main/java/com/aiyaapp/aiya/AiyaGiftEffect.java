@@ -211,9 +211,15 @@ public class AiyaGiftEffect {
     static {
         System.loadLibrary("AyCoreSdk");
         System.loadLibrary("AyCoreSdkJni");
-        System.loadLibrary("assimp");
-        System.loadLibrary("gameplay");
-        System.loadLibrary("ayeffects");
+        // Normal mode: support 3D objects, 3D animation, 2D gift effects and 2D facial effects.
+        // Following 3 libs should be loaded in normal mode.
+        //System.loadLibrary("assimp");
+        //System.loadLibrary("gameplay");
+        //System.loadLibrary("ayeffects");
+
+        // Lite mode: only support 2D gift effects. Lite mode and normal mode are exclusive.
+        // Following lib should be loaded only in lite mode;
+        System.loadLibrary("ayeffects-lite");
         System.loadLibrary("AyGift");
     }
 
