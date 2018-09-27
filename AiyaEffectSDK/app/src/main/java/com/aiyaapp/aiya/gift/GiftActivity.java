@@ -16,7 +16,7 @@ import com.aiyaapp.aiya.render.AiyaMutilEffectView;
  */
 
 public class GiftActivity extends AppCompatActivity {
-
+    private static final String TAG = "aiyaapp";
     private AiyaMutilEffectView mGift;
 
 
@@ -36,13 +36,13 @@ public class GiftActivity extends AppCompatActivity {
             public void onAnimEvent(AiyaMutilEffectView.Layer layer, int i, int i1, String s) {
                 if(i== Const.MSG_TYPE_INFO){
                     if(i1== AiyaGiftEffect.MSG_STAT_EFFECTS_END){
-                        Log.e("wuwang","播放完成:"+layer.toString());
-                        Log.e("wuwang","isAllAnimEnd:"+mGift.isAllAnimEnd());
+                        Log.d(TAG,"播放完成:"+layer.toString());
+                        Log.d(TAG,"isAllAnimEnd:"+mGift.isAllAnimEnd());
                     }else if(i1==AiyaGiftEffect.MSG_STAT_EFFECTS_START){
-                        Log.e("wuwang","播放开始:"+layer.toString());
+                        Log.d(TAG,"播放开始:"+layer.toString());
                     }
                 }else if(i==Const.MSG_TYPE_ERROR){
-                    Log.e("wuwang","错误："+layer.toString()+"/"+i+"/"+i1+"/"+s);
+                    Log.e(TAG,"错误："+layer.toString()+"/"+i+"/"+i1+"/"+s);
                 }
             }
         });

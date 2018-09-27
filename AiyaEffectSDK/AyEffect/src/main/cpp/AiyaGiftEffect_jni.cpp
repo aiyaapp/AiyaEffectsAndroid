@@ -45,13 +45,16 @@ jint ayInit(JNIEnv * env,jclass clazz,jlong id,jstring data){
 }
 
 jint aySetEffect(JNIEnv * env,jclass clazz,jlong id,jstring effect){
+
     if(effect!=NULL){
         const char * e=env->GetStringUTFChars(effect,JNI_FALSE);
         int ret=((RenderSticker *)id)->setParam("StickerType",(void *)e);
+        Log::d("setEffect: %s", e);
         env->ReleaseStringUTFChars(effect,e);
         return  ret;
     }else{
         ((RenderSticker *)id)->setParam("StickerType", nullptr);
+        Log::d("setEffect: null");
     }
     return 0;
 }

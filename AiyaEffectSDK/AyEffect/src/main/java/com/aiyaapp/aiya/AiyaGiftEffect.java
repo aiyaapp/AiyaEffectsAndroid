@@ -28,7 +28,7 @@ import com.aiyaapp.aiya.render.AnimListener;
  * @version v1.0 2017:10:30 15:06
  */
 public class AiyaGiftEffect {
-
+    private static final String TAG = "aiyaapp";
     /**
      * GL环境错误
      */
@@ -55,14 +55,14 @@ public class AiyaGiftEffect {
     public static final int MSG_STAT_EFFECTS_START = 0x00080000;
 
     public static final WeakEventListener mListener = new WeakEventListener();
-
+    public static WeakAnimListener mAnimListener;
     private long nativeId;
     private IComponent mTracker;
     private final Object LOCK = new Object();
 
     public AiyaGiftEffect(Context context) {
         nativeId = _createGiftObject(context, 0);
-        Log.e("wuwang", "create nativeId:" + nativeId);
+        Log.d(TAG, "create nativeId:" + nativeId);
     }
 
     /**
@@ -98,7 +98,7 @@ public class AiyaGiftEffect {
     public int draw(int textureId, int width, int height, byte[] data) {
         long start = System.currentTimeMillis();
         int ret = _draw(nativeId, textureId, width, height, data);
-        AvLog.d("AiyaGiftEffect Draw cost time:" + (System.currentTimeMillis() - start));
+        Log.d(TAG, "AiyaGiftEffect Draw cost time:" + (System.currentTimeMillis() - start));
         return ret;
     }
 
@@ -132,7 +132,7 @@ public class AiyaGiftEffect {
     }
 
     public void setFaceDataID(long id) {
-        Log.e("wuwang", "FaceData:" + id);
+        Log.d(TAG, "FaceData:" + id);
         _setOptions(nativeId, "FaceData", id);
     }
 
@@ -154,20 +154,18 @@ public class AiyaGiftEffect {
         super.finalize();
     }
 
-
-
-
     /**
      * 释放对象
      */
     public void release() {
         synchronized (LOCK) {
-            Log.e("wuwang", "nativeID:" + nativeId);
+            Log.d(TAG, "nativeID:" + nativeId);
              _release(nativeId);
             nativeId = 0;
             if (mTracker != null) {
                 mTracker.release();
             }
+
         }
     }
 
@@ -177,7 +175,9 @@ public class AiyaGiftEffect {
      * @param listener 监听器
      */
     public void setEventListener(AnimListener listener) {
-        _setEventListener(nativeId, new WeakAnimListener(listener));
+        //_setEventListener(nativeId, new WeakAnimListener(listener));
+        mAnimListener = new WeakAnimListener(listener);
+        _setEventListener(nativeId, mAnimListener);
     }
 
     private static native long _createGiftObject(Context context, int type);
@@ -213,13 +213,13 @@ public class AiyaGiftEffect {
         System.loadLibrary("AyCoreSdkJni");
         // Normal mode: support 3D objects, 3D animation, 2D gift effects and 2D facial effects.
         // Following 3 libs should be loaded in normal mode.
-        //System.loadLibrary("assimp");
-        //System.loadLibrary("gameplay");
-        //System.loadLibrary("ayeffects");
+        System.loadLibrary("assimp");
+        System.loadLibrary("gameplay");
+        System.loadLibrary("ayeffects");
 
         // Lite mode: only support 2D gift effects. Lite mode and normal mode are exclusive.
         // Following lib should be loaded only in lite mode;
-        System.loadLibrary("ayeffects-lite");
+        //System.loadLibrary("ayeffects-lite");
         System.loadLibrary("AyGift");
     }
 
