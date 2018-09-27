@@ -49,9 +49,9 @@ jint ayTrack(JNIEnv * env,jclass clazz,jlong id,jint type,jbyteArray input,jint 
     jbyte * in=env->GetByteArrayElements(input,JNI_FALSE);
     jfloat * out=env->GetFloatArrayElements(output,JNI_FALSE);
     int size=env->GetArrayLength(output);
-    Log::e("track start");
+    Log::d("track start");
     int ret=((FaceTrack *)id)->track((uint8_t *) in, width, height, AiyaTrack::ImageType::tImageTypeRGBA,&mFaceData);
-    Log::e("track end: ret=%d",ret);
+    Log::d("track end: ret=%d",ret);
 
     int len=std::min(size,mFaceData.numfeaturePoints2D*2)* sizeof(float);
     if(len>0){
@@ -64,9 +64,9 @@ jint ayTrack(JNIEnv * env,jclass clazz,jlong id,jint type,jbyteArray input,jint 
 
 jint ayTrackFaceData(JNIEnv * env,jclass clazz,jlong id,jint type,jbyteArray input,jint width,jint height){
     jbyte * in=env->GetByteArrayElements(input,JNI_FALSE);
-    Log::e("ayTrackFaceData start");
+    Log::d("ayTrackFaceData start");
     int ret=((FaceTrack *)id)->track((uint8_t *) in, width, height, AiyaTrack::ImageType::tImageTypeRGBA,&mFaceData);
-    Log::e("ayTrackFaceData end: ret=%d",ret);
+    Log::d("ayTrackFaceData end: ret=%d",ret);
     pmFaceData = ret == 0 ? &mFaceData : NULL;
     env->ReleaseByteArrayElements(input,in,JNI_ABORT);
     return ret;
