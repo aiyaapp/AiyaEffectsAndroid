@@ -100,10 +100,12 @@ public class VideoSurfaceProcessor {
     }
 
     private void glRun() {
+        AvLog.d(TAG, "initial egl enviroment");
         EglHelper egl = new EglHelper();
         boolean ret = egl.createGLESWithSurface(new EGLConfigAttrs(), new EGLContextAttrs(), new SurfaceTexture(1));
         if (!ret) {
             //todo 错误处理
+            AvLog.e(TAG, "createGLESWithSurface fail");
             return;
         }
         int mInputSurfaceTextureId = GpuUtils.createTextureID(true);
@@ -149,7 +151,7 @@ public class VideoSurfaceProcessor {
         while (!mProvider.frame() && mGLThreadFlag) {
             mInputSurfaceTexture.updateTexImage();
             mInputSurfaceTexture.getTransformMatrix(mRenderer.getTextureMatrix());
-            AvLog.d(TAG, "timestamp:" + mInputSurfaceTexture.getTimestamp());
+            //AvLog.d(TAG, "timestamp:" + mInputSurfaceTexture.getTimestamp());
             sourceFrame.bindFrameBuffer(mSourceWidth, mSourceHeight);
             GLES20.glViewport(0, 0, mSourceWidth, mSourceHeight);
             mRenderer.draw(mInputSurfaceTextureId);
@@ -172,6 +174,7 @@ public class VideoSurfaceProcessor {
     }
 
     private void destroyGL(EglHelper egl) {
+        AvLog.d(TAG, "Destroy Egl context");
         mGLThreadFlag = false;
         EGL14.eglMakeCurrent(egl.getDisplay(), EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
         EGL14.eglDestroyContext(egl.getDisplay(), egl.getDefaultContext());
