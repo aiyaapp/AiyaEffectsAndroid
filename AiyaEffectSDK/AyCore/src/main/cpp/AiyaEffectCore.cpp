@@ -65,7 +65,7 @@ jint ayInit(JNIEnv * env, jclass clazz, jobject context,jstring appKey){
     }
     isInit=true;
     observer.message=observerMessage;
-    observer.message(ObserverMsg::MSG_TYPE_INIT,0,"init callback xxx");
+    observer.message(ObserverMsg::MSG_TYPE_INIT,0,"init callback");
 
     char *_appKey= (char *) env->GetStringUTFChars(appKey, JNI_FALSE);
 

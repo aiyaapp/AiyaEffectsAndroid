@@ -43,7 +43,6 @@ public class AiyaTracker implements IFaceTracker {
 
 
     public int track(int type, byte[] input, int width, int height) {
-        System.out.println("track");
         return _track(nativeId, type, input, width, height);
     }
 

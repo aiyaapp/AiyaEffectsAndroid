@@ -28,7 +28,7 @@ import com.aiyaapp.aiya.render.AnimListener;
  * @version v1.0 2017:10:30 15:06
  */
 public class AiyaGiftEffect {
-
+    private static final String TAG = "aiyaapp";
     /**
      * GL环境错误
      */
@@ -62,7 +62,7 @@ public class AiyaGiftEffect {
 
     public AiyaGiftEffect(Context context) {
         nativeId = _createGiftObject(context, 0);
-        Log.e("wuwang", "create nativeId:" + nativeId);
+        Log.d(TAG, "create nativeId:" + nativeId);
     }
 
     /**
@@ -98,7 +98,7 @@ public class AiyaGiftEffect {
     public int draw(int textureId, int width, int height, byte[] data) {
         long start = System.currentTimeMillis();
         int ret = _draw(nativeId, textureId, width, height, data);
-        AvLog.d("AiyaGiftEffect Draw cost time:" + (System.currentTimeMillis() - start));
+        Log.d(TAG, "AiyaGiftEffect Draw cost time:" + (System.currentTimeMillis() - start));
         return ret;
     }
 
@@ -132,7 +132,7 @@ public class AiyaGiftEffect {
     }
 
     public void setFaceDataID(long id) {
-        Log.e("wuwang", "FaceData:" + id);
+        Log.d(TAG, "FaceData:" + id);
         _setOptions(nativeId, "FaceData", id);
     }
 
@@ -162,7 +162,7 @@ public class AiyaGiftEffect {
      */
     public void release() {
         synchronized (LOCK) {
-            Log.e("wuwang", "nativeID:" + nativeId);
+            Log.d(TAG, "nativeID:" + nativeId);
              _release(nativeId);
             nativeId = 0;
             if (mTracker != null) {
