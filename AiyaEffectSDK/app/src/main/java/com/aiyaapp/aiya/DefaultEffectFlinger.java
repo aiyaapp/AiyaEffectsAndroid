@@ -241,7 +241,13 @@ public class DefaultEffectFlinger implements EffectListener.EffectFlinger, Rende
 
     @Override
     public void destroy() {
-        AvLog.d("wuwang", "-->flinger destroy");
+        AvLog.d("aiyaapp", "-->flinger destroy");
+        if(mThinFaceFilter != null)
+            mThinFaceFilter.destroy();
+        if(mBigEyeFilter != null)
+            mBigEyeFilter.destroy();
+        if(mAiyaBeautyFilter != null)
+            mAiyaBeautyFilter.destroy();
         mEffectFilter.destroy();
         mShowFilter.destroy();
         mSvTool.onGlDestroy();

@@ -130,5 +130,6 @@ public class AyBeautyFilter extends BaseFilter {
     public void destroy() {
         super.destroy();
         AiyaBeauty.nGlDestroy(nativeId);
+        AiyaBeauty.nDestroyNativeObj(nativeId);
     }
 }

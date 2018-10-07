@@ -24,11 +24,11 @@ public class BeautyAdapter extends RecyclerView.Adapter<BeautyAdapter.MenuHolder
 
     private Context mContext;
     public String[] beautys = new String[]{
-            "无美颜", "美颜一", "美颜二", "美颜三", "美颜四", "美颜五", "美颜六"
+            "无美颜", "美颜一", "美颜二", "美颜三", "美颜四", "美颜五"
     };
 
     public int[] beanutyId = new int[]{
-            0, AiyaBeauty.TYPE1, AiyaBeauty.TYPE2, AiyaBeauty.TYPE3, AiyaBeauty.TYPE4, AiyaBeauty.TYPE5, AiyaBeauty.TYPE6
+            AiyaBeauty.TYPE1, AiyaBeauty.TYPE2, AiyaBeauty.TYPE3, AiyaBeauty.TYPE4, AiyaBeauty.TYPE5, AiyaBeauty.TYPE6
     };
 
     public int checkPos = 0;
