@@ -74,7 +74,7 @@ public class Mp4MuxStore implements IHardStore {
                         }
                         mMuxer.start();
                         isMuxStart=true;
-                        Log.e("wuwang","add video track:"+ret);
+                        Log.d("aiyaapp","add video track:"+ret);
                     }
                     return ret;
                 }

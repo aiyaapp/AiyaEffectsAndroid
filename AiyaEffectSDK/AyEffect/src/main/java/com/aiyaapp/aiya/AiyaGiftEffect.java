@@ -132,7 +132,6 @@ public class AiyaGiftEffect {
     }
 
     public void setFaceDataID(long id) {
-        Log.d(TAG, "FaceData:" + id);
         _setOptions(nativeId, "FaceData", id);
     }
 

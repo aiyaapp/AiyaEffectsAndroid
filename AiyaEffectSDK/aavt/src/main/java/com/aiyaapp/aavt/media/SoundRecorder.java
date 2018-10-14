@@ -69,7 +69,7 @@ public class SoundRecorder {
                 public void run() {
                     while (!stopFlag && !audioEncodeStep(false)) {};
                     audioEncodeStep(true);
-                    Log.e("wuwang", "audio stop");
+                    Log.d("aiyaapp", "audio stop");
                     if (isStarted) {
                         mRecord.stop();
                         mRecord.release();

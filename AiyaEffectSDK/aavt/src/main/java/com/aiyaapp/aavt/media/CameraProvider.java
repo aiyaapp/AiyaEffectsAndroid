@@ -117,7 +117,6 @@ public class CameraProvider implements ITextureProvider {
 
         @Override
         public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-            AvLog.d(tag, "onFrameAvailable");
             mFrameSem.drainPermits();
             mFrameSem.release();
         }

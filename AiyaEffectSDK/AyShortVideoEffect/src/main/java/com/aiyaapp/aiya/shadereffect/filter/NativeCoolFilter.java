@@ -61,7 +61,7 @@ public abstract class NativeCoolFilter{
                 mTasks.removeFirst().run();
             }
             AiyaShaderEffect.nGlInit(id);
-            Log.e("wuwang","create effect id::"+id);
+            Log.d("aiyaapp","create effect id::"+id);
         }
         if(mapChanged){
             for (Map.Entry<String,Float> entry : map.entrySet()) {

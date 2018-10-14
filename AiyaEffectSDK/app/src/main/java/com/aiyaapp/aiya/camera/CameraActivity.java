@@ -125,7 +125,7 @@ public class CameraActivity extends AppCompatActivity {
         Log.d("wuwang", "onActivityResult:rq:" + requestCode + "/" + resultCode);
         if (requestCode == 101) {
             if (resultCode == RESULT_OK) {
-                android.util.Log.e("wuwang", "data:" + getRealFilePath(data.getData()));
+                Log.d("aiyaapp", "data:" + getRealFilePath(data.getData()));
                 String dataPath = getRealFilePath(data.getData());
                 if (dataPath != null && dataPath.endsWith(".json")) {
                     mFlinger.setEffect(dataPath);

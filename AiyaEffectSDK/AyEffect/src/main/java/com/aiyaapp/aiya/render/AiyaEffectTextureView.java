@@ -348,7 +348,7 @@ public class AiyaEffectTextureView extends TextureView {
                 e.printStackTrace();
             }
         }
-        Log.e("wuwang","GL finish");
+        Log.d("aiyaapp","GL finish");
         mThread=null;
     }
 
