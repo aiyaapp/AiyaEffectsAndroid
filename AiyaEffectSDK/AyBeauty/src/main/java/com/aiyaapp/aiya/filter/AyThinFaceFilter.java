@@ -16,7 +16,7 @@ package com.aiyaapp.aiya.filter;
 import com.aiyaapp.aavt.gl.BaseFilter;
 import com.aiyaapp.aavt.log.AvLog;
 import com.aiyaapp.aiya.AiyaBeauty;
-
+import android.util.Log;
 
 /**
  * AyThinFaceFilter
@@ -29,9 +29,10 @@ public class AyThinFaceFilter extends BaseFilter {
     private long nativeId;
     private float degree=0.0f;
     private long faceId=0;
-
+    private long count, total;
     public AyThinFaceFilter() {
         super(null, "", "");
+        count = total = 0;
     }
 
     public void setDegree(final float degree){
@@ -68,7 +69,12 @@ public class AyThinFaceFilter extends BaseFilter {
             AiyaBeauty.nSet(nativeId,"FaceData",faceId);
         }
         AiyaBeauty.nDraw(nativeId,texture,0,0,mWidth,mHeight);
-        AvLog.d("AyBeautyFilter Draw cost time:"+(System.currentTimeMillis()-start));
+        count++;
+        total += (System.currentTimeMillis() - start);
+        if(count == 300) {
+            Log.d("aiyaapp", "AyThinFace average cost time:" + total/count);
+            count = total = 0;
+        }
     }
 
     @Override

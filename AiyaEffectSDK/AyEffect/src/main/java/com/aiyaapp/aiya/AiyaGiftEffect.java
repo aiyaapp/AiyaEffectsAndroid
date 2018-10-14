@@ -59,9 +59,13 @@ public class AiyaGiftEffect {
     private long nativeId;
     private IComponent mTracker;
     private final Object LOCK = new Object();
+    private long count;
+    private long total;
 
     public AiyaGiftEffect(Context context) {
         nativeId = _createGiftObject(context, 0);
+        count = 0;
+        total = 0;
         Log.d(TAG, "create nativeId:" + nativeId);
     }
 
@@ -98,7 +102,12 @@ public class AiyaGiftEffect {
     public int draw(int textureId, int width, int height, byte[] data) {
         long start = System.currentTimeMillis();
         int ret = _draw(nativeId, textureId, width, height, data);
-        Log.d(TAG, "AiyaGiftEffect Draw cost time:" + (System.currentTimeMillis() - start));
+        count++;
+        total += (System.currentTimeMillis() - start);
+        if(count == 300) {
+            Log.d(TAG, "AiyaGiftEffect average cost time:" + total/count);
+            count = total = 0;
+        }
         return ret;
     }
 

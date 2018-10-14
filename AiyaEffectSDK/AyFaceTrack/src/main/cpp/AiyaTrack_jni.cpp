@@ -64,9 +64,9 @@ jint ayTrack(JNIEnv * env,jclass clazz,jlong id,jint type,jbyteArray input,jint 
 
 jint ayTrackFaceData(JNIEnv * env,jclass clazz,jlong id,jint type,jbyteArray input,jint width,jint height){
     jbyte * in=env->GetByteArrayElements(input,JNI_FALSE);
-    Log::d("ayTrackFaceData start");
     int ret=((FaceTrack *)id)->track((uint8_t *) in, width, height, AiyaTrack::ImageType::tImageTypeRGBA,&mFaceData);
-    Log::d("ayTrackFaceData end: ret=%d",ret);
+    if(ret != 0)
+        Log::d("ayTrackFaceData end: ret=%d",ret);
     pmFaceData = ret == 0 ? &mFaceData : NULL;
     env->ReleaseByteArrayElements(input,in,JNI_ABORT);
     return ret;

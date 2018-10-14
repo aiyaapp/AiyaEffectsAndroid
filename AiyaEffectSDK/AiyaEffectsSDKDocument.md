@@ -37,7 +37,7 @@ AiyaEffects.setEventListener(new IEventListener() {
         if(i==Const.MSG_TYPE_INIT){
             AiyaEffects.registerComponent(AiyaGiftEffect.class);
         }
-        Log.e("wuwang","MSG(type/ret/info):"+i+"/"+i1+"/"+s);
+        Log.d("aiyaapp","MSG(type/ret/info):"+i+"/"+i1+"/"+s);
         return 0;
     }
 });

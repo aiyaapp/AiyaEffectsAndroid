@@ -13,6 +13,8 @@
  */
 package com.aiyaapp.aiya.filter;
 
+import android.util.Log;
+
 import com.aiyaapp.aavt.gl.BaseFilter;
 import com.aiyaapp.aavt.log.AvLog;
 import com.aiyaapp.aiya.AiyaBeauty;
@@ -27,12 +29,13 @@ public class AyBeautyFilter extends BaseFilter {
 
     private long nativeId;
     private int beautyType = AiyaBeauty.TYPE1;
-
+    private long count, total;
     public AyBeautyFilter(int type) {
         super(null, "", "");
         if (type != 0) {
             this.beautyType = type;
         }
+        count = total = 0;
     }
 
     @Override
@@ -123,7 +126,12 @@ public class AyBeautyFilter extends BaseFilter {
         onTaskExec();
         long start = System.currentTimeMillis();
         AiyaBeauty.nDraw(nativeId, texture, 0, 0, mWidth, mHeight);
-        AvLog.d("AyBeautyFilter Draw cost time:" + (System.currentTimeMillis() - start));
+        count++;
+        total += (System.currentTimeMillis() - start);
+        if(count == 300) {
+            Log.d("aiyaapp", "AyBeautyFilter average cost time:" + total/count);
+            count = total = 0;
+        }
     }
 
     @Override

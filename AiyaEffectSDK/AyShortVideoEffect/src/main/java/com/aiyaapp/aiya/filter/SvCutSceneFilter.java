@@ -13,6 +13,8 @@
  */
 package com.aiyaapp.aiya.filter;
 
+import android.util.Log;
+
 import com.aiyaapp.aavt.log.AvLog;
 import com.aiyaapp.aiya.AiyaShaderEffect;
 
@@ -25,10 +27,11 @@ import com.aiyaapp.aiya.AiyaShaderEffect;
 public class SvCutSceneFilter extends BaseShortVideoFilter {
 
     private int direction = 0;
-
+    private long calls, total_time;
 
     public SvCutSceneFilter() {
         super(AiyaShaderEffect.TYPE_CUT_SCENE);
+        calls = total_time = 0;
     }
 
 
@@ -46,6 +49,12 @@ public class SvCutSceneFilter extends BaseShortVideoFilter {
             System.out.println("count =" + count);
             if (count == 4) {
                 AiyaShaderEffect.nRestart(nativeObjId);
+            }
+            calls++;
+            total_time += (System.currentTimeMillis() - start);
+            if(calls == 300) {
+                Log.d("aiyaapp", "SvCutSceneFilter average cost time:" + total_time /count);
+                calls = total_time = 0;
             }
             AvLog.d("ShortVideoFilter Draw cost time:" + (System.currentTimeMillis() - start));
         }
