@@ -116,12 +116,12 @@ public class AiyaBeauty {
 
     static {
         System.loadLibrary("AyCoreSdk");
-        System.loadLibrary("AyCoreSdkJni");
+        System.loadLibrary("AyCoreJni");
         System.loadLibrary("BaseEffects");
         System.loadLibrary("Beauty");
         System.loadLibrary("Faceprocess");
         System.loadLibrary("AiyaEffectLib");
-        System.loadLibrary("AyBeauty");
+        System.loadLibrary("AyBeautyJni");
     }
 
 }
