@@ -37,9 +37,9 @@ jlong ayCreateTracker(JNIEnv * env, jclass clazz,jint type){
     return (jlong)tracker;
 }
 
-jint ayInit(JNIEnv * env,jclass clazz,jlong id,jstring data){
+jint ayInit(JNIEnv * env,jclass clazz,jlong id,jint min_face_type, jstring data){
     const char * d=env->GetStringUTFChars(data,JNI_FALSE);
-    int ret = ((FaceTrack *)id)->loadModel(std::string(d));
+    int ret = ((FaceTrack *)id)->loadModel(std::string(d), min_face_type);
     env->ReleaseStringUTFChars(data,d);
     return ret;
 }
@@ -85,7 +85,7 @@ jint ayRelease(JNIEnv * env, jclass clazz,jlong id){
 
 static JNINativeMethod g_methods[]={
         {"_createNativeObj",       "(I)J",                      (void *)ayCreateTracker},
-        {"_init",                  "(JLjava/lang/String;)I",    (void *)ayInit},
+        {"_init",                  "(JILjava/lang/String;)I",    (void *)ayInit},
         {"_track",                 "(JI[BII[F)I",               (void *)ayTrack},
         {"_track",                 "(JI[BII)I",                 (void *)ayTrackFaceData},
         {"_getFaceDataID",         "()J",                       (void *)ayGetFaceData},

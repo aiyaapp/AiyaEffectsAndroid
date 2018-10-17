@@ -2,23 +2,27 @@
 #define AIYATRACK_H
 #include <string>
 #include <functional>
-#include "BaseTrack.h"
 #include "FaceData.h"
 
 
 namespace AiyaTrack
 {
+enum ImageType {
+  tImageTypeNone,
+  tImageTypeY,
+  tImageTypeRGBA,
+};
 
-class FaceTrack : public BaseTrack
+class FaceTrack
 {
 public:
 	FaceTrack();
 	FaceTrack(const std::string &s);
 	virtual ~FaceTrack();
 
-	virtual bool loadModel(const std::string &model) override;
-	virtual int track(uint8_t *image, int width, int height, ImageType type, FaceData *fd) override;
-	virtual int trackAsync(uint8_t *image, int width, int height, ImageType type, FaceData *fd) override;
+	virtual bool loadModel(const std::string &model, int min_face_size);
+	virtual int track(uint8_t *image, int width, int height, ImageType type, FaceData *fd);
+	virtual int trackAsync(uint8_t *image, int width, int height, ImageType type, FaceData *fd);
 
 	std::function<void(int type, int ret, const char *info)> message;
 

@@ -30,10 +30,10 @@ public class AiyaTracker implements IFaceTracker {
     private Context mContext;
     private SharedPreferences mSp;
 
-    public AiyaTracker(Context context) {
+    public AiyaTracker(Context context, int min_face_size) {
         this.mContext = context.getApplicationContext();
         mSp = this.mContext.getSharedPreferences(mContext.getPackageName(), Context.MODE_PRIVATE);
-        init();
+        init(min_face_size);
     }
 
 
@@ -52,9 +52,13 @@ public class AiyaTracker implements IFaceTracker {
         super.finalize();
     }
 
-
     @Override
     public int init() {
+        return 0;
+    }
+
+    //@Override
+    public int init(int min_face_size) {
         synchronized (LOCK) {
             if (nativeId == 0) {
                 nativeId = _createNativeObj(0);
@@ -78,7 +82,7 @@ public class AiyaTracker implements IFaceTracker {
                     if (!new File(dstPath).exists()) {
                         copyFileFromAssets("config", dstPath, mContext.getAssets());
                     }
-                    return _init(nativeId, dstPath);
+                    return _init(nativeId, min_face_size, dstPath);
                 } else {
                     return -1;
                 }
@@ -204,7 +208,7 @@ public class AiyaTracker implements IFaceTracker {
 
     private static native long _getFaceDataID();
 
-    private static native int _init(long id, String data);
+    private static native int _init(long id, int min_face_size, String data);
 
     private static native int _track(long id, int type, byte[] input, int width, int height, float[] output);
 
