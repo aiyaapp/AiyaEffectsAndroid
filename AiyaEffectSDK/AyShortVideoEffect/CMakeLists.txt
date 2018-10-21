@@ -19,6 +19,5 @@ target_link_libraries(AyShortVideoEffectJni
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAiyaEffectLib.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libBaseEffects.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAyCoreSdk.so
-                        ${CMAKE_SOURCE_DIR}/../AyCore/build/intermediates/cmake/${CMAKE_BUILD_TYPE}/obj/${ANDROID_ABI}/libAyCoreJni.so
                         ${CMAKE_SOURCE_DIR}/../AyShortVideoEffect/libs/${ANDROID_ABI}/libAiyaAe3dLib.so
                         ${CMAKE_SOURCE_DIR}/../AyShortVideoEffect/libs/${ANDROID_ABI}/libShortVideo.so)

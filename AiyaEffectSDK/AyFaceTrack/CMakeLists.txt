@@ -17,6 +17,5 @@ add_library(AyFaceTrackJni SHARED ${cpp_src})
 # 将目标文件与外部库文件进行链接
 target_link_libraries(AyFaceTrackJni
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAyCoreSdk.so
-                        ${CMAKE_SOURCE_DIR}/../AyCore/build/intermediates/cmake/${CMAKE_BUILD_TYPE}/obj/${ANDROID_ABI}/libAyCoreJni.so
                         ${CMAKE_SOURCE_DIR}/../AyFaceTrack/libs/${ANDROID_ABI}/libaftk.so
                         ${CMAKE_SOURCE_DIR}/../AyFaceTrack/libs/${ANDROID_ABI}/libsimd.so)

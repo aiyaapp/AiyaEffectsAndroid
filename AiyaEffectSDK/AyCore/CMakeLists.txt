@@ -14,14 +14,8 @@ aux_source_directory(src/main/cpp cpp_src)
 # 将指定的源文件生成目标文件
 add_library(AyCoreJni SHARED ${cpp_src})
 
-#在系统的环境变量中查找库。如果找到库，则结果存储在变量中.
-find_library(libAndroid android)
-find_library(libLog log)
-
 # 将目标文件与外部库文件进行链接
 target_link_libraries(AyCoreJni
-                        ${android-lib}
-                        ${log-lib}
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAiyaEffectLib.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libBaseEffects.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAyCoreSdk.so)

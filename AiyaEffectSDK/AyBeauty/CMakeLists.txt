@@ -19,6 +19,6 @@ target_link_libraries(AyBeautyJni
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAiyaEffectLib.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libBaseEffects.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAyCoreSdk.so
-                        ${CMAKE_SOURCE_DIR}/../AyCore/build/intermediates/cmake/${CMAKE_BUILD_TYPE}/obj/${ANDROID_ABI}/libAyCoreJni.so
                         ${CMAKE_SOURCE_DIR}/../AyBeauty/libs/${ANDROID_ABI}/libBeauty.so
                         ${CMAKE_SOURCE_DIR}/../AyBeauty/libs/${ANDROID_ABI}/libFaceprocess.so)
+
