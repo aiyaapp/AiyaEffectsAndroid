@@ -96,7 +96,7 @@ public class CoolFilterFactory{
                 e.printStackTrace();
             }
         }
-        Log.e("NativeCoolFilter","create filter failed");
+        Log.d("NativeCoolFilter","create filter failed");
         return null;
     }
 

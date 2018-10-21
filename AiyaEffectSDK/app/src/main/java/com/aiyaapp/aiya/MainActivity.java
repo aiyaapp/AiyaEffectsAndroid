@@ -36,12 +36,12 @@ public class MainActivity extends AppCompatActivity {
             AiyaEffects.setEventListener(new IEventListener() {
                 @Override
                 public int onEvent(int i, int i1, String s) {
-                    Log.e(TAG, "MSG(type/ret/info):" + i + "/" + i1 + "/" + s);
+                    Log.d(TAG, "MSG(type/ret/info):" + i + "/" + i1 + "/" + s);
                     return 0;
                 }
             });
             int id = AiyaEffects.init(getApplicationContext(), "477de67d19ba39fb656a4806c803b552");
-            Log.e(TAG, "id:" + id);
+            Log.d(TAG, "id:" + id);
         }
     };
 

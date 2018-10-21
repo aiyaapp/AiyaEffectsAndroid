@@ -189,7 +189,7 @@ class LowEGLHelper {
 
     private void log(String log) {
         if (isDebug) {
-            Log.e("EGLHelper", log);
+            Log.d("EGLHelper", log);
         }
     }
 

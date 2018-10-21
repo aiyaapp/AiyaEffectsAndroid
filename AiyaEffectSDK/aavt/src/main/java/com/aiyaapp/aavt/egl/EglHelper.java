@@ -200,7 +200,7 @@ public class EglHelper {
     //创建视频数据流的OES TEXTURE
     private void log(String log) {
         if (isDebug) {
-            Log.e("EGLHelper", log);
+            Log.d("EGLHelper", log);
         }
     }
 

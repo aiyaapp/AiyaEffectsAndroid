@@ -74,7 +74,7 @@ public class SvThreeScreenFilter extends BaseShortVideoFilter {
                 hasInit=true;
                 int[] buffer=new int[1];
                 GLES20.glGetIntegerv(GLES20.GL_FRAMEBUFFER_BINDING,buffer,0);
-                Log.e("wuwang","frameBuffer bind:"+buffer[0]);
+                Log.d("aiyaapp","frameBuffer bind:"+buffer[0]);
                 for (int i=0;i<3;i++){
                     AiyaShaderEffect.nSet(nativeObjId,"SubWindow",i);
                     AiyaShaderEffect.nSet(nativeObjId,"DrawGray",1);

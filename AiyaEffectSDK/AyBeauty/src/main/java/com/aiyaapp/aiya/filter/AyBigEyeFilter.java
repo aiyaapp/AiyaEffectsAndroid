@@ -13,6 +13,8 @@
  */
 package com.aiyaapp.aiya.filter;
 
+import android.util.Log;
+
 import com.aiyaapp.aavt.gl.BaseFilter;
 import com.aiyaapp.aavt.log.AvLog;
 import com.aiyaapp.aiya.AiyaBeauty;
@@ -29,9 +31,10 @@ public class AyBigEyeFilter extends BaseFilter {
     private long nativeId;
     private long faceId;
     private float degree=0.0f;
-
+    private long count, total;
     public AyBigEyeFilter() {
         super(null, "", "");
+        count = total = 0;
     }
 
 
@@ -71,7 +74,12 @@ public class AyBigEyeFilter extends BaseFilter {
             AiyaBeauty.nSet(nativeId,"FaceData",faceId);
         }
         AiyaBeauty.nDraw(nativeId,texture,0,0,mWidth,mHeight);
-        AvLog.d("AyBeautyFilter Draw cost time:"+(System.currentTimeMillis()-start));
+        count++;
+        total += (System.currentTimeMillis() - start);
+        if(count == 300) {
+            Log.d("aiyaapp", "AyBigEyeFilter average cost time:" + total/count);
+            count = total = 0;
+        }
     }
 
     @Override

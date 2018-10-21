@@ -75,7 +75,6 @@ public class CircularProgressView extends ImageView{
                 mDrawable.invalidateSelf();
             }
         });
-        Log.e("wuwang","process-->"+process);
     }
 
     public int getProcess(){

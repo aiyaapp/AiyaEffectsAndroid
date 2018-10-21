@@ -13,6 +13,8 @@
  */
 package com.aiyaapp.aiya.filter;
 
+import android.util.Log;
+
 import com.aiyaapp.aavt.gl.BaseFilter;
 import com.aiyaapp.aavt.log.AvLog;
 import com.aiyaapp.aiya.AiyaShaderEffect;
@@ -28,10 +30,11 @@ public abstract class BaseShortVideoFilter extends BaseFilter {
 
     protected long nativeObjId=0;
     private int type=0;
-
+    private long count, total;
     public BaseShortVideoFilter(int type) {
         super(null,"none","none");
         this.type=type;
+        count = total = 0;
     }
 
     @Override
@@ -59,7 +62,12 @@ public abstract class BaseShortVideoFilter extends BaseFilter {
         if(nativeObjId>0){
             long start=System.currentTimeMillis();
             AiyaShaderEffect.nDraw(nativeObjId,texture,0,0,mWidth,mHeight);
-            AvLog.d("ShortVideoFilter Draw cost time:"+(System.currentTimeMillis()-start));
+            count++;
+            total += (System.currentTimeMillis() - start);
+            if(count == 300) {
+                Log.d("aiyaapp", "ShortVideoFilter average cost time:" + total/count);
+                count = total = 0;
+            }
         }
     }
 

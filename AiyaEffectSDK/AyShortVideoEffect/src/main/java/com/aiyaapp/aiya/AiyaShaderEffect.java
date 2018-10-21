@@ -156,11 +156,11 @@ public class AiyaShaderEffect {
 
     static {
         System.loadLibrary("AyCoreSdk");
-        System.loadLibrary("AyCoreSdkJni");
+        System.loadLibrary("AyCoreJni");
         System.loadLibrary("AiyaAe3dLib");
         System.loadLibrary("BaseEffects");
         System.loadLibrary("AiyaEffectLib");
-        System.loadLibrary("AyShaderEffect");
+        System.loadLibrary("AyShortVideoEffectJni");
     }
 
 }

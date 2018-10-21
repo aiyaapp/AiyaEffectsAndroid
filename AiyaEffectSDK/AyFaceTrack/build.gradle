@@ -41,35 +41,6 @@ android {
 
 }
 
-
-task buildMyJar(type: Jar, dependsOn: ['build']) {
-    //导出的jar文件名称
-    archiveName = 'AyTrack.jar'
-    //从哪个目录打包jar
-    from('build/intermediates/classes/release/')
-    from('src/main/')
-
-    destinationDir = file('../output/aiyatrack/')
-    //去掉不要的类
-    exclude('**/BuildConfig.class')
-    exclude('**/BuildConfig\$*.class')
-    exclude('**/R.class')
-    exclude('**/R\$*.class')
-    include('com/aiyaapp/aiya/**')
-    include('assets/**')
-
-    doLast{
-        copy {
-            from('build/intermediates/cmake/release/obj')
-            into('../output/aiyatrack/')
-        }
-        copy {
-            from('libs')
-            into('../output/aiyatrack/')
-        }
-    }
-}
-
 task buildJavaDoc(type:Javadoc){
     options.encoding = "UTF-8"
     options.charSet = "UTF-8"
