@@ -40,7 +40,7 @@ public class AiyaEffects {
 
     static {
         System.loadLibrary("AyCoreSdk");
-        System.loadLibrary("AyCoreSdkJni");
+        System.loadLibrary("AyCoreJni");
     }
 
 }

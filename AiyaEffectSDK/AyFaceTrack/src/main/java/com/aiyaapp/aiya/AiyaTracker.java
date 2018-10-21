@@ -218,8 +218,8 @@ public class AiyaTracker implements IFaceTracker {
 
     static {
         System.loadLibrary("AyCoreSdk");
-        System.loadLibrary("AyCoreSdkJni");
-        System.loadLibrary("AyTrack");
+        System.loadLibrary("AyCoreJni");
+        System.loadLibrary("AyFaceTrackJni");
     }
 
 }

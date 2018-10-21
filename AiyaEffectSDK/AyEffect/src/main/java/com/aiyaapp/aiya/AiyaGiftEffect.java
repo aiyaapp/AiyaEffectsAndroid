@@ -218,11 +218,11 @@ public class AiyaGiftEffect {
 
     static {
         System.loadLibrary("AyCoreSdk");
-        System.loadLibrary("AyCoreSdkJni");
+        System.loadLibrary("AyCoreJni");
         System.loadLibrary("assimp");
         System.loadLibrary("gameplay");
         System.loadLibrary("ayeffects");
-        System.loadLibrary("AyGift");
+        System.loadLibrary("AyEffectJni");
     }
 
 }
