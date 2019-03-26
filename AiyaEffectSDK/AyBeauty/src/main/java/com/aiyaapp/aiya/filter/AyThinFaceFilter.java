@@ -14,7 +14,6 @@
 package com.aiyaapp.aiya.filter;
 
 import com.aiyaapp.aavt.gl.BaseFilter;
-import com.aiyaapp.aavt.log.AvLog;
 import com.aiyaapp.aiya.AiyaBeauty;
 import android.util.Log;
 

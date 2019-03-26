@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.aiyaapp.aiya.camera.CameraActivity;
 import com.aiyaapp.aiya.gift.GiftActivity;
 import com.aiyaapp.aiya.panel.PermissionUtils;
 
@@ -22,11 +21,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        PermissionUtils.askPermission(this, new String[]{
-//                Manifest.permission.READ_PHONE_STATE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                Manifest.permission.CAMERA, Manifest.permission.INTERNET, Manifest.permission.RECORD_AUDIO
-        }, 10, start);
+        PermissionUtils.askPermission(this, new String[]{ Manifest.permission.CAMERA }, 10001, start);
     }
 
     private Runnable start = new Runnable() {
@@ -40,8 +35,16 @@ public class MainActivity extends AppCompatActivity {
                     return 0;
                 }
             });
-            int id = AiyaEffects.init(getApplicationContext(), "477de67d19ba39fb656a4806c803b552");
-            Log.d(TAG, "id:" + id);
+
+            AyCore.initLicense(getApplicationContext(), "477de67d19ba39fb656a4806c803b552", new AyCore.OnResultCallback() {
+                @Override
+                public void onResult(int ret) {
+                    Log.d("wangyang", "License初始化结果 : " + ret);
+                }
+            });
+
+//            int id = AiyaEffects.init(getApplicationContext(), "477de67d19ba39fb656a4806c803b552");
+//            Log.d(TAG, "id:" + id);
         }
     };
 
@@ -49,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        PermissionUtils.onRequestPermissionsResult(requestCode == 10, grantResults, start, new Runnable() {
+        PermissionUtils.onRequestPermissionsResult(requestCode == 10001, grantResults, start, new Runnable() {
             @Override
             public void run() {
                 finish();

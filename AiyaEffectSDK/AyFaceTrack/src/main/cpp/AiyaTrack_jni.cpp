@@ -1,118 +1,55 @@
-//
-// Created by aiya on 2017/9/16.
-//
-#include "AiyaTrack.h"
 #include <jni.h>
-#include <assert.h>
-#include "Log.h"
-#include "Observer.h"
 #include <string>
-#include <string.h>
+#include <memory>
+#include <android/log.h>
+#include <sstream>
+#include "AiyaTrack.h"
 
+static AiyaTrack::FaceTrack *AY_faceTrack;
+FaceData AY_faceData;
+FaceData *AY_faceData_p = &AY_faceData;
 
-#define AYEFFECTS_JAVA "com/aiyaapp/aiya/AiyaTracker"
-#define TRACK_VERSION_CODE 4002
-#define TRACK_VERSION_NAME "v4.0.02"
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_aiyaapp_aiya_AyFaceTrack_init(JNIEnv *env, jclass type, jstring dstPath_) {
+    const char * dstPath = env->GetStringUTFChars(dstPath_,JNI_FALSE);
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+    if (AY_faceTrack == nullptr) {
+        AY_faceTrack = new AiyaTrack::FaceTrack();
 
-using namespace AiyaTrack;
-
-static FaceData mFaceData;
-static FaceData *pmFaceData;
-
-jint ayTrackVersionCode(JNIEnv * env, jclass clazz){
-    return TRACK_VERSION_CODE;
-}
-
-jstring ayTrackVersionName(JNIEnv * env, jclass clazz){
-    return env->NewStringUTF(TRACK_VERSION_NAME);
-}
-
-jlong ayCreateTracker(JNIEnv * env, jclass clazz,jint type){
-    Log::d("create effect : %d",type);
-    FaceTrack * tracker=new FaceTrack();
-    return (jlong)tracker;
-}
-
-jint ayInit(JNIEnv * env,jclass clazz,jlong id,jstring data){
-    const char * d=env->GetStringUTFChars(data,JNI_FALSE);
-    int ret = ((FaceTrack *)id)->loadModel(std::string(d));
-    env->ReleaseStringUTFChars(data,d);
-    return ret;
-}
-
-jint ayTrack(JNIEnv * env,jclass clazz,jlong id,jint type,jbyteArray input,jint width,jint height,
-             jfloatArray output){
-    jbyte * in=env->GetByteArrayElements(input,JNI_FALSE);
-    jfloat * out=env->GetFloatArrayElements(output,JNI_FALSE);
-    int size=env->GetArrayLength(output);
-    Log::d("track start");
-    int ret=((FaceTrack *)id)->track((uint8_t *) in, width, height, AiyaTrack::ImageType::tImageTypeRGBA,&mFaceData);
-    Log::d("track end: ret=%d",ret);
-
-    int len=std::min(size,mFaceData.numfeaturePoints2D*2)* sizeof(float);
-    if(len>0){
-        memcpy(out, mFaceData.featurePoints2D, (size_t) len);
+        AY_faceTrack->loadModel(dstPath);
     }
-    env->ReleaseByteArrayElements(input,in,JNI_COMMIT);
-    env->ReleaseFloatArrayElements(output,out,JNI_COMMIT);
-    return ret;
+
+    env->ReleaseStringUTFChars(dstPath_, dstPath);
 }
 
-jint ayTrackFaceData(JNIEnv * env,jclass clazz,jlong id,jint type,jbyteArray input,jint width,jint height){
-    jbyte * in=env->GetByteArrayElements(input,JNI_FALSE);
-    int ret=((FaceTrack *)id)->track((uint8_t *) in, width, height, AiyaTrack::ImageType::tImageTypeRGBA,&mFaceData);
-    if(ret != 0)
-        Log::d("ayTrackFaceData end: ret=%d",ret);
-    pmFaceData = ret == 0 ? &mFaceData : NULL;
-    env->ReleaseByteArrayElements(input,in,JNI_ABORT);
-    return ret;
-}
-
-jlong ayGetFaceData(){
-    return (jlong)pmFaceData;
-}
-
-jint ayRelease(JNIEnv * env, jclass clazz,jlong id){
-    if(id!=0){
-        delete (FaceTrack *)id;
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_aiyaapp_aiya_AyFaceTrack_deinit(JNIEnv *env, jclass type) {
+    if (AY_faceTrack) {
+        delete(AY_faceTrack);
+        AY_faceTrack = nullptr;
     }
-    return 0;
 }
 
-static JNINativeMethod g_methods[]={
-        {"_createNativeObj",       "(I)J",                      (void *)ayCreateTracker},
-        {"_init",                  "(JLjava/lang/String;)I",    (void *)ayInit},
-        {"_track",                 "(JI[BII[F)I",               (void *)ayTrack},
-        {"_track",                 "(JI[BII)I",                 (void *)ayTrackFaceData},
-        {"_getFaceDataID",         "()J",                       (void *)ayGetFaceData},
-        {"_release",               "(J)I",                      (void *)ayRelease},
-        {"_getVersionCode",        "()I",                       (void *)ayTrackVersionCode},
-        {"_getVersionName",        "()Ljava/lang/String;",      (void *)ayTrackVersionName},
-};
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_aiyaapp_aiya_AyFaceTrack_faceData(JNIEnv *env, jclass type) {
+    return reinterpret_cast<jlong>(&AY_faceData_p);
+}
 
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_aiyaapp_aiya_AyFaceTrack_trackWithBGRABuffer(JNIEnv *env, jclass type, jobject pixelBuffer_, jint width, jint height) {
 
-JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved)
-{
-    JNIEnv* env = nullptr;
+    uint8_t *pixelBuffer = static_cast<uint8_t *>(env->GetDirectBufferAddress(pixelBuffer_));
 
-    if (vm->GetEnv((void**)&env, JNI_VERSION_1_4) != JNI_OK) {
-        return JNI_ERR;
+    int result = AY_faceTrack->track(pixelBuffer, width, height, AiyaTrack::ImageType::tImageTypeRGBA, &AY_faceData);
+
+    if (result == 0) {
+        AY_faceData_p = &AY_faceData;
+
+    } else {
+        AY_faceData_p = NULL;
     }
-    assert(env != nullptr);
-    jclass clazz=env->FindClass(AYEFFECTS_JAVA);
-    env->RegisterNatives(clazz, g_methods, (int) (sizeof(g_methods) / sizeof((g_methods)[0])));
-
-    return JNI_VERSION_1_4;
 }
-
-JNIEXPORT void JNI_OnUnload(JavaVM *jvm, void *reserved){
-    //todo try ayDeInit here
-}
-
-#ifdef __cplusplus
-}
-#endif

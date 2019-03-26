@@ -45,8 +45,6 @@ public class AyBeautyFilter extends BaseFilter {
 
     /**
      * 设置美颜程度
-     *
-     * @param degree 美颜程度，0-1之间
      */
     public void setDegree(final float degree) {
         runOnGLThread(new Runnable() {
@@ -59,8 +57,6 @@ public class AyBeautyFilter extends BaseFilter {
     }
     /**
      * 设置磨皮系数
-     *
-     * @param degree
      */
     public void setSmoothDegree(final float degree) {
         runOnGLThread(new Runnable() {
@@ -70,12 +66,10 @@ public class AyBeautyFilter extends BaseFilter {
                 AiyaBeauty.nSet(nativeId, "SmoothDegree", degree);
             }
         });
-
     }
 
     /**
      * 设置红润度系数
-     * @param degree
      */
     public void setSaturateDegree(final float degree) {
         runOnGLThread(new Runnable() {

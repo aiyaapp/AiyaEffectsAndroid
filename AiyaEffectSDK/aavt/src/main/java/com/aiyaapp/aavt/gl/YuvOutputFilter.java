@@ -15,6 +15,7 @@ package com.aiyaapp.aavt.gl;
 
 import android.content.res.Resources;
 import android.opengl.GLES20;
+import android.opengl.GLES20;
 
 import com.aiyaapp.aavt.utils.MatrixUtils;
 

@@ -2,7 +2,6 @@ package com.aiyaapp.aiya;
 
 import android.app.Application;
 
-import com.aiyaapp.aiya.utils.CrashHandler;
 import com.squareup.leakcanary.LeakCanary;
 
 /**
@@ -15,11 +14,6 @@ public class MainApplication extends Application{
     public void onCreate() {
         super.onCreate();
         LeakCanary.install(this);
-
-        // 异常处理，不需要处理时注释掉这两句即可！
-        CrashHandler crashHandler = CrashHandler.getInstance();
-        // 注册crashHandler
-        crashHandler.init(getApplicationContext());
     }
 
 

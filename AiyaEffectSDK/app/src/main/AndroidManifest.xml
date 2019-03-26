@@ -31,6 +31,7 @@
         <activity android:name="com.aiyaapp.aiya.camera.CameraActivity"
             android:screenOrientation="portrait" >
         </activity>
+        <activity android:name=".CameraActivity" />
     </application>
 
 </manifest>
