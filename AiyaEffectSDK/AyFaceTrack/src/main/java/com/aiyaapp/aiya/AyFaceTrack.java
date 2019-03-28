@@ -19,7 +19,7 @@ public class AyFaceTrack {
     /**
      * 初始化人脸识别
      */
-    public static void init(Context context) {
+    public static void Init(Context context) {
         File folder = context.getExternalCacheDir();
         if (folder == null) {
             folder = context.getCacheDir();
@@ -30,29 +30,16 @@ public class AyFaceTrack {
             deleteFile(new File(dstPath));
             copyFileFromAssets("config", dstPath, context.getAssets());
 
-            init(dstPath);
+            Init(dstPath);
         }
     }
 
-    private static native void init(String dstPath);
+    private static native void Init(String dstPath);
+    public static native void Deinit();
+    public static native long FaceData();
+    public static native void TrackWithBGRABuffer(ByteBuffer pixelBuffer, int width, int height);
 
-    /**
-     * 释放人脸识别
-     */
-    public static native void deinit();
-
-    /**
-     * 人脸数据指针的指针
-     */
-    public static native long faceData();
-
-    /**
-     * 人脸识别
-     */
-    public static native void trackWithBGRABuffer(ByteBuffer pixelBuffer, int width, int height);
-
-
-    private static void deleteFile(File file) {
+    public static void deleteFile(File file) {
         if (file.exists()) {
             if (file.isDirectory()) {
                 for (File f : file.listFiles()) {
@@ -64,7 +51,7 @@ public class AyFaceTrack {
         }
     }
 
-    private static boolean copyFileFromAssets(String src, String dst, AssetManager manager) {
+    public static boolean copyFileFromAssets(String src, String dst, AssetManager manager) {
         try {
             String[] files = manager.list(src);
             if (files.length > 0) {     //如果是文件夹

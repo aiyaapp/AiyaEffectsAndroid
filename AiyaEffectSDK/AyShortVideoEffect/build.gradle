@@ -43,8 +43,6 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
     implementation project(':AyCore')
-
-    implementation project(':aavt')
 }
 
 apply from: "buShortVideo.gradle"

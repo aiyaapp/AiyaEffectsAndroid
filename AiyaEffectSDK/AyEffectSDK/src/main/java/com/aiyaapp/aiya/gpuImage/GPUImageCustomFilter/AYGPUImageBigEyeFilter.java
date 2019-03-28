@@ -1,8 +1,6 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 
-import com.aiyaapp.aiya.AyBeauty;
 import com.aiyaapp.aiya.AyBigEye;
-import com.aiyaapp.aiya.AyFaceTrack;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 

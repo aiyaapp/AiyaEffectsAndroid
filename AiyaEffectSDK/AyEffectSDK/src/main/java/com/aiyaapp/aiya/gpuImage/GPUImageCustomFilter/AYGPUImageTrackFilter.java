@@ -1,33 +1,18 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 
 import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 
 import com.aiyaapp.aiya.AyFaceTrack;
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
-import com.aiyaapp.aiya.gpuImage.AYGPUImageOutput;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.util.UUID;
 
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.TAG;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.needExchangeWidthAndHeightWithRotation;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImagePassthroughFragmentShaderString;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImageVertexShaderString;
@@ -68,11 +53,11 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
             }
         });
 
-        AyFaceTrack.init(context);
+        AyFaceTrack.Init(context);
     }
 
     public long faceData() {
-        return AyFaceTrack.faceData();
+        return AyFaceTrack.FaceData();
     }
 
     protected void renderToTexture(final Buffer vertices, final Buffer textureCoordinates) {
@@ -108,7 +93,7 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
                 bgraBuffer.rewind();
                 glReadPixels(0, 0, outputWidth, outputHeight, GL_RGBA, GL_UNSIGNED_BYTE, bgraBuffer);
 
-                AyFaceTrack.trackWithBGRABuffer(bgraBuffer, outputWidth, outputHeight);
+                AyFaceTrack.TrackWithBGRABuffer(bgraBuffer, outputWidth, outputHeight);
 
                 glDisableVertexAttribArray(filterPositionAttribute);
                 glDisableVertexAttribArray(filterTextureCoordinateAttribute);
@@ -129,7 +114,7 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
             }
         });
 
-        AyFaceTrack.deinit();
+        AyFaceTrack.Deinit();
     }
 
     public void setOutputWidthAndHeight(int width, int height) {

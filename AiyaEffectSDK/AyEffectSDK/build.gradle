@@ -20,7 +20,10 @@ android {
 }
 
 dependencies {
-    implementation project(':libyuv')
-    implementation project(':AyBeauty')
-    implementation project(':AyFaceTrack')
+    compile project(':libyuv')
+    compile project(':AyCore')
+    compile project(':AyBeauty')
+    compile project(':AyFaceTrack')
+    compile project(':AyEffect')
+    compile project(':AyShortVideoEffect')
 }

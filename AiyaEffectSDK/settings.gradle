@@ -1,3 +1,1 @@
-//include  ':AiyaDemo4'
-include ':app', ':AyCore', ':AyEffect', ':AyFaceTrack', ':AyBeauty', ':aavt', ':AyEffectSDK', ':libyuv'
-include ':AyShortVideoEffect'
+include ':app', ':AyCore', ':AyEffect', ':AyFaceTrack', ':AyBeauty', ':AyEffectSDK', ':libyuv', ':AyShortVideoEffect'

@@ -4,7 +4,7 @@
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1Create(JNIEnv *env, jobject instance, jint type) {
+Java_com_aiyaapp_aiya_AyBeauty_Create(JNIEnv *env, jobject instance, jint type) {
 
     AYSDK::AiyaEffect *render = AYSDK::AiyaEffect::Create(type);
     return reinterpret_cast<jlong>(render);
@@ -12,7 +12,7 @@ Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1Create(JNIEnv *env, jobj
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1Destroy(JNIEnv *env, jobject instance, jlong render) {
+Java_com_aiyaapp_aiya_AyBeauty_Destroy(JNIEnv *env, jobject instance, jlong render) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {
@@ -22,7 +22,7 @@ Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1Destroy(JNIEnv *env, job
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1InitGLResource(JNIEnv *env, jobject instance, jlong render) {
+Java_com_aiyaapp_aiya_AyBeauty_InitGLResource(JNIEnv *env, jobject instance, jlong render) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {
@@ -32,7 +32,7 @@ Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1InitGLResource(JNIEnv *e
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1DeinitGLResource(JNIEnv *env, jobject instance, jlong render) {
+Java_com_aiyaapp_aiya_AyBeauty_DeinitGLResource(JNIEnv *env, jobject instance, jlong render) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {
@@ -42,7 +42,7 @@ Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1DeinitGLResource(JNIEnv 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1Set(JNIEnv *env, jobject instance, jlong render, jstring name_, jfloat value) {
+Java_com_aiyaapp_aiya_AyBeauty_Set(JNIEnv *env, jobject instance, jlong render, jstring name_, jfloat value) {
     const char *name = env->GetStringUTFChars(name_, 0);
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
@@ -55,7 +55,7 @@ Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1Set(JNIEnv *env, jobject
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AyBeauty_AYSDK_1AiyaBeautyEffect_1Draw(JNIEnv *env, jobject instance, jlong render, jint texture, jint x, jint y, jint width, jint height) {
+Java_com_aiyaapp_aiya_AyBeauty_Draw(JNIEnv *env, jobject instance, jlong render, jint texture, jint x, jint y, jint width, jint height) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {

@@ -7,7 +7,7 @@
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1Create(JNIEnv *env, jobject instance) {
+Java_com_aiyaapp_aiya_AySlimFace_Create(JNIEnv *env, jobject instance) {
 
     AYSDK::AiyaEffect *render = AYSDK::AiyaEffect::Create(0x2002);
     return reinterpret_cast<jlong>(render);
@@ -15,7 +15,7 @@ Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1Create(JNIEnv *env, 
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1Destroy(JNIEnv *env, jobject instance, jlong render) {
+Java_com_aiyaapp_aiya_AySlimFace_Destroy(JNIEnv *env, jobject instance, jlong render) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {
@@ -25,7 +25,7 @@ Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1Destroy(JNIEnv *env,
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1InitGLResource(JNIEnv *env, jobject instance, jlong render) {
+Java_com_aiyaapp_aiya_AySlimFace_InitGLResource(JNIEnv *env, jobject instance, jlong render) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {
@@ -35,7 +35,7 @@ Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1InitGLResource(JNIEn
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1DeinitGLResource(JNIEnv *env, jobject instance, jlong render) {
+Java_com_aiyaapp_aiya_AySlimFace_DeinitGLResource(JNIEnv *env, jobject instance, jlong render) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {
@@ -45,7 +45,7 @@ Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1DeinitGLResource(JNI
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1Set(JNIEnv *env, jobject instance, jlong render, jstring name_, jfloat value) {
+Java_com_aiyaapp_aiya_AySlimFace_Set(JNIEnv *env, jobject instance, jlong render, jstring name_, jfloat value) {
     const char *name = env->GetStringUTFChars(name_, 0);
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
@@ -58,7 +58,7 @@ Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1Set(JNIEnv *env, job
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1SetFaceData(JNIEnv *env, jobject instance, jlong render, jlong value) {
+Java_com_aiyaapp_aiya_AySlimFace_SetFaceData(JNIEnv *env, jobject instance, jlong render, jlong value) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
 
@@ -76,7 +76,7 @@ Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1SetFaceData(JNIEnv *
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AySlimFace_AYSDK_1AiyaSlimFaceEffect_1Draw(JNIEnv *env, jobject instance, jlong render, jint texture, jint x, jint y, jint width, jint height) {
+Java_com_aiyaapp_aiya_AySlimFace_Draw(JNIEnv *env, jobject instance, jlong render, jint texture, jint x, jint y, jint width, jint height) {
 
     AYSDK::AiyaEffect *AyBeauty_render = reinterpret_cast<AYSDK::AiyaEffect *>(render);
     if (AyBeauty_render) {

@@ -40,19 +40,9 @@ android {
     }
 }
 
-task buildJavaDoc(type:Javadoc){
-    options.encoding = "UTF-8"
-    options.charSet = "UTF-8"
-    source 'src/main/java'
-}
-
 dependencies {
-    //    compile fileTree(include: ['*.jar'], dir: 'libs')
-    //    compile project(':aiyaeffectcore')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation project(':AyCore')
-    //    compile files('../output/core/AySdkCore.jar')
-    implementation project(':aavt')
 }
 
 apply from: "buGift.gradle"

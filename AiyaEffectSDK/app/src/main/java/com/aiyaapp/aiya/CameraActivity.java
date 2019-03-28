@@ -4,10 +4,13 @@ import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
+import com.aiyaapp.aiya.cameraTool.AYCameraPreviewListener;
+import com.aiyaapp.aiya.cameraTool.AYCameraPreviewWrap;
+import com.aiyaapp.aiya.cameraTool.AYPreviewView;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageShortVideoFilter;
 
 import java.io.IOException;
 
@@ -21,6 +24,7 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     AYPreviewView surfaceView;
 
     AYEffectHandler effectHandler;
+//    AYShortVideoEffectHandler shortVideoEffectHandler;
 
     @Override
     protected void onCreate( Bundle savedInstanceState) {
@@ -86,6 +90,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             effectHandler.processWithTexture(texture, width, height);
         }
 
+//        // 渲染视频特效
+//        if (shortVideoEffectHandler != null) {
+//            shortVideoEffectHandler.processWithTexture(texture, width, height);
+//        }
+
         // 渲染到surfaceView
         if (surfaceView != null) {
             surfaceView.render(texture, width, height);
@@ -96,6 +105,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
     public void surfaceCreated(SurfaceHolder holder) {
         effectHandler = new AYEffectHandler(this);
         effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
+        // 设置特效
+        effectHandler.setEffectPath(getExternalCacheDir() + "/aiya/effect/xiaohongmao/meta.json");
+        effectHandler.setEffectPlayCount(2);
         // 设置美颜程度
         effectHandler.setIntensityOfSmooth(0.1f);
         effectHandler.setIntensityOfSaturation(0.1f);
@@ -109,6 +121,11 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+//        // 设置视频特效
+//        shortVideoEffectHandler = new AYShortVideoEffectHandler(this);
+//        shortVideoEffectHandler.setTypeOfShortVideo(AYGPUImageShortVideoFilter.AY_VIDEO_EFFECT_TYPE.AY_VIDEO_EFFECT_FOUR_SCREEN);
+
     }
 
     @Override
@@ -122,5 +139,9 @@ public class CameraActivity extends AppCompatActivity implements SurfaceHolder.C
             effectHandler.destroy();
             effectHandler = null;
         }
+//        if (shortVideoEffectHandler != null) {
+//            shortVideoEffectHandler.destroy();
+//            shortVideoEffectHandler = null;
+//        }
     }
 }

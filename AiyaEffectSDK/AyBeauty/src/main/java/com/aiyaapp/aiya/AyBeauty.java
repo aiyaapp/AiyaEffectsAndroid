@@ -54,8 +54,8 @@ public class AyBeauty {
      初始化opengl相关的资源
      */
     public void initGLResource() {
-        render = AYSDK_AiyaBeautyEffect_Create(getTypeValue(type));
-        AYSDK_AiyaBeautyEffect_InitGLResource(render);
+        render = Create(getTypeValue(type));
+        InitGLResource(render);
     }
 
     /**
@@ -63,8 +63,8 @@ public class AyBeauty {
      */
     public void releaseGLResource() {
         if (render != 0) {
-            AYSDK_AiyaBeautyEffect_DeinitGLResource(render);
-            AYSDK_AiyaBeautyEffect_Destroy(render);
+            DeinitGLResource(render);
+            Destroy(render);
         }
     }
 
@@ -76,26 +76,26 @@ public class AyBeauty {
      */
     public void processWithTexture(int texture, int width, int height) {
         if (updateIntensity) {
-            AYSDK_AiyaBeautyEffect_Set(render, "Degree", intensity);
+            Set(render, "Degree", intensity);
             updateIntensity = false;
         }
 
         if (updateSmooth) {
-            AYSDK_AiyaBeautyEffect_Set(render, "SmoothDegree", smooth);
+            Set(render, "SmoothDegree", smooth);
             updateSmooth = false;
         }
 
         if (updateSaturation) {
-            AYSDK_AiyaBeautyEffect_Set(render, "SaturateDegree", saturation);
+            Set(render, "SaturateDegree", saturation);
             updateSaturation = false;
         }
 
         if (updateWhiten) {
-            AYSDK_AiyaBeautyEffect_Set(render, "WhitenDegree", whiten);
+            Set(render, "WhitenDegree", whiten);
             updateWhiten = false;
         }
 
-        AYSDK_AiyaBeautyEffect_Draw(render, texture, 0, 0, width, height);
+        Draw(render, texture, 0, 0, width, height);
     }
 
     public AY_BEAUTY_TYPE getType() {
@@ -167,15 +167,15 @@ public class AyBeauty {
         return _type;
     }
 
-    native long AYSDK_AiyaBeautyEffect_Create(int type);
+    native long Create(int type);
 
-    native void AYSDK_AiyaBeautyEffect_Destroy(long render);
+    native void Destroy(long render);
 
-    native void AYSDK_AiyaBeautyEffect_InitGLResource(long render);
+    native void InitGLResource(long render);
 
-    native void AYSDK_AiyaBeautyEffect_DeinitGLResource(long render);
+    native void DeinitGLResource(long render);
 
-    native void AYSDK_AiyaBeautyEffect_Set(long render, String name, float value);
+    native void Set(long render, String name, float value);
 
-    native void AYSDK_AiyaBeautyEffect_Draw(long render, int texture, int x, int y, int width, int height);
+    native void Draw(long render, int texture, int x, int y, int width, int height);
 }

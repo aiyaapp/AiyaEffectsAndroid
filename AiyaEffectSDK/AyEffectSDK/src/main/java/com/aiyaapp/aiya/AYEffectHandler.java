@@ -4,10 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.util.Log;
 
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBeautyFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBigEyeFilter;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageLookupFilter;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageShortVideoFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageSlimFaceFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageTrackFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageI420DataInput;
@@ -17,8 +20,8 @@ import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageText
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 
+import java.io.File;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +47,7 @@ public class AYEffectHandler {
     private AYGPUImageTrackFilter trackFilter;
     private AYGPUImageBigEyeFilter bigEyeFilter;
     private AYGPUImageSlimFaceFilter slimFaceFilter;
+    private AYGPUImageEffectFilter effectFilter;
 
     private boolean initCommonProcess = false;
     private boolean initProcess = false;
@@ -79,8 +83,32 @@ public class AYEffectHandler {
                 slimFaceFilter = new AYGPUImageSlimFaceFilter();
 
                 trackFilter = new AYGPUImageTrackFilter(context);
+
+                effectFilter = new AYGPUImageEffectFilter();
             }
         });
+    }
+
+    public void setEffectPath(String effectPath) {
+        File file = new File(effectPath);
+        if (!file.exists()) {
+            Log.e("AYEffect", "无效的特效资源路径");
+            return;
+        }
+
+        effectFilter.setEffectPath(effectPath);
+    }
+
+    public void setEffectPlayCount(int effectPlayCount) {
+        effectFilter.setEffectPlayCount(effectPlayCount);
+    }
+
+    public void pauseEffect() {
+        effectFilter.pause();
+    }
+
+    public void resumeEffect() {
+        effectFilter.resume();
     }
 
     public void setStyle(Bitmap lookup) {
@@ -164,6 +192,10 @@ public class AYEffectHandler {
                 filterChainArray.add(slimFaceFilter);
             }
 
+            if (effectFilter != null) {
+                filterChainArray.add(effectFilter);
+            }
+
             if (trackFilter != null) {
                 commonInputFilter.addTarget(trackFilter);
             }
@@ -180,14 +212,18 @@ public class AYEffectHandler {
             }
 
             initCommonProcess = true;
-        }
 
-        if (bigEyeFilter != null) {
-            bigEyeFilter.setFaceData(trackFilter.faceData());
-        }
+            if (bigEyeFilter != null) {
+                bigEyeFilter.setFaceData(trackFilter.faceData());
+            }
 
-        if (slimFaceFilter != null) {
-            slimFaceFilter.setFaceData(trackFilter.faceData());
+            if (slimFaceFilter != null) {
+                slimFaceFilter.setFaceData(trackFilter.faceData());
+            }
+
+            if (effectFilter != null) {
+                effectFilter.setFaceData(trackFilter.faceData());
+            }
         }
     }
 
@@ -315,6 +351,9 @@ public class AYEffectHandler {
         }
         if (slimFaceFilter != null) {
             slimFaceFilter.destroy();
+        }
+        if (effectFilter != null) {
+            effectFilter.destroy();
         }
         if (trackFilter != null) {
             trackFilter.destroy();

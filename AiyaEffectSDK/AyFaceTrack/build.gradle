@@ -38,21 +38,11 @@ android {
             jniLibs.srcDirs+="libs"
         }
     }
-
-}
-
-task buildJavaDoc(type:Javadoc){
-    options.encoding = "UTF-8"
-    options.charSet = "UTF-8"
-    source 'src/main/java'
 }
 
 dependencies {
-    //compile fileTree(include: ['*.jar'], dir: 'libs')
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    //    compile files('../output/core/AySdkCore.jar')
     implementation project(':AyCore')
-    implementation project(':aavt')
 }
 
 apply from: "buTrack.gradle"

@@ -7,7 +7,7 @@ public class AyCore {
         System.loadLibrary("AyCoreJni");
     }
 
-    public static native void initLicense(Context context, String key, OnResultCallback callback);
+    public static native void InitLicense(Context context, String key, OnResultCallback callback);
 
     public interface OnResultCallback {
         void onResult(int ret); //0表示成功, 其它表示失败
