@@ -7,34 +7,62 @@ import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.os.Looper;
+import android.util.Log;
 
 import java.util.concurrent.Semaphore;
 
 import static android.opengl.EGL14.*;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.TAG;
 
 public class AYGPUImageEGLContext {
 
     private EGLDisplay eglDisplay;
     private EGLSurface surface;
-    private static EGLContext context;
+    private EGLContext context;
 
-    private static HandlerThread handlerThread;
-    private static Handler glesHandler;
-    static {
+    private HandlerThread handlerThread;
+    private Handler glesHandler;
+
+    public boolean initEGLWindow(final Object nativeWindow) {
+
+        // 初始化GL执行线程
         handlerThread = new HandlerThread("com.aiyaapp.gpuimage");
         handlerThread.start();
         glesHandler = new Handler(handlerThread.getLooper());
 
+        // 创建EGLWindow
+        final boolean[] result = new boolean[1];
+
+        final Semaphore semaphore = new Semaphore(0);
+
+        glesHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                result[0] = createEGLWindow(nativeWindow);
+                semaphore.release();
+            }
+        });
+
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return result[0];
     }
 
-    public boolean initEGLWindow(Object nativeWindow) {
+    private boolean createEGLWindow(Object nativeWindow) {
         eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
         if (eglDisplay == null) {
+            Log.d(TAG, "eglGetDisplay error " + eglGetError());
             return false;
         }
 
         int[] versions = new int[2];
         if (!eglInitialize(eglDisplay, versions, 0, versions, 1)) {
+            Log.d(TAG, "eglInitialize error " + eglGetError());
             return false;
         }
 
@@ -50,11 +78,13 @@ public class AYGPUImageEGLContext {
         EGLConfig[] configs = new EGLConfig[1];
         int[] numConfigs = new int[1];
         if (!eglChooseConfig(eglDisplay, attrs, 0, configs, 0, configs.length, numConfigs, 0)) {
+            Log.d(TAG, "eglChooseConfig error " + eglGetError());
             return false;
         }
 
         surface = eglCreateWindowSurface(eglDisplay, configs[0], nativeWindow, new int[]{EGL_NONE}, 0);
         if (surface == EGL_NO_SURFACE) {
+            Log.d(TAG, "eglCreateWindowSurface error " + eglGetError());
             return false;
         }
 
@@ -62,19 +92,25 @@ public class AYGPUImageEGLContext {
                 EGL_CONTEXT_CLIENT_VERSION, 2,
                 EGL_NONE
         };
-        if (context == null) {
-            context = eglCreateContext(eglDisplay, configs[0], EGL14.EGL_NO_CONTEXT,
+        context = eglCreateContext(eglDisplay, configs[0], EGL14.EGL_NO_CONTEXT,
                     contextAttrs, 0);
-        }
         if (context == EGL_NO_CONTEXT) {
+            Log.d(TAG, "eglCreateContext error " + eglGetError());
             return false;
         }
 
-        return eglMakeCurrent(eglDisplay, surface, surface, context);
+        if (!eglMakeCurrent(eglDisplay, surface, surface, context)) {
+            Log.d(TAG, "eglMakeCurrent error " + eglGetError());
+            return false;
+        }
+
+        Log.d(TAG, "创建 eglCreateContext");
+        return true;
     }
 
     public boolean makeCurrent() {
         if (eglDisplay != null && surface != null && context != null) {
+            // Log.d(TAG,"makeCurrent " + Thread.currentThread());
             return eglMakeCurrent(eglDisplay, surface, surface, context);
         } else {
             return false;
@@ -96,33 +132,43 @@ public class AYGPUImageEGLContext {
     }
 
     public void destroyEGLWindow() {
+        if (eglDisplay != null && context != null) {
+            eglDestroyContext(eglDisplay, context);
+            Log.d(TAG, "销毁 eglCreateContext");
+        }
+
         if (eglDisplay != null && surface != null) {
             eglDestroySurface(eglDisplay, surface);
         }
     }
 
-    public static void syncRunOnRenderThread(final Runnable runnable) {
-        Thread thread = Thread.currentThread();
+    public void syncRunOnRenderThread(final Runnable runnable) {
 
-        if (thread == handlerThread) {
-            runnable.run();
-        } else {
+        if (eglDisplay != null && surface != null && context != null) {
+            Thread thread = Thread.currentThread();
 
-            final Semaphore semaphore = new Semaphore(0);
+            if (thread == glesHandler.getLooper().getThread()) {
+                runnable.run();
+            } else {
 
-            glesHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    runnable.run();
-                    semaphore.release();
+                final Semaphore semaphore = new Semaphore(0);
+
+                glesHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        runnable.run();
+                        semaphore.release();
+                    }
+                });
+
+                try {
+                    semaphore.acquire();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            });
-
-            try {
-                semaphore.acquire();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+        } else {
+            runnable.run();
         }
     }
 }

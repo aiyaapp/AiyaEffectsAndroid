@@ -3,7 +3,6 @@ package com.aiyaapp.aiya.gpuImage;
 import java.nio.Buffer;
 
 import static android.opengl.GLES20.*;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 
 public class AYGPUImageFilter extends AYGPUImageOutput implements AYGPUImageInput{
 
@@ -29,6 +28,8 @@ public class AYGPUImageFilter extends AYGPUImageOutput implements AYGPUImageInpu
             "    gl_FragColor = texture2D(inputImageTexture, textureCoordinate);\n" +
             "}";
 
+    protected AYGPUImageEGLContext context;
+
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
     private Buffer textureCoordinates = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.noRotationTextureCoordinates);
 
@@ -43,8 +44,9 @@ public class AYGPUImageFilter extends AYGPUImageOutput implements AYGPUImageInpu
     protected int inputWidth;
     protected int inputHeight;
 
-    public AYGPUImageFilter(final String vertexShaderString, final String fragmentShaderString) {
-        syncRunOnRenderThread(new Runnable() {
+    public AYGPUImageFilter(final AYGPUImageEGLContext context, final String vertexShaderString, final String fragmentShaderString) {
+        this.context = context;
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram = new AYGLProgram(vertexShaderString, fragmentShaderString);
@@ -58,12 +60,12 @@ public class AYGPUImageFilter extends AYGPUImageOutput implements AYGPUImageInpu
         });
     }
 
-    public AYGPUImageFilter() {
-        this(kAYGPUImageVertexShaderString, kAYGPUImagePassthroughFragmentShaderString);
+    public AYGPUImageFilter(AYGPUImageEGLContext context) {
+        this(context, kAYGPUImageVertexShaderString, kAYGPUImagePassthroughFragmentShaderString);
     }
 
     protected void renderToTexture(final Buffer vertices, final Buffer textureCoordinates) {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -142,7 +144,7 @@ public class AYGPUImageFilter extends AYGPUImageOutput implements AYGPUImageInpu
     public void destroy() {
         removeAllTargets();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.destroy();

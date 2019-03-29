@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageOutput;
@@ -13,41 +14,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
-import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
-import static android.opengl.GLES20.GL_FALSE;
-import static android.opengl.GLES20.GL_FLOAT;
-import static android.opengl.GLES20.GL_LINEAR;
-import static android.opengl.GLES20.GL_LUMINANCE;
-import static android.opengl.GLES20.GL_RGBA;
-import static android.opengl.GLES20.GL_TEXTURE1;
-import static android.opengl.GLES20.GL_TEXTURE2;
-import static android.opengl.GLES20.GL_TEXTURE3;
-import static android.opengl.GLES20.GL_TEXTURE_2D;
-import static android.opengl.GLES20.GL_TEXTURE_MAG_FILTER;
-import static android.opengl.GLES20.GL_TEXTURE_MIN_FILTER;
-import static android.opengl.GLES20.GL_TEXTURE_WRAP_S;
-import static android.opengl.GLES20.GL_TEXTURE_WRAP_T;
-import static android.opengl.GLES20.GL_TRIANGLE_STRIP;
-import static android.opengl.GLES20.GL_UNSIGNED_BYTE;
-import static android.opengl.GLES20.glActiveTexture;
-import static android.opengl.GLES20.glBindTexture;
-import static android.opengl.GLES20.glClear;
-import static android.opengl.GLES20.glClearColor;
-import static android.opengl.GLES20.glDeleteTextures;
-import static android.opengl.GLES20.glDisableVertexAttribArray;
-import static android.opengl.GLES20.glDrawArrays;
-import static android.opengl.GLES20.glEnableVertexAttribArray;
-import static android.opengl.GLES20.glGenTextures;
-import static android.opengl.GLES20.glTexImage2D;
-import static android.opengl.GLES20.glTexParameteri;
-import static android.opengl.GLES20.glUniform1i;
-import static android.opengl.GLES20.glUniformMatrix3fv;
-import static android.opengl.GLES20.glVertexAttribPointer;
+import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.TAG;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.needExchangeWidthAndHeightWithRotation;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImageVertexShaderString;
 
 public class AYGPUImageI420DataInput extends AYGPUImageOutput {
@@ -69,11 +39,11 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
             "    gl_FragColor = vec4(rgb, 1);\n" +
             "}";
 
-    private static float kImageVertices[] = {
-            -1.0f,  1.0f,
-            1.0f,  1.0f,
+    public static float kImageVertices[] = {
             -1.0f, -1.0f,
             1.0f, -1.0f,
+            -1.0f,  1.0f,
+            1.0f,  1.0f,
     };
 
     private static final float[] kAYColorConversion601FullRangeDefault = {
@@ -81,6 +51,8 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
             0.000f,       -0.343f,       1.765f,
             1.400f,       -0.711f,       0.000f
     };
+
+    private AYGPUImageEGLContext context;
 
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(kImageVertices);
 
@@ -98,8 +70,9 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
 
     private AYGPUImageConstants.AYGPUImageRotationMode rotateMode = kAYGPUImageNoRotation;
 
-    public AYGPUImageI420DataInput() {
-        syncRunOnRenderThread(new Runnable() {
+    public AYGPUImageI420DataInput(AYGPUImageEGLContext context) {
+        this.context = context;
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram = new AYGLProgram(kAYGPUImageVertexShaderString, kAYRGBConversionFragmentShaderString);
@@ -116,8 +89,8 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
         });
     }
 
-    public void processWithYUV(final byte[] yData, final byte[] uData, final byte[] vData, final int width, final int height, final int lineSize) {
-        syncRunOnRenderThread(new Runnable() {
+    public void processWithYUV(final byte[] yuvData, final int width, final int height, final int lineSize) {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
 
@@ -138,7 +111,6 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
                         outputFramebuffer = null;
                     }
                 }
-
                 if (outputFramebuffer == null) {
                     outputFramebuffer = new AYGPUImageFramebuffer(inputWidth, inputHeight);
                 }
@@ -178,27 +150,27 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
                     glBindTexture(GL_TEXTURE_2D, 0);
                 }
 
-                ByteBuffer yBuffer = ByteBuffer.allocate(yData.length);
-                yBuffer.order(ByteOrder.BIG_ENDIAN);
-                yBuffer.put(yData);
+                ByteBuffer yBuffer = ByteBuffer.allocate(lineSize*height);
+//                yBuffer.order(ByteOrder.BIG_ENDIAN);
+                yBuffer.put(yuvData, 0, lineSize*height);
                 yBuffer.position(0);
                 glActiveTexture(GL_TEXTURE1);
                 glBindTexture(GL_TEXTURE_2D, inputYTexture[0]);
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, lineSize, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, yBuffer);
                 glUniform1i(yTextureUniform, 1);
 
-                ByteBuffer uBuffer = ByteBuffer.allocate(uData.length);
-                uBuffer.order(ByteOrder.BIG_ENDIAN);
-                uBuffer.put(uData);
+                ByteBuffer uBuffer = ByteBuffer.allocate(lineSize*height/4);
+//                uBuffer.order(ByteOrder.BIG_ENDIAN);
+                uBuffer.put(yuvData, lineSize*height, lineSize*height/4);
                 uBuffer.position(0);
                 glActiveTexture(GL_TEXTURE2);
                 glBindTexture(GL_TEXTURE_2D, inputUTexture[0]);
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, lineSize / 2, height / 2, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, uBuffer);
                 glUniform1i(uTextureUniform, 2);
 
-                ByteBuffer vBuffer = ByteBuffer.allocate(vData.length);
-                vBuffer.order(ByteOrder.BIG_ENDIAN);
-                vBuffer.put(vData);
+                ByteBuffer vBuffer = ByteBuffer.allocate(lineSize*height/4);
+//                vBuffer.order(ByteOrder.BIG_ENDIAN);
+                vBuffer.put(yuvData, lineSize*height+lineSize*height/4, lineSize*height/4);
                 vBuffer.position(0);
                 glActiveTexture(GL_TEXTURE3);
                 glBindTexture(GL_TEXTURE_2D, inputVTexture[0]);
@@ -217,10 +189,6 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
                     if (textureCoordinates[x] == 1) {
                         textureCoordinates[x] = (float)width / (float)lineSize;
                     }
-                }
-
-                for (int x = 0; x < textureCoordinates.length; x = x + 1) {
-                    Log.d(TAG, x + " : "+textureCoordinates[x]);
                 }
 
                 glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, false, 0, imageVertices);
@@ -250,7 +218,7 @@ public class AYGPUImageI420DataInput extends AYGPUImageOutput {
     public void destroy() {
         removeAllTargets();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.destroy();

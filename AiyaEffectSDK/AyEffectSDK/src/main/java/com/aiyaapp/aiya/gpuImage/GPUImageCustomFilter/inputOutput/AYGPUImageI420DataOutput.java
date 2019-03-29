@@ -5,6 +5,7 @@ import android.util.Log;
 import com.aiyaapp.aiya.AYYuvUtil;
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
 
@@ -14,11 +15,13 @@ import java.util.Arrays;
 
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.TAG;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImagePassthroughFragmentShaderString;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImageVertexShaderString;
 
 public class AYGPUImageI420DataOutput implements AYGPUImageInput {
+
+    private AYGPUImageEGLContext context;
 
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
 
@@ -30,9 +33,7 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
     protected int filterPositionAttribute, filterTextureCoordinateAttribute;
     protected int filterInputTextureUniform;
 
-    protected byte[] outputYData;
-    protected byte[] outputUData;
-    protected byte[] outputVData;
+    protected byte[] outputYUVData;
     protected int outputWidth;
     protected int outputHeight;
     protected int outputLineSize;
@@ -42,8 +43,9 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
 
     private AYGPUImageConstants.AYGPUImageRotationMode rotateMode = kAYGPUImageNoRotation;
 
-    public AYGPUImageI420DataOutput() {
-        syncRunOnRenderThread(new Runnable() {
+    public AYGPUImageI420DataOutput(AYGPUImageEGLContext context) {
+        this.context = context;
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram = new AYGLProgram(kAYGPUImageVertexShaderString, kAYGPUImagePassthroughFragmentShaderString);
@@ -58,8 +60,7 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
     }
 
     protected void renderToTexture(final Buffer vertices, final Buffer textureCoordinates) {
-
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -108,9 +109,9 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
                 glFinish();
                 glReadPixels(0, 0, outputWidth, outputHeight, GL_RGBA, GL_UNSIGNED_BYTE, bgraBuffer);
                 AYYuvUtil.RGBA_To_I420(bgraBuffer, yuvBuffer, outputWidth, outputHeight);
-                System.arraycopy(yuvBuffer.array(), 0, outputYData, 0, outputWidth * outputHeight);
-                System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight, outputUData, 0, outputWidth * outputHeight / 4);
-                System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight * 5 / 4, outputVData, 0, outputWidth * outputHeight / 4);
+                System.arraycopy(yuvBuffer.array(), 0, outputYUVData, 0, outputWidth * outputHeight);
+                System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight, outputYUVData, outputWidth * outputHeight, outputWidth * outputHeight / 4);
+                System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight + outputWidth * outputHeight / 4, outputYUVData, outputWidth * outputHeight + outputWidth * outputHeight / 4, outputWidth * outputHeight / 4);
 
                 glDisableVertexAttribArray(filterPositionAttribute);
                 glDisableVertexAttribArray(filterTextureCoordinateAttribute);
@@ -118,10 +119,8 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
         });
     }
 
-    public void setOutputWithYUVData(final byte[] yData, final byte[] uData, final byte[] vData, final int width, final int height, final int lineSize) {
-        this.outputYData = Arrays.copyOf(yData, yData.length); // 浅拷贝
-        this.outputUData = Arrays.copyOf(uData, uData.length); // 浅拷贝
-        this.outputVData = Arrays.copyOf(vData, vData.length); // 浅拷贝
+    public void setOutputWithYUVData(byte[] yuvData, final int width, final int height, final int lineSize) {
+        this.outputYUVData = yuvData;
         this.outputWidth = width;
         this.outputHeight = height;
         this.outputLineSize = lineSize;
@@ -135,7 +134,7 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
     }
 
     public void destroy() {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.destroy();

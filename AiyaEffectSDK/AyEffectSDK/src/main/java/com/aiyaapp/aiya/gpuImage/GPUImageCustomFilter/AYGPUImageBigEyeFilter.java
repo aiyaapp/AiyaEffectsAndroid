@@ -1,12 +1,11 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 
 import com.aiyaapp.aiya.AyBigEye;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
 import java.nio.Buffer;
-
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 
 public class AYGPUImageBigEyeFilter extends AYGPUImageFilter {
 
@@ -14,10 +13,10 @@ public class AYGPUImageBigEyeFilter extends AYGPUImageFilter {
 
     private long faceData;
 
-    public AYGPUImageBigEyeFilter() {
-        super();
+    public AYGPUImageBigEyeFilter(AYGPUImageEGLContext context) {
+        super(context);
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 bigEye = new AyBigEye();
@@ -28,7 +27,7 @@ public class AYGPUImageBigEyeFilter extends AYGPUImageFilter {
 
     @Override
     protected void renderToTexture(Buffer vertices, Buffer textureCoordinates) {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -69,7 +68,7 @@ public class AYGPUImageBigEyeFilter extends AYGPUImageFilter {
     public void destroy() {
         super.destroy();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 bigEye.releaseGLResource();

@@ -2,6 +2,7 @@ package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput;
 
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageOutput;
@@ -11,11 +12,12 @@ import java.nio.Buffer;
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.needExchangeWidthAndHeightWithRotation;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImagePassthroughFragmentShaderString;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImageVertexShaderString;
 
 public class AYGPUImageTextureInput extends AYGPUImageOutput {
+
+    private AYGPUImageEGLContext context;
 
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
 
@@ -28,8 +30,9 @@ public class AYGPUImageTextureInput extends AYGPUImageOutput {
 
     private AYGPUImageConstants.AYGPUImageRotationMode rotateMode = kAYGPUImageNoRotation;
 
-    public AYGPUImageTextureInput() {
-        syncRunOnRenderThread(new Runnable() {
+    public AYGPUImageTextureInput(AYGPUImageEGLContext context) {
+        this.context = context;
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram = new AYGLProgram(kAYGPUImageVertexShaderString, kAYGPUImagePassthroughFragmentShaderString);
@@ -44,7 +47,7 @@ public class AYGPUImageTextureInput extends AYGPUImageOutput {
     }
 
     public void processWithBGRATexture(final int texture, final int width, final int height) {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
 
@@ -110,7 +113,7 @@ public class AYGPUImageTextureInput extends AYGPUImageOutput {
     public void destroy() {
         removeAllTargets();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.destroy();

@@ -3,6 +3,7 @@ package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 import android.graphics.Bitmap;
 
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
@@ -11,7 +12,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 import static android.opengl.GLES20.*;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 
 public class AYGPUImageLookupFilter extends AYGPUImageFilter {
 
@@ -61,9 +61,10 @@ public class AYGPUImageLookupFilter extends AYGPUImageFilter {
     private int lookupTexture[] = new int[1];
     private boolean updateLookupTexture = true;
 
-    public AYGPUImageLookupFilter(final Bitmap lookup) {
+    public AYGPUImageLookupFilter(AYGPUImageEGLContext context, final Bitmap lookup) {
+        super(context);
         this.lookup = lookup;
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram = new AYGLProgram(kAYGPUImageVertexShaderString, kAYGPUImageLookupFragmentShaderString);
@@ -98,7 +99,7 @@ public class AYGPUImageLookupFilter extends AYGPUImageFilter {
 
     @Override
     protected void renderToTexture(final Buffer vertices, final Buffer textureCoordinates) {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -166,7 +167,7 @@ public class AYGPUImageLookupFilter extends AYGPUImageFilter {
     public void destroy() {
         super.destroy();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 if (lookupTexture[0] != 0) {

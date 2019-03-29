@@ -35,7 +35,7 @@ void funcAyEffectMessage(int type, int ret, const char *info) {
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_aiyaapp_aiya_AyEffect_Create(JNIEnv *env, jobject instance, jint type) {
+Java_com_aiyaapp_aiya_AyEffect_Create(JNIEnv *env, jobject instance) {
 
     AiyaRender::RenderSticker *render = new AiyaRender::RenderSticker();
     return reinterpret_cast<jlong>(render);

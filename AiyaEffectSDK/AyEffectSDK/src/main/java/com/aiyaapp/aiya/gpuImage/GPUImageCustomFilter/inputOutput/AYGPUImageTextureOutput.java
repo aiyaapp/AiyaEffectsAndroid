@@ -1,31 +1,24 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.util.Log;
 
-import com.aiyaapp.aiya.AyFaceTrack;
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.TAG;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImagePassthroughFragmentShaderString;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImageVertexShaderString;
 
 public class AYGPUImageTextureOutput implements AYGPUImageInput {
 
+    private AYGPUImageEGLContext context;
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
 
     protected AYGPUImageFramebuffer firstInputFramebuffer;
@@ -43,8 +36,9 @@ public class AYGPUImageTextureOutput implements AYGPUImageInput {
     private int[] framebuffer = new int[1];
     public int[] texture = new int[1];
 
-    public AYGPUImageTextureOutput() {
-        syncRunOnRenderThread(new Runnable() {
+    public AYGPUImageTextureOutput(AYGPUImageEGLContext context) {
+        this.context = context;
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram = new AYGLProgram(kAYGPUImageVertexShaderString, kAYGPUImagePassthroughFragmentShaderString);
@@ -59,8 +53,7 @@ public class AYGPUImageTextureOutput implements AYGPUImageInput {
     }
 
     protected void renderToTexture(final Buffer vertices, final Buffer textureCoordinates) {
-
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -95,7 +88,7 @@ public class AYGPUImageTextureOutput implements AYGPUImageInput {
         this.inputWidth = width;
         this.inputHeight = height;
 
-        syncRunOnRenderThread(new Runnable(){
+        context.syncRunOnRenderThread(new Runnable(){
             @Override
             public void run() {
                 if (framebuffer[0] == 0){
@@ -119,7 +112,7 @@ public class AYGPUImageTextureOutput implements AYGPUImageInput {
     }
 
     public void destroy() {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.destroy();

@@ -1,12 +1,11 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 
 import com.aiyaapp.aiya.AyBeauty;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
 import java.nio.Buffer;
-
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 
 public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
 
@@ -37,11 +36,11 @@ public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
 
     private AyBeauty beauty;
 
-    public AYGPUImageBeautyFilter(AyBeauty.AY_BEAUTY_TYPE type) {
-        super();
+    public AYGPUImageBeautyFilter(AYGPUImageEGLContext context, AyBeauty.AY_BEAUTY_TYPE type) {
+        super(context);
         this.type = type;
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 beauty = new AyBeauty(AYGPUImageBeautyFilter.this.type);
@@ -52,7 +51,7 @@ public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
 
     @Override
     protected void renderToTexture(Buffer vertices, Buffer textureCoordinates) {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -80,7 +79,7 @@ public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
     public void setType(final AyBeauty.AY_BEAUTY_TYPE type) {
         this.type = type;
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 if (beauty != null) {
@@ -147,7 +146,7 @@ public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
     public void destroy() {
         super.destroy();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 beauty.releaseGLResource();

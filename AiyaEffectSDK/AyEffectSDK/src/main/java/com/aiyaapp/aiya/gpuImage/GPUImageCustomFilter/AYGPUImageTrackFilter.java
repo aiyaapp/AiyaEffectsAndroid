@@ -5,6 +5,7 @@ import android.content.Context;
 import com.aiyaapp.aiya.AyFaceTrack;
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
 
@@ -13,11 +14,12 @@ import java.nio.ByteBuffer;
 
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImagePassthroughFragmentShaderString;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageFilter.kAYGPUImageVertexShaderString;
 
 public class AYGPUImageTrackFilter implements AYGPUImageInput {
+
+    private AYGPUImageEGLContext eglContext;
 
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
 
@@ -37,10 +39,11 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
     private Context context;
     private ByteBuffer bgraBuffer;
 
-    public AYGPUImageTrackFilter(Context context) {
+    public AYGPUImageTrackFilter(AYGPUImageEGLContext eglContext, Context context) {
+        this.eglContext = eglContext;
         this.context = context;
 
-        syncRunOnRenderThread(new Runnable() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram = new AYGLProgram(kAYGPUImageVertexShaderString, kAYGPUImagePassthroughFragmentShaderString);
@@ -62,7 +65,7 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
 
     protected void renderToTexture(final Buffer vertices, final Buffer textureCoordinates) {
 
-        syncRunOnRenderThread(new Runnable() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -106,11 +109,13 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
     }
 
     public void destroy() {
-        syncRunOnRenderThread(new Runnable() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.destroy();
-                outputFramebuffer.destroy();
+                if (outputFramebuffer != null) {
+                    outputFramebuffer.destroy();
+                }
             }
         });
 

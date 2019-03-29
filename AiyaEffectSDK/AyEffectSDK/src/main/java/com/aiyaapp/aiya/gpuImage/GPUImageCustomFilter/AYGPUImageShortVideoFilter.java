@@ -1,15 +1,12 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 
 import com.aiyaapp.aiya.AyShortVideoEffect;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
 import java.nio.Buffer;
 import java.util.HashMap;
-import java.util.List;
-
-import static android.opengl.GLES20.*;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 
 public class AYGPUImageShortVideoFilter extends AYGPUImageFilter {
 
@@ -46,8 +43,8 @@ public class AYGPUImageShortVideoFilter extends AYGPUImageFilter {
     private HashMap<Integer, AyShortVideoEffect> shortVideoMap;
     private AyShortVideoEffect shortVideo;
 
-    public AYGPUImageShortVideoFilter() {
-        super();
+    public AYGPUImageShortVideoFilter(AYGPUImageEGLContext context) {
+        super(context);
 
         shortVideoMap = new HashMap();
     }
@@ -58,7 +55,7 @@ public class AYGPUImageShortVideoFilter extends AYGPUImageFilter {
 
     @Override
     protected void renderToTexture(Buffer vertices, Buffer textureCoordinates) {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -171,7 +168,7 @@ public class AYGPUImageShortVideoFilter extends AYGPUImageFilter {
     public void destroy() {
         super.destroy();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 for (AyShortVideoEffect shortVideo : shortVideoMap.values() ) {

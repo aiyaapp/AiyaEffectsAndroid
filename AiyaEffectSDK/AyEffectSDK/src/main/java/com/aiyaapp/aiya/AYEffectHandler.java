@@ -4,13 +4,15 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
 import android.util.Log;
 
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBeautyFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBigEyeFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageLookupFilter;
-import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageShortVideoFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageSlimFaceFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageTrackFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageI420DataInput;
@@ -29,9 +31,12 @@ import java.util.List;
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateLeft;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRight;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.TAG;
 
 public class AYEffectHandler {
+
+    private AYGPUImageEGLContext eglContext;
+    private SurfaceTexture surfaceTexture;
 
     private AYGPUImageTextureInput textureInput;
     private AYGPUImageTextureOutput textureOutput;
@@ -59,32 +64,49 @@ public class AYEffectHandler {
     private ArrayList<Integer> vertexAttribEnableArray = new ArrayList(vertexAttribEnableArraySize);
 
     public AYEffectHandler(final Context context) {
+        this(context, true);
+    }
 
-        syncRunOnRenderThread(new Runnable(){
+    public AYEffectHandler(final Context context, boolean useCurrentEGLContext) {
+
+        eglContext = new AYGPUImageEGLContext();
+        if (useCurrentEGLContext) {
+            if (EGL14.eglGetCurrentContext() == null) {
+                surfaceTexture = new SurfaceTexture(0);
+                eglContext.initEGLWindow(surfaceTexture);
+            } else {
+                Log.d(TAG, "不需要初始化EGL环境");
+            }
+        } else {
+            surfaceTexture = new SurfaceTexture(0);
+            eglContext.initEGLWindow(surfaceTexture);
+        }
+
+        eglContext.syncRunOnRenderThread(new Runnable(){
             @Override
             public void run() {
-                textureInput = new AYGPUImageTextureInput();
-                textureOutput = new AYGPUImageTextureOutput();
+                textureInput = new AYGPUImageTextureInput(eglContext);
+                textureOutput = new AYGPUImageTextureOutput(eglContext);
 
-                i420DataInput = new AYGPUImageI420DataInput();
-                i420DataOutput = new AYGPUImageI420DataOutput();
+                i420DataInput = new AYGPUImageI420DataInput(eglContext);
+                i420DataOutput = new AYGPUImageI420DataOutput(eglContext);
 
-                commonInputFilter = new AYGPUImageFilter();
-                commonOutputFilter = new AYGPUImageFilter();
+                commonInputFilter = new AYGPUImageFilter(eglContext);
+                commonOutputFilter = new AYGPUImageFilter(eglContext);
 
                 try {
                     Bitmap lookupBitmap = BitmapFactory.decodeStream(context.getAssets().open("lookup.png"));
-                    lookupFilter = new AYGPUImageLookupFilter(lookupBitmap);
+                    lookupFilter = new AYGPUImageLookupFilter(eglContext,lookupBitmap);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                beautyFilter = new AYGPUImageBeautyFilter(AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_5);
-                bigEyeFilter = new AYGPUImageBigEyeFilter();
-                slimFaceFilter = new AYGPUImageSlimFaceFilter();
+                beautyFilter = new AYGPUImageBeautyFilter(eglContext, AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_5);
+                bigEyeFilter = new AYGPUImageBigEyeFilter(eglContext);
+                slimFaceFilter = new AYGPUImageSlimFaceFilter(eglContext);
 
-                trackFilter = new AYGPUImageTrackFilter(context);
+                trackFilter = new AYGPUImageTrackFilter(eglContext, context);
 
-                effectFilter = new AYGPUImageEffectFilter();
+                effectFilter = new AYGPUImageEffectFilter(eglContext);
             }
         });
     }
@@ -95,20 +117,27 @@ public class AYEffectHandler {
             Log.e("AYEffect", "无效的特效资源路径");
             return;
         }
-
-        effectFilter.setEffectPath(effectPath);
+        if (effectFilter != null) {
+            effectFilter.setEffectPath(effectPath);
+        }
     }
 
     public void setEffectPlayCount(int effectPlayCount) {
-        effectFilter.setEffectPlayCount(effectPlayCount);
+        if (effectFilter != null) {
+            effectFilter.setEffectPlayCount(effectPlayCount);
+        }
     }
 
     public void pauseEffect() {
-        effectFilter.pause();
+        if (effectFilter != null) {
+            effectFilter.pause();
+        }
     }
 
     public void resumeEffect() {
-        effectFilter.resume();
+        if (effectFilter != null) {
+            effectFilter.resume();
+        }
     }
 
     public void setStyle(Bitmap lookup) {
@@ -161,6 +190,7 @@ public class AYEffectHandler {
 
     public void setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode rotateMode) {
         this.textureInput.setRotateMode(rotateMode);
+        this.i420DataInput.setRotateMode(rotateMode);
 
         if (rotateMode == kAYGPUImageRotateLeft) {
             rotateMode = kAYGPUImageRotateRight;
@@ -169,6 +199,7 @@ public class AYEffectHandler {
         }
 
         this.textureOutput.setRotateMode(rotateMode);
+        this.i420DataOutput.setRotateMode(rotateMode);
     }
 
     private void commonProcess() {
@@ -213,24 +244,25 @@ public class AYEffectHandler {
 
             initCommonProcess = true;
 
-            if (bigEyeFilter != null) {
+            if (bigEyeFilter != null && trackFilter != null) {
                 bigEyeFilter.setFaceData(trackFilter.faceData());
             }
 
-            if (slimFaceFilter != null) {
+            if (slimFaceFilter != null && trackFilter != null) {
                 slimFaceFilter.setFaceData(trackFilter.faceData());
             }
 
-            if (effectFilter != null) {
+            if (effectFilter != null && trackFilter != null) {
                 effectFilter.setFaceData(trackFilter.faceData());
             }
         }
     }
 
     public void processWithTexture(final int texture, final int width, final int height) {
-        syncRunOnRenderThread(new Runnable() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
+                eglContext.makeCurrent();
 
                 saveOpenGLState();
 
@@ -253,10 +285,11 @@ public class AYEffectHandler {
         });
     }
 
-    public void processWithYUVData(final byte[] yData, final byte[] uData, final byte[] vData, final int width, final int height) {
-        syncRunOnRenderThread(new Runnable() {
+    public void processWithYUVData(final byte[] yuvData, final int width, final int height) {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
+                eglContext.makeCurrent();
 
                 saveOpenGLState();
 
@@ -269,10 +302,10 @@ public class AYEffectHandler {
                 }
 
                 // 设置输出的Filter
-                i420DataOutput.setOutputWithYUVData(yData, uData, vData, width, height, width);
+                i420DataOutput.setOutputWithYUVData(yuvData, width, height, width);
 
                 // 设置输入的Filter, 同时开始处理纹理数据
-                i420DataInput.processWithYUV(yData, uData, vData, width, height, width);
+                i420DataInput.processWithYUV(yuvData, width, height, width);
 
                 restoreOpenGLState();
             }
@@ -282,7 +315,7 @@ public class AYEffectHandler {
     public Bitmap getCurrentImage(final int width, final int height) {
         final ByteBuffer byteBuffer = ByteBuffer.allocate(width*height*4);
 
-        syncRunOnRenderThread(new Runnable() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 glReadPixels(0,0,width,height,GL_RGBA, GL_UNSIGNED_BYTE, byteBuffer);
@@ -335,28 +368,44 @@ public class AYEffectHandler {
     }
 
     public void destroy() {
-        textureInput.destroy();
-        textureOutput.destroy();
-        commonInputFilter.destroy();
-        commonOutputFilter.destroy();
+        if (eglContext != null) {
+            eglContext.syncRunOnRenderThread(new Runnable() {
+                @Override
+                public void run() {
+                    eglContext.makeCurrent();
 
-        if (lookupFilter != null) {
-            lookupFilter.destroy();
-        }
-        if (beautyFilter != null) {
-            beautyFilter.destroy();
-        }
-        if (bigEyeFilter != null) {
-            bigEyeFilter.destroy();
-        }
-        if (slimFaceFilter != null) {
-            slimFaceFilter.destroy();
-        }
-        if (effectFilter != null) {
-            effectFilter.destroy();
-        }
-        if (trackFilter != null) {
-            trackFilter.destroy();
+                    textureInput.destroy();
+                    textureOutput.destroy();
+                    i420DataInput.destroy();
+                    i420DataOutput.destroy();
+                    commonInputFilter.destroy();
+                    commonOutputFilter.destroy();
+
+                    if (lookupFilter != null) {
+                        lookupFilter.destroy();
+                    }
+                    if (beautyFilter != null) {
+                        beautyFilter.destroy();
+                    }
+                    if (bigEyeFilter != null) {
+                        bigEyeFilter.destroy();
+                    }
+                    if (slimFaceFilter != null) {
+                        slimFaceFilter.destroy();
+                    }
+                    if (effectFilter != null) {
+                        effectFilter.destroy();
+                    }
+                    if (trackFilter != null) {
+                        trackFilter.destroy();
+                    }
+                    if (surfaceTexture != null) {
+                        surfaceTexture.release();
+                    }
+
+                    eglContext.destroyEGLWindow();
+                }
+            });
         }
     }
 }

@@ -3,8 +3,12 @@ package com.aiyaapp.aiya;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
+import android.graphics.SurfaceTexture;
+import android.opengl.EGL14;
+import android.util.Log;
 
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageShortVideoFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageTextureInput;
@@ -32,9 +36,12 @@ import static android.opengl.GLES20.glReadPixels;
 import static android.opengl.GLES20.glViewport;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateLeft;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRight;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.TAG;
 
 public class AYShortVideoEffectHandler {
+
+    private AYGPUImageEGLContext eglContext;
+    private SurfaceTexture surfaceTexture;
 
     private AYGPUImageTextureInput textureInput;
     private AYGPUImageTextureOutput textureOutput;
@@ -54,17 +61,33 @@ public class AYShortVideoEffectHandler {
     private ArrayList<Integer> vertexAttribEnableArray = new ArrayList(vertexAttribEnableArraySize);
 
     public AYShortVideoEffectHandler(final Context context) {
+        this(context, true);
+    }
 
-        syncRunOnRenderThread(new Runnable(){
+    public AYShortVideoEffectHandler(final Context context, boolean useCurrentEGLContext) {
+        eglContext = new AYGPUImageEGLContext();
+        if (useCurrentEGLContext) {
+            if (EGL14.eglGetCurrentContext() == null) {
+                surfaceTexture = new SurfaceTexture(0);
+                eglContext.initEGLWindow(surfaceTexture);
+            } else {
+                Log.d(TAG, "不需要初始化EGL环境");
+            }
+        } else {
+            surfaceTexture = new SurfaceTexture(0);
+            eglContext.initEGLWindow(surfaceTexture);
+        }
+
+        eglContext.syncRunOnRenderThread(new Runnable(){
             @Override
             public void run() {
-                textureInput = new AYGPUImageTextureInput();
-                textureOutput = new AYGPUImageTextureOutput();
+                textureInput = new AYGPUImageTextureInput(eglContext);
+                textureOutput = new AYGPUImageTextureOutput(eglContext);
 
-                commonInputFilter = new AYGPUImageFilter();
-                commonOutputFilter = new AYGPUImageFilter();
+                commonInputFilter = new AYGPUImageFilter(eglContext);
+                commonOutputFilter = new AYGPUImageFilter(eglContext);
 
-                shortVideoFilter = new AYGPUImageShortVideoFilter();
+                shortVideoFilter = new AYGPUImageShortVideoFilter(eglContext);
             }
         });
     }
@@ -112,7 +135,7 @@ public class AYShortVideoEffectHandler {
     }
 
     public void processWithTexture(final int texture, final int width, final int height) {
-        syncRunOnRenderThread(new Runnable() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
 
@@ -140,7 +163,7 @@ public class AYShortVideoEffectHandler {
     public Bitmap getCurrentImage(final int width, final int height) {
         final ByteBuffer byteBuffer = ByteBuffer.allocate(width*height*4);
 
-        syncRunOnRenderThread(new Runnable() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 glFinish();
@@ -202,6 +225,12 @@ public class AYShortVideoEffectHandler {
         if (shortVideoFilter != null) {
             shortVideoFilter.destroy();
             shortVideoFilter = null;
+        }
+        if (surfaceTexture != null) {
+            surfaceTexture.release();
+        }
+        if (eglContext != null) {
+            eglContext.destroyEGLWindow();
         }
     }
 }

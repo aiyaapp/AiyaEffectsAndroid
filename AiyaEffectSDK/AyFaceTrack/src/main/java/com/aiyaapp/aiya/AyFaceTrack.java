@@ -46,7 +46,7 @@ public class AyFaceTrack {
                     deleteFile(f);
                 }
             } else {
-                boolean _ = file.delete();
+                boolean result = file.delete();
             }
         }
     }

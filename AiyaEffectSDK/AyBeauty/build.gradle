@@ -42,9 +42,4 @@ android {
     }
 }
 
-dependencies {
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation project(':AyCore')
-}
-
 apply from: "buBeauty.gradle"

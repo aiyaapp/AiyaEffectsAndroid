@@ -1,10 +1,7 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 
-import android.opengl.GLES20;
-import android.util.Log;
-
 import com.aiyaapp.aiya.AyEffect;
-import com.aiyaapp.aiya.AySlimFace;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
@@ -12,7 +9,6 @@ import java.nio.Buffer;
 
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.AyEffect.MSG_STAT_EFFECTS_END;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext.syncRunOnRenderThread;
 
 public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect.OnEffectCallback {
     private AyEffect effect;
@@ -24,10 +20,10 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
 
     private int[] depthRenderbuffer = new int[]{0};
 
-    public AYGPUImageEffectFilter() {
-        super();
+    public AYGPUImageEffectFilter(AYGPUImageEGLContext context) {
+        super(context);
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 createRBO();
@@ -41,7 +37,7 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
 
     @Override
     protected void renderToTexture(Buffer vertices, Buffer textureCoordinates) {
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 filterProgram.use();
@@ -106,7 +102,7 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
     public void destroy() {
         super.destroy();
 
-        syncRunOnRenderThread(new Runnable() {
+        context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
                 effect.releaseGLResource();
@@ -125,8 +121,6 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
             depthRenderbuffer[0] = 0;
         }
     }
-
-
 
     @Override
     public void aiyaEffectMessage(int type, int ret) {
