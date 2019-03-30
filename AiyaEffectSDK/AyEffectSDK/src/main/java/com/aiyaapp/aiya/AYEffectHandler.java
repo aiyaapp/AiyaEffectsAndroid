@@ -100,7 +100,7 @@ public class AYEffectHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                beautyFilter = new AYGPUImageBeautyFilter(eglContext, AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_5);
+                beautyFilter = new AYGPUImageBeautyFilter(eglContext, AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_2);
                 bigEyeFilter = new AYGPUImageBigEyeFilter(eglContext);
                 slimFaceFilter = new AYGPUImageSlimFaceFilter(eglContext);
 

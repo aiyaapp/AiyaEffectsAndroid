@@ -132,7 +132,7 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
     @Override
     public void setInputSize(int width, int height) {
         if (outputWidth != width || outputHeight != height) {
-            setOutputWidthAndHeight(176, (int) (height * 176.f / width));
+            setOutputWidthAndHeight(160, (int) (height * 160.f / width));
         }
     }
 

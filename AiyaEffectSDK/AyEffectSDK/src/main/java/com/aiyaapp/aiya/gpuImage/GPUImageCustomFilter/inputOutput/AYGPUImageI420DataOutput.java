@@ -1,5 +1,7 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput;
 
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.util.Log;
 
 import com.aiyaapp.aiya.AYYuvUtil;
@@ -9,6 +11,8 @@ import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -108,10 +112,23 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
                 yuvBuffer.clear();
                 glFinish();
                 glReadPixels(0, 0, outputWidth, outputHeight, GL_RGBA, GL_UNSIGNED_BYTE, bgraBuffer);
+
                 AYYuvUtil.RGBA_To_I420(bgraBuffer, yuvBuffer, outputWidth, outputHeight);
                 System.arraycopy(yuvBuffer.array(), 0, outputYUVData, 0, outputWidth * outputHeight);
                 System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight, outputYUVData, outputWidth * outputHeight, outputWidth * outputHeight / 4);
                 System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight + outputWidth * outputHeight / 4, outputYUVData, outputWidth * outputHeight + outputWidth * outputHeight / 4, outputWidth * outputHeight / 4);
+
+                //TODO TEST: 保存最终的RGBA数据到 SDCard/test.png
+//                try {
+//                    Bitmap bitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888);
+//                    bitmap.copyPixelsFromBuffer(bgraBuffer);
+//                    FileOutputStream fileOutputStream = new FileOutputStream(new File(Environment.getExternalStorageDirectory() + "/test.png"));
+//                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fileOutputStream);
+//                    fileOutputStream.flush();
+//                    fileOutputStream.close();
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
 
                 glDisableVertexAttribArray(filterPositionAttribute);
                 glDisableVertexAttribArray(filterTextureCoordinateAttribute);

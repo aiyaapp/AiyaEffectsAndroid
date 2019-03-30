@@ -18,21 +18,18 @@ android {
                 arguments '-DANDROID_TOOLCHAIN=clang', '-DANDROID_STL=gnustl_static'
             }
         }
+
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a", "x86"
         }
     }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+
     externalNativeBuild {
         cmake {
             path 'CMakeLists.txt'
         }
     }
+
     sourceSets {
         main {
             jniLibs.srcDirs += "libs"
