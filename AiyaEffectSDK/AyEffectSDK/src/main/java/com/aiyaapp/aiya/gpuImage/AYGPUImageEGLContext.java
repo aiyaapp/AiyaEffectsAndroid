@@ -7,7 +7,6 @@ import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import android.util.Log;
 
 import java.util.concurrent.Semaphore;
@@ -24,7 +23,10 @@ public class AYGPUImageEGLContext {
     private HandlerThread handlerThread;
     private Handler glesHandler;
 
-    public boolean initEGLWindow(final Object nativeWindow) {
+    /**
+     * 创建EGLContext, 绑定window
+     */
+    public boolean initWithEGLWindow(final Object nativeWindow) {
 
         // 初始化GL执行线程
         handlerThread = new HandlerThread("com.aiyaapp.gpuimage");
@@ -39,7 +41,7 @@ public class AYGPUImageEGLContext {
         glesHandler.post(new Runnable() {
             @Override
             public void run() {
-                result[0] = createEGLWindow(nativeWindow);
+                result[0] = createAndBindEGLWindow(nativeWindow);
                 semaphore.release();
             }
         });
@@ -53,7 +55,7 @@ public class AYGPUImageEGLContext {
         return result[0];
     }
 
-    private boolean createEGLWindow(Object nativeWindow) {
+    private boolean createAndBindEGLWindow(Object nativeWindow) {
         eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
         if (eglDisplay == null) {
             Log.d(TAG, "eglGetDisplay error " + eglGetError());
@@ -108,18 +110,61 @@ public class AYGPUImageEGLContext {
         return true;
     }
 
+    /**
+     * 绑定EGLWindow
+     */
+    public boolean bindEGLWindow(Object nativeWindow, EGLContext context) {
+        this.context = context;
+
+        eglDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        if (eglDisplay == null) {
+            Log.d(TAG, "eglGetDisplay error " + eglGetError());
+            return false;
+        }
+
+        int[] versions = new int[2];
+        if (!eglInitialize(eglDisplay, versions, 0, versions, 1)) {
+            Log.d(TAG, "eglInitialize error " + eglGetError());
+            return false;
+        }
+
+        int[] attrs = {
+                EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+                EGL_RED_SIZE, 8,
+                EGL_GREEN_SIZE, 8,
+                EGL_BLUE_SIZE, 8,
+                EGL_ALPHA_SIZE, 8,
+                EGL_DEPTH_SIZE, 16,
+                EGL_NONE
+        };
+        EGLConfig[] configs = new EGLConfig[1];
+        int[] numConfigs = new int[1];
+        if (!eglChooseConfig(eglDisplay, attrs, 0, configs, 0, configs.length, numConfigs, 0)) {
+            Log.d(TAG, "eglChooseConfig error " + eglGetError());
+            return false;
+        }
+
+        surface = eglCreateWindowSurface(eglDisplay, configs[0], nativeWindow, new int[]{EGL_NONE}, 0);
+        if (surface == EGL_NO_SURFACE) {
+            Log.d(TAG, "eglCreateWindowSurface error " + eglGetError());
+            return false;
+        }
+
+        if (!eglMakeCurrent(eglDisplay, surface, surface, context)) {
+            Log.d(TAG, "eglMakeCurrent error " + eglGetError());
+            return false;
+        }
+
+        Log.d(TAG, "绑定 eglCreateContext");
+        return true;
+    }
+
     public boolean makeCurrent() {
         if (eglDisplay != null && surface != null && context != null) {
             // Log.d(TAG,"makeCurrent " + Thread.currentThread());
             return eglMakeCurrent(eglDisplay, surface, surface, context);
         } else {
             return false;
-        }
-    }
-
-    public void setTimeStemp(long time) {
-        if (eglDisplay != null && surface != null) {
-            EGLExt.eglPresentationTimeANDROID(eglDisplay, surface, time);
         }
     }
 
@@ -134,7 +179,7 @@ public class AYGPUImageEGLContext {
     public void destroyEGLWindow() {
         if (eglDisplay != null && context != null) {
             eglDestroyContext(eglDisplay, context);
-            Log.d(TAG, "销毁 eglCreateContext");
+            Log.d(TAG, "销毁 eglContext");
         }
 
         if (eglDisplay != null && surface != null) {
@@ -144,7 +189,7 @@ public class AYGPUImageEGLContext {
 
     public void syncRunOnRenderThread(final Runnable runnable) {
 
-        if (eglDisplay != null && surface != null && context != null) {
+        if (eglDisplay != null && surface != null && context != null && glesHandler != null) {
             Thread thread = Thread.currentThread();
 
             if (thread == glesHandler.getLooper().getThread()) {

@@ -73,13 +73,13 @@ public class AYEffectHandler {
         if (useCurrentEGLContext) {
             if (EGL14.eglGetCurrentContext() == null) {
                 surfaceTexture = new SurfaceTexture(0);
-                eglContext.initEGLWindow(surfaceTexture);
+                eglContext.initWithEGLWindow(surfaceTexture);
             } else {
                 Log.d(TAG, "不需要初始化EGL环境");
             }
         } else {
             surfaceTexture = new SurfaceTexture(0);
-            eglContext.initEGLWindow(surfaceTexture);
+            eglContext.initWithEGLWindow(surfaceTexture);
         }
 
         eglContext.syncRunOnRenderThread(new Runnable(){

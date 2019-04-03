@@ -1,16 +1,15 @@
 apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
-group='com.wuwang.aavt'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
-        minSdkVersion 14
-        targetSdkVersion 27
-        versionCode rootProject.ext.vCode
-        versionName rootProject.ext.vName
+        minSdkVersion 18
+        targetSdkVersion 28
+        versionCode 4200
+        versionName "4.2.0"
 
         externalNativeBuild {
             cmake {
@@ -37,4 +36,4 @@ android {
     }
 }
 
-apply from: "buCore.gradle"
+apply from: "buildJCenter.gradle"

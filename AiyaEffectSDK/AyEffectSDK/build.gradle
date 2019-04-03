@@ -1,13 +1,14 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
+    compileSdkVersion 28
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 18
-        targetSdkVersion 27
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 28
+        versionCode 4200
+        versionName "4.2.0"
     }
 }
 
@@ -18,4 +19,15 @@ dependencies {
     compile project(':AyFaceTrack')
     compile project(':AyEffect')
     compile project(':AyShortVideoEffect')
+
+//    TODO 直接依赖jcenter项目
+//    compile "com.aiyaapp.aiya:libyuv:$android.defaultConfig.versionName"
+//    compile "com.aiyaapp.aiya:AyCore:$android.defaultConfig.versionName"
+//    compile "com.aiyaapp.aiya:AyBeauty:$android.defaultConfig.versionName"
+//    compile "com.aiyaapp.aiya:AyFaceTrack:$android.defaultConfig.versionName"
+//    compile "com.aiyaapp.aiya:AyEffect:$android.defaultConfig.versionName"
+//    compile "com.aiyaapp.aiya:AyShortVideoEffect:$android.defaultConfig.versionName"
+
 }
+
+apply from: "../AyCore/buildJCenter.gradle"
