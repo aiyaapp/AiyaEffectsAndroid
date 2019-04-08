@@ -8,7 +8,8 @@
 
 ### 1.1 版本信息
 
-**当前版本：AiyaEffects SDK v4.2.0**
+**当前版本：AiyaEffectsSDK<br/><br/>**
+<img src='https://api.bintray.com/packages/aiyaapp/sdk/AyCore/images/download.svg'>
 
 ### 1.2 集成示例
 * [集成到腾讯云的示例](https://github.com/aiyaapp/AiyaEffectsWithTengxunyunAndroid)
