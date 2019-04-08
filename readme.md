@@ -10,7 +10,6 @@
 
 **当前版本：AiyaEffects SDK v4.2.0**
 
-
 ### 1.2 集成示例
 * [集成到腾讯云的示例](https://github.com/aiyaapp/AiyaEffectsWithTengxunyunAndroid)
 * [集成到阿里云的示例](https://github.com/aiyaapp/AiyaEffectsWithAliyunAndroid)
