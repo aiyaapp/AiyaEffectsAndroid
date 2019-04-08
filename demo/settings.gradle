@@ -1,1 +1,8 @@
-include ':app'
+include ':app', ':AyCore', ':AyEffect', ':AyFaceTrack', ':AyBeauty', ':AyEffectSDK', ':libyuv', ':AyShortVideoEffect'
+project(':AyCore').projectDir=new File('../AiyaEffectSDK/AyCore')
+project(':AyEffect').projectDir=new File('../AiyaEffectSDK/AyEffect')
+project(':AyFaceTrack').projectDir=new File('../AiyaEffectSDK/AyFaceTrack')
+project(':AyBeauty').projectDir=new File('../AiyaEffectSDK/AyBeauty')
+project(':libyuv').projectDir=new File('../AiyaEffectSDK/libyuv')
+project(':AyShortVideoEffect').projectDir=new File('../AiyaEffectSDK/AyShortVideoEffect')
+project(':AyEffectSDK').projectDir=new File('../AiyaEffectSDK/AyEffectSDK')
