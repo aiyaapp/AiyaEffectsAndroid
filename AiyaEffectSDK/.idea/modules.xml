@@ -9,6 +9,8 @@
       <module fileurl="file://$PROJECT_DIR$/AyEffectSDK/AyEffectSDK.iml" filepath="$PROJECT_DIR$/AyEffectSDK/AyEffectSDK.iml" />
       <module fileurl="file://$PROJECT_DIR$/AyFaceTrack/AyFaceTrack.iml" filepath="$PROJECT_DIR$/AyFaceTrack/AyFaceTrack.iml" />
       <module fileurl="file://$PROJECT_DIR$/AyShortVideoEffect/AyShortVideoEffect.iml" filepath="$PROJECT_DIR$/AyShortVideoEffect/AyShortVideoEffect.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../demo/app/app.iml" filepath="$PROJECT_DIR$/../demo/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../demo/demo.iml" filepath="$PROJECT_DIR$/../demo/demo.iml" />
       <module fileurl="file://$PROJECT_DIR$/libyuv/libyuv.iml" filepath="$PROJECT_DIR$/libyuv/libyuv.iml" />
     </modules>
   </component>

@@ -37,7 +37,7 @@ public class AyFaceTrack {
     private static native void Init(String dstPath);
     public static native void Deinit();
     public static native long FaceData();
-    public static native void TrackWithBGRABuffer(ByteBuffer pixelBuffer, int width, int height);
+    public static native int TrackWithBGRABuffer(ByteBuffer pixelBuffer, int width, int height);
 
     public static void deleteFile(File file) {
         if (file.exists()) {

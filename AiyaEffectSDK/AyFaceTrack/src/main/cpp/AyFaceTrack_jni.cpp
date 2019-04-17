@@ -39,7 +39,7 @@ Java_com_aiyaapp_aiya_AyFaceTrack_FaceData(JNIEnv *env, jclass type) {
 }
 
 extern "C"
-JNIEXPORT void JNICALL
+JNIEXPORT jint JNICALL
 Java_com_aiyaapp_aiya_AyFaceTrack_TrackWithBGRABuffer(JNIEnv *env, jclass type, jobject pixelBuffer_, jint width, jint height) {
 
     uint8_t *pixelBuffer = static_cast<uint8_t *>(env->GetDirectBufferAddress(pixelBuffer_));
@@ -52,4 +52,6 @@ Java_com_aiyaapp_aiya_AyFaceTrack_TrackWithBGRABuffer(JNIEnv *env, jclass type, 
     } else {
         AY_faceData_p = NULL;
     }
+
+    return result;
 }
