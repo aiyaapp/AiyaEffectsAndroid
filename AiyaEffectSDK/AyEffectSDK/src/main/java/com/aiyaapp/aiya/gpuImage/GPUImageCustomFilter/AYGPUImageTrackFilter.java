@@ -39,6 +39,8 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
     private Context context;
     private ByteBuffer bgraBuffer;
 
+    public boolean trackResult;
+
     public AYGPUImageTrackFilter(AYGPUImageEGLContext eglContext, Context context) {
         this.eglContext = eglContext;
         this.context = context;
@@ -96,7 +98,9 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
                 bgraBuffer.rewind();
                 glReadPixels(0, 0, outputWidth, outputHeight, GL_RGBA, GL_UNSIGNED_BYTE, bgraBuffer);
 
-                AyFaceTrack.TrackWithBGRABuffer(bgraBuffer, outputWidth, outputHeight);
+                int result = AyFaceTrack.TrackWithBGRABuffer(bgraBuffer, outputWidth, outputHeight);
+
+                trackResult = result == 0;
 
                 glDisableVertexAttribArray(filterPositionAttribute);
                 glDisableVertexAttribArray(filterTextureCoordinateAttribute);
