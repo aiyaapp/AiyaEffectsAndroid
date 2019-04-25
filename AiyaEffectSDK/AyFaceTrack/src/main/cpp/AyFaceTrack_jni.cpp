@@ -11,7 +11,7 @@ FaceData *AY_faceData_p = &AY_faceData;
 
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_aiyaapp_aiya_AyFaceTrack_Init__Ljava_lang_String_2(JNIEnv *env, jclass type, jstring dstPath_) {
+Java_com_aiyaapp_aiya_AyFaceTrack_Init(JNIEnv *env, jclass type, jstring dstPath_) {
     const char * dstPath = env->GetStringUTFChars(dstPath_,JNI_FALSE);
 
     if (AY_faceTrack == nullptr) {
