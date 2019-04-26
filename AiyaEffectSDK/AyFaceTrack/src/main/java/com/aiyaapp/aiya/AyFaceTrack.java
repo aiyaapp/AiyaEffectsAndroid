@@ -16,19 +16,25 @@ public class AyFaceTrack {
         System.loadLibrary("AyFaceTrackJni");
     }
 
+    private static boolean isCopiedAssetResource = false;
     /**
      * 初始化人脸识别
      */
     public static void Init(Context context) {
-        File folder = context.getExternalCacheDir();
+        File folder = context.getFilesDir();
         if (folder == null) {
             folder = context.getCacheDir();
         }
 
         if (folder != null) {
+
             String dstPath = folder.getAbsolutePath() + "/aiya/config";
-            deleteFile(new File(dstPath));
-            copyFileFromAssets("config", dstPath, context.getAssets());
+
+            if (!isCopiedAssetResource) { // 只拷贝一次
+                deleteFile(new File(dstPath));
+                copyFileFromAssets("config", dstPath, context.getAssets());
+                isCopiedAssetResource = true;
+            }
 
             Init(dstPath);
         }

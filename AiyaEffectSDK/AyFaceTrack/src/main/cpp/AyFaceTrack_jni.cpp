@@ -5,7 +5,7 @@
 #include <sstream>
 #include "AiyaTrack.h"
 
-static AiyaTrack::FaceTrack *AY_faceTrack;
+std::shared_ptr<AiyaTrack::FaceTrack> faceTrack;
 FaceData AY_faceData;
 FaceData *AY_faceData_p = &AY_faceData;
 
@@ -14,11 +14,7 @@ JNIEXPORT void JNICALL
 Java_com_aiyaapp_aiya_AyFaceTrack_Init(JNIEnv *env, jclass type, jstring dstPath_) {
     const char * dstPath = env->GetStringUTFChars(dstPath_,JNI_FALSE);
 
-    if (AY_faceTrack == nullptr) {
-        AY_faceTrack = new AiyaTrack::FaceTrack();
-
-        AY_faceTrack->loadModel(dstPath);
-    }
+    faceTrack = std::make_shared<AiyaTrack::FaceTrack>(dstPath);
 
     env->ReleaseStringUTFChars(dstPath_, dstPath);
 }
@@ -26,10 +22,7 @@ Java_com_aiyaapp_aiya_AyFaceTrack_Init(JNIEnv *env, jclass type, jstring dstPath
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_aiyaapp_aiya_AyFaceTrack_Deinit(JNIEnv *env, jclass type) {
-    if (AY_faceTrack) {
-        delete(AY_faceTrack);
-        AY_faceTrack = nullptr;
-    }
+    faceTrack = nullptr;
 }
 
 extern "C"
@@ -44,7 +37,7 @@ Java_com_aiyaapp_aiya_AyFaceTrack_TrackWithBGRABuffer(JNIEnv *env, jclass type, 
 
     uint8_t *pixelBuffer = static_cast<uint8_t *>(env->GetDirectBufferAddress(pixelBuffer_));
 
-    int result = AY_faceTrack->track(pixelBuffer, width, height, AiyaTrack::ImageType::tImageTypeRGBA, &AY_faceData);
+    int result = faceTrack->track(pixelBuffer, width, height, AiyaTrack::ImageType::tImageTypeRGBA, &AY_faceData);
 
     if (result == 0) {
         AY_faceData_p = &AY_faceData;
