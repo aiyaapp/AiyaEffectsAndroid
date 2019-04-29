@@ -2,7 +2,9 @@ package com.aiyaapp.aiya.cameraTool;
 
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
+import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
+import android.util.Log;
 
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
@@ -130,13 +132,17 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
         eglContext.syncRunOnRenderThread(() -> {
             eglContext.makeCurrent();
 
-            surfaceTexture.updateTexImage();
+            if (EGL14.eglGetCurrentDisplay() != EGL14.EGL_NO_DISPLAY) {
+                surfaceTexture.updateTexImage();
 
-            // 因为在shader中处理oes纹理需要使用到扩展类型, 必须要先转换为普通纹理再传给下一级
-            renderToFramebuffer(oesTexture);
+                glFinish();
 
-            if (previewListener != null) {
-                previewListener.cameraVideoOutput(outputFramebuffer.texture[0], inputWidth, inputHeight, surfaceTexture.getTimestamp());
+                // 因为在shader中处理oes纹理需要使用到扩展类型, 必须要先转换为普通纹理再传给下一级
+                renderToFramebuffer(oesTexture);
+
+                if (previewListener != null) {
+                    previewListener.cameraVideoOutput(outputFramebuffer.texture[0], inputWidth, inputHeight, surfaceTexture.getTimestamp());
+                }
             }
         });
     }
