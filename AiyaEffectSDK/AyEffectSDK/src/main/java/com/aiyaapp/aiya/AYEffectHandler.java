@@ -100,7 +100,7 @@ public class AYEffectHandler {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                beautyFilter = new AYGPUImageBeautyFilter(eglContext, AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_2);
+                beautyFilter = new AYGPUImageBeautyFilter(eglContext, AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_3);
                 bigEyeFilter = new AYGPUImageBigEyeFilter(eglContext);
                 slimFaceFilter = new AYGPUImageSlimFaceFilter(eglContext);
 
@@ -152,24 +152,35 @@ public class AYEffectHandler {
         }
     }
 
+    // 需要保证在初始化线程设置
+    public void setBeautyType(AyBeauty.AY_BEAUTY_TYPE type) {
+        if (beautyFilter != null) {
+            beautyFilter.setType(type);
+        }
+    }
+
+    // 只支持 AY_BEAUTY_TYPE_2
     public void setIntensityOfBeauty(float intensity) {
         if (beautyFilter != null) {
             beautyFilter.setIntensity(intensity);
         }
     }
 
+    // 不支持 AY_BEAUTY_TYPE_2
     public void setIntensityOfSmooth(float intensity) {
         if (beautyFilter != null) {
             beautyFilter.setSmooth(intensity);
         }
     }
 
+    // 不支持 AY_BEAUTY_TYPE_2
     public void setIntensityOfSaturation(float intensity) {
         if (beautyFilter != null) {
             beautyFilter.setSaturation(intensity);
         }
     }
 
+    // 不支持 AY_BEAUTY_TYPE_2
     public void setIntensityOfWhite(float intensity) {
         if (beautyFilter != null) {
             beautyFilter.setWhiten(intensity);
