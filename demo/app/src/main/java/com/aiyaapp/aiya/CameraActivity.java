@@ -76,8 +76,11 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
         effectHandler.setEffectPath(getExternalCacheDir() + "/aiya/effect/xiaohongmao/meta.json");
         effectHandler.setEffectPlayCount(2);
         // 设置美颜程度
-        effectHandler.setIntensityOfSmooth(0.1f);
-        effectHandler.setIntensityOfSaturation(0.1f);
+        effectHandler.setBeautyType(AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_3);
+        effectHandler.setIntensityOfSmooth(0.8f);
+        effectHandler.setIntensityOfSaturation(0.2f);
+        effectHandler.setIntensityOfWhite(0f);
+
         // 设置大眼瘦脸
         effectHandler.setIntensityOfBigEye(0.2f);
         effectHandler.setIntensityOfSlimFace(0.8f);
