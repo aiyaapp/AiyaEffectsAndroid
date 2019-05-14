@@ -5,6 +5,7 @@ import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.SurfaceHolder;
+import android.widget.SeekBar;
 
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewListener;
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewWrap;
@@ -17,11 +18,13 @@ import java.io.IOException;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageContentMode.kAYGPUImageScaleAspectFill;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRight;
 
-public class CameraActivity extends AppCompatActivity implements AYCameraPreviewListener, SurfaceHolder.Callback {
+public class CameraActivity extends AppCompatActivity implements AYCameraPreviewListener, SurfaceHolder.Callback, SeekBar.OnSeekBarChangeListener {
 
     Camera camera;
     AYCameraPreviewWrap cameraPreviewWrap;
     AYPreviewView surfaceView;
+
+    SeekBar seekBar;
 
     AYEffectHandler effectHandler;
 
@@ -34,6 +37,9 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
 
         surfaceView.getHolder().addCallback(this);
         surfaceView.setContentMode(kAYGPUImageScaleAspectFill);
+
+        seekBar = findViewById(R.id.seekbar);
+        seekBar.setOnSeekBarChangeListener(this);
     }
 
     /**
@@ -80,10 +86,11 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
         effectHandler.setIntensityOfSmooth(0.8f);
         effectHandler.setIntensityOfSaturation(0.2f);
         effectHandler.setIntensityOfWhite(0f);
-
         // 设置大眼瘦脸
         effectHandler.setIntensityOfBigEye(0.2f);
         effectHandler.setIntensityOfSlimFace(0.8f);
+        // 设置高斯模糊
+        effectHandler.setBlurRadiusInPixels(1);
 
         try {
             // 添加滤镜
@@ -129,5 +136,20 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         closeHardware();
+    }
+
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        if (effectHandler != null) {
+            effectHandler.setBlurRadiusInPixels(progress == 0 ? 1 : progress);
+        }
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
     }
 }

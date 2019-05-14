@@ -12,6 +12,7 @@ import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBeautyFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBigEyeFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectFilter;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageGaussianBlurFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageLookupFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageSlimFaceFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageTrackFilter;
@@ -53,6 +54,7 @@ public class AYEffectHandler {
     private AYGPUImageBigEyeFilter bigEyeFilter;
     private AYGPUImageSlimFaceFilter slimFaceFilter;
     private AYGPUImageEffectFilter effectFilter;
+    private AYGPUImageGaussianBlurFilter gaussianBlurFilter;
 
     private boolean initCommonProcess = false;
     private boolean initProcess = false;
@@ -107,6 +109,8 @@ public class AYEffectHandler {
                 trackFilter = new AYGPUImageTrackFilter(eglContext, context);
 
                 effectFilter = new AYGPUImageEffectFilter(eglContext);
+
+                gaussianBlurFilter = new AYGPUImageGaussianBlurFilter(eglContext);
             }
         });
     }
@@ -199,6 +203,12 @@ public class AYEffectHandler {
         }
     }
 
+    public void setBlurRadiusInPixels(float radius) {
+        if (gaussianBlurFilter != null) {
+            gaussianBlurFilter.setBlurRadiusInPixels(radius);
+        }
+    }
+
     public void setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode rotateMode) {
         this.textureInput.setRotateMode(rotateMode);
         this.i420DataInput.setRotateMode(rotateMode);
@@ -236,6 +246,10 @@ public class AYEffectHandler {
 
             if (effectFilter != null) {
                 filterChainArray.add(effectFilter);
+            }
+
+            if (gaussianBlurFilter != null) {
+                filterChainArray.add(gaussianBlurFilter);
             }
 
             if (trackFilter != null) {
@@ -406,6 +420,9 @@ public class AYEffectHandler {
                     }
                     if (effectFilter != null) {
                         effectFilter.destroy();
+                    }
+                    if (gaussianBlurFilter != null) {
+                        gaussianBlurFilter.destroy();
                     }
                     if (trackFilter != null) {
                         trackFilter.destroy();
