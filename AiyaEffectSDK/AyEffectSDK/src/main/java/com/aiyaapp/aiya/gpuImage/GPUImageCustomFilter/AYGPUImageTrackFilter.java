@@ -1,6 +1,8 @@
 package com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter;
 
 import android.content.Context;
+import android.os.SystemClock;
+import android.util.Log;
 
 import com.aiyaapp.aiya.AyFaceTrack;
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
@@ -11,6 +13,7 @@ import com.aiyaapp.aiya.gpuImage.AYGPUImageInput;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.concurrent.Semaphore;
 
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
@@ -41,6 +44,9 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
 
     public boolean trackResult;
 
+    private boolean useDelay = false;
+    private Semaphore semaphore = new Semaphore(1);
+
     public AYGPUImageTrackFilter(AYGPUImageEGLContext eglContext, Context context) {
         this.eglContext = eglContext;
         this.context = context;
@@ -62,7 +68,11 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
     }
 
     public long faceData() {
-        return AyFaceTrack.FaceData();
+        if (useDelay) {
+            return AyFaceTrack.CacheFaceData();
+        } else {
+            return AyFaceTrack.FaceData();
+        }
     }
 
     protected void renderToTexture(final Buffer vertices, final Buffer textureCoordinates) {
@@ -98,9 +108,29 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
                 bgraBuffer.rewind();
                 glReadPixels(0, 0, outputWidth, outputHeight, GL_RGBA, GL_UNSIGNED_BYTE, bgraBuffer);
 
-                int result = AyFaceTrack.TrackWithBGRABuffer(bgraBuffer, outputWidth, outputHeight);
+                if (useDelay) {
+                    try {
+                        semaphore.acquire();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-                trackResult = result == 0;
+                    AyFaceTrack.UpdateCacheFaceData(); // 取出缓存数据
+
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // 正常处理
+                            int result = AyFaceTrack.TrackWithBGRABuffer(bgraBuffer, outputWidth, outputHeight);
+                            trackResult = result == 0;
+
+                            semaphore.release();
+                        }
+                    }).start();
+                } else {
+                    int result = AyFaceTrack.TrackWithBGRABuffer(bgraBuffer, outputWidth, outputHeight);
+                    trackResult = result == 0;
+                }
 
                 glDisableVertexAttribArray(filterPositionAttribute);
                 glDisableVertexAttribArray(filterTextureCoordinateAttribute);
@@ -148,5 +178,9 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
     @Override
     public void newFrameReady() {
         renderToTexture(imageVertices,  AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.textureCoordinatesForRotation(rotateMode)));
+    }
+
+    public void setUseDelay(boolean useDelay) {
+        this.useDelay = useDelay;
     }
 }

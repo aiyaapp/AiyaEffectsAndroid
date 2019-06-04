@@ -11,6 +11,7 @@ import android.util.Log;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBeautyFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBigEyeFilter;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageDelayFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageLookupFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageSlimFaceFilter;
@@ -47,6 +48,7 @@ public class AYEffectHandler {
     private AYGPUImageFilter commonInputFilter;
     private AYGPUImageFilter commonOutputFilter;
 
+    private AYGPUImageDelayFilter delayFilter;
     private AYGPUImageLookupFilter lookupFilter;
     private AYGPUImageBeautyFilter beautyFilter;
     private AYGPUImageTrackFilter trackFilter;
@@ -93,6 +95,8 @@ public class AYEffectHandler {
 
                 commonInputFilter = new AYGPUImageFilter(eglContext);
                 commonOutputFilter = new AYGPUImageFilter(eglContext);
+
+                delayFilter = new AYGPUImageDelayFilter(eglContext);
 
                 try {
                     Bitmap lookupBitmap = BitmapFactory.decodeStream(context.getAssets().open("lookup.png"));
@@ -213,10 +217,14 @@ public class AYEffectHandler {
         this.i420DataOutput.setRotateMode(rotateMode);
     }
 
-    private void commonProcess() {
+    private void commonProcess(boolean useDelay) {
 
         if (!initCommonProcess) {
             List<AYGPUImageFilter> filterChainArray = new ArrayList<AYGPUImageFilter>();
+
+            if (useDelay && delayFilter != null) {
+                filterChainArray.add(delayFilter);
+            }
 
             if (lookupFilter != null) {
                 filterChainArray.add(lookupFilter);
@@ -239,6 +247,7 @@ public class AYEffectHandler {
             }
 
             if (trackFilter != null) {
+                trackFilter.setUseDelay(useDelay);
                 commonInputFilter.addTarget(trackFilter);
             }
 
@@ -277,7 +286,7 @@ public class AYEffectHandler {
 
                 saveOpenGLState();
 
-                commonProcess();
+                commonProcess(false);
 
                 if (!initProcess) {
                     textureInput.addTarget(commonInputFilter);
@@ -304,7 +313,7 @@ public class AYEffectHandler {
 
                 saveOpenGLState();
 
-                commonProcess();
+                commonProcess(true);
 
                 if (!initProcess) {
                     i420DataInput.addTarget(commonInputFilter);
@@ -391,6 +400,10 @@ public class AYEffectHandler {
                     i420DataOutput.destroy();
                     commonInputFilter.destroy();
                     commonOutputFilter.destroy();
+
+                    if (delayFilter != null) {
+                        delayFilter.destroy();
+                    }
 
                     if (lookupFilter != null) {
                         lookupFilter.destroy();
