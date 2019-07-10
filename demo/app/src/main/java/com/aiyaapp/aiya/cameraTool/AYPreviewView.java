@@ -68,70 +68,75 @@ public class AYPreviewView extends SurfaceView implements SurfaceHolder.Callback
         if (eglContext == null) {
             return;
         }
-        eglContext.makeCurrent();
 
-        filterProgram.use();
+        eglContext.syncRunOnRenderThread(new Runnable() {
+            @Override
+            public void run() {
+                eglContext.makeCurrent();
 
-        glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glViewport(0, 0, boundingWidth, boundingHeight);
+                filterProgram.use();
 
-        glClearColor(0, 0, 0, 0);
-        glClear(GL_COLOR_BUFFER_BIT);
+                glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                glViewport(0, 0, boundingWidth, boundingHeight);
 
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, texture);
+                glClearColor(0, 0, 0, 0);
+                glClear(GL_COLOR_BUFFER_BIT);
 
-        glUniform1i(filterInputTextureUniform, 2);
+                glActiveTexture(GL_TEXTURE2);
+                glBindTexture(GL_TEXTURE_2D, texture);
 
-        PointF insetSize = getAspectRatioInsideSize(new PointF(width, height), new PointF(boundingWidth, boundingHeight));
+                glUniform1i(filterInputTextureUniform, 2);
 
-        float widthScaling = 0.0f, heightScaling = 0.0f;
+                PointF insetSize = getAspectRatioInsideSize(new PointF(width, height), new PointF(boundingWidth, boundingHeight));
 
-        switch (contentMode) {
-            case kAYGPUImageScaleToFill:
-                widthScaling = 1.0f;
-                heightScaling = 1.0f;
-                break;
-            case kAYGPUImageScaleAspectFit:
-                widthScaling = insetSize.x / boundingWidth;
-                heightScaling = insetSize.y / boundingHeight;
-                break;
-            case kAYGPUImageScaleAspectFill:
-                widthScaling = boundingHeight / insetSize.y;
-                heightScaling = boundingWidth / insetSize.x;
-                break;
-        }
+                float widthScaling = 0.0f, heightScaling = 0.0f;
 
-        float squareVertices[] = new float[8];
-        squareVertices[0] = -widthScaling;
-        squareVertices[1] = -heightScaling;
-        squareVertices[2] = widthScaling;
-        squareVertices[3] = -heightScaling;
-        squareVertices[4] = -widthScaling;
-        squareVertices[5] = heightScaling;
-        squareVertices[6] = widthScaling;
-        squareVertices[7] = heightScaling;
+                switch (contentMode) {
+                    case kAYGPUImageScaleToFill:
+                        widthScaling = 1.0f;
+                        heightScaling = 1.0f;
+                        break;
+                    case kAYGPUImageScaleAspectFit:
+                        widthScaling = insetSize.x / boundingWidth;
+                        heightScaling = insetSize.y / boundingHeight;
+                        break;
+                    case kAYGPUImageScaleAspectFill:
+                        widthScaling = boundingHeight / insetSize.y;
+                        heightScaling = boundingWidth / insetSize.x;
+                        break;
+                }
 
-        glEnableVertexAttribArray(filterPositionAttribute);
-        glEnableVertexAttribArray(filterTextureCoordinateAttribute);
+                float squareVertices[] = new float[8];
+                squareVertices[0] = -widthScaling;
+                squareVertices[1] = -heightScaling;
+                squareVertices[2] = widthScaling;
+                squareVertices[3] = -heightScaling;
+                squareVertices[4] = -widthScaling;
+                squareVertices[5] = heightScaling;
+                squareVertices[6] = widthScaling;
+                squareVertices[7] = heightScaling;
 
-        Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(squareVertices);
+                glEnableVertexAttribArray(filterPositionAttribute);
+                glEnableVertexAttribArray(filterTextureCoordinateAttribute);
 
-        glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, false, 0, imageVertices);
-        glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, false, 0, textureCoordinates);
+                Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(squareVertices);
 
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+                glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, false, 0, imageVertices);
+                glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, false, 0, textureCoordinates);
 
-        glDisableVertexAttribArray(filterPositionAttribute);
-        glDisableVertexAttribArray(filterTextureCoordinateAttribute);
+                glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-        eglContext.swapBuffers();
+                glDisableVertexAttribArray(filterPositionAttribute);
+                glDisableVertexAttribArray(filterTextureCoordinateAttribute);
 
+                eglContext.swapBuffers();
+            }
+        });
     }
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        createGLEnvironment(holder);
     }
 
     @Override
@@ -142,34 +147,45 @@ public class AYPreviewView extends SurfaceView implements SurfaceHolder.Callback
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-
+        destroyGLEnvironment();
     }
 
     /**
      * 创建 GLES 环境
      */
-    public void createGLEnvironment() {
+    private void createGLEnvironment(Object object) {
         eglContext = new AYGPUImageEGLContext();
+        eglContext.initWithEGLWindow(object);
 
-        eglContext.bindEGLWindow(this, EGL14.eglGetCurrentContext());
+        eglContext.syncRunOnRenderThread(new Runnable() {
+            @Override
+            public void run() {
 
-        filterProgram = new AYGLProgram(AYGPUImageFilter.kAYGPUImageVertexShaderString, AYGPUImageFilter.kAYGPUImagePassthroughFragmentShaderString);
-        filterProgram.link();
+                filterProgram = new AYGLProgram(AYGPUImageFilter.kAYGPUImageVertexShaderString, AYGPUImageFilter.kAYGPUImagePassthroughFragmentShaderString);
+                filterProgram.link();
 
-        filterPositionAttribute = filterProgram.attributeIndex("position");
-        filterTextureCoordinateAttribute = filterProgram.attributeIndex("inputTextureCoordinate");
-        filterInputTextureUniform = filterProgram.uniformIndex("inputImageTexture");
-        filterProgram.use();
+                filterPositionAttribute = filterProgram.attributeIndex("position");
+                filterTextureCoordinateAttribute = filterProgram.attributeIndex("inputTextureCoordinate");
+                filterInputTextureUniform = filterProgram.uniformIndex("inputImageTexture");
+                filterProgram.use();
+            }
+        });
     }
 
     /**
      * 销毁 GLES 环境
      */
-    public void destroyGLEnvironment() {
-        eglContext.makeCurrent();
-        filterProgram.destroy();
+    private void destroyGLEnvironment() {
+        eglContext.syncRunOnRenderThread(new Runnable() {
+            @Override
+            public void run() {
+                eglContext.makeCurrent();
+                filterProgram.destroy();
 
-        eglContext.destroyEGLWindow();
-        eglContext = null;
+                eglContext.destroyEGLWindow();
+                eglContext = null;
+            }
+        });
+
     }
 }

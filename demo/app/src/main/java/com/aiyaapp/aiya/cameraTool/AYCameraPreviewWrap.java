@@ -36,7 +36,7 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
 
     private Camera mCamera;
 
-    private AYGPUImageEGLContext eglContext = new AYGPUImageEGLContext();
+    private AYGPUImageEGLContext eglContext;
 
     private SurfaceTexture surfaceTexture;
 
@@ -57,16 +57,14 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
     private int filterInputTextureUniform;
 
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
-    private Buffer textureCoordinates = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.noRotationTextureCoordinates);
-
-    private AYCameraPreviewWrap() {}
 
     public AYCameraPreviewWrap(Camera camera) {
         mCamera = camera;
     }
 
-    public void startPreview() {
-        initEGLContext();
+    public void startPreview(AYGPUImageEGLContext eglContext) {
+        this.eglContext = eglContext;
+        createGLEnvironment();
 
         try {
             mCamera.setPreviewTexture(surfaceTexture);
@@ -83,7 +81,7 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
    }
 
    public void stopPreview() {
-       destroyEGLContext();
+       destroyGLContext();
        mCamera.stopPreview();
    }
 
@@ -101,9 +99,7 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
         }
     }
 
-    private void initEGLContext() {
-        eglContext.initWithEGLWindow(new SurfaceTexture(0));
-
+    private void createGLEnvironment() {
         eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
@@ -196,7 +192,7 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
         return texture[0];
     }
 
-    private void destroyEGLContext() {
+    private void destroyGLContext() {
         eglContext.syncRunOnRenderThread(() -> {
 
             filterProgram.destroy();
@@ -208,8 +204,6 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
             if (previewListener != null) {
                 previewListener.cameraDestroyGLEnvironment();
             }
-
-            eglContext.destroyEGLWindow();
         });
     }
 }

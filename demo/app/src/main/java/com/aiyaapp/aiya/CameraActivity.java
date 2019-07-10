@@ -49,7 +49,7 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
         cameraPreviewWrap = new AYCameraPreviewWrap(camera);
         cameraPreviewWrap.setPreviewListener(this);
         cameraPreviewWrap.setRotateMode(kAYGPUImageRotateRight);
-        cameraPreviewWrap.startPreview();
+        cameraPreviewWrap.startPreview(surfaceView.eglContext);
     }
 
     /**
@@ -67,8 +67,6 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
 
     @Override
     public void cameraCrateGLEnvironment() {
-
-        surfaceView.createGLEnvironment();
 
         effectHandler = new AYEffectHandler(this);
         effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
@@ -112,8 +110,6 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
             effectHandler.destroy();
             effectHandler = null;
         }
-
-        surfaceView.destroyGLEnvironment();
     }
 
     @Override
