@@ -2,15 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../AiyaEffectSDK/AyBeauty/AyBeauty.iml" filepath="$PROJECT_DIR$/../AiyaEffectSDK/AyBeauty/AyBeauty.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AiyaEffectSDK/AyCore/AyCore.iml" filepath="$PROJECT_DIR$/../AiyaEffectSDK/AyCore/AyCore.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AiyaEffectSDK/AyEffect/AyEffect.iml" filepath="$PROJECT_DIR$/../AiyaEffectSDK/AyEffect/AyEffect.iml" />
       <module fileurl="file://$PROJECT_DIR$/../AiyaEffectSDK/AyEffectSDK/AyEffectSDK.iml" filepath="$PROJECT_DIR$/../AiyaEffectSDK/AyEffectSDK/AyEffectSDK.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AiyaEffectSDK/AyFaceTrack/AyFaceTrack.iml" filepath="$PROJECT_DIR$/../AiyaEffectSDK/AyFaceTrack/AyFaceTrack.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AiyaEffectSDK/AyShortVideoEffect/AyShortVideoEffect.iml" filepath="$PROJECT_DIR$/../AiyaEffectSDK/AyShortVideoEffect/AyShortVideoEffect.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/demo.iml" filepath="$PROJECT_DIR$/demo.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../AiyaEffectSDK/libyuv/libyuv.iml" filepath="$PROJECT_DIR$/../AiyaEffectSDK/libyuv/libyuv.iml" />
     </modules>
   </component>
 </project>
