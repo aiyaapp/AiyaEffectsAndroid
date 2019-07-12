@@ -13,6 +13,7 @@ import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBeautyFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBigEyeFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageDelayFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectFilter;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectPlayFinishListener;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageLookupFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageSlimFaceFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageTrackFilter;
@@ -129,6 +130,12 @@ public class AYEffectHandler {
     public void setEffectPlayCount(int effectPlayCount) {
         if (effectFilter != null) {
             effectFilter.setEffectPlayCount(effectPlayCount);
+        }
+    }
+
+    public void setEffectPlayFinishListener(AYGPUImageEffectPlayFinishListener effectPlayFinishListener) {
+        if (effectFilter != null) {
+            effectFilter.setEffectPlayFinishListener(effectPlayFinishListener);
         }
     }
 

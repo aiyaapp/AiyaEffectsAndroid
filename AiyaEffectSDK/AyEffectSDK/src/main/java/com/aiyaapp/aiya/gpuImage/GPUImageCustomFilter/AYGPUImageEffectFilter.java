@@ -20,6 +20,8 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
 
     private int[] depthRenderbuffer = new int[]{0};
 
+    private AYGPUImageEffectPlayFinishListener effectPlayFinishListener;
+
     public AYGPUImageEffectFilter(AYGPUImageEGLContext context) {
         super(context);
 
@@ -86,6 +88,10 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
         currentPlayCount = 0;
     }
 
+    public void setEffectPlayFinishListener(AYGPUImageEffectPlayFinishListener effectPlayFinishListener) {
+        this.effectPlayFinishListener = effectPlayFinishListener;
+    }
+
     public void setFaceData(long faceData) {
         this.faceData = faceData;
     }
@@ -131,7 +137,12 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
             currentPlayCount++;
             if (effectPlayCount != 0 && currentPlayCount >= effectPlayCount) {
                 setEffectPath("");
+
+                if (effectPlayFinishListener != null) {
+                    effectPlayFinishListener.playFinish();
+                }
             }
+
         } else if (effectPlayCount != 0 && currentPlayCount >= effectPlayCount) { //已经播放完成
             setEffectPath("");
         }

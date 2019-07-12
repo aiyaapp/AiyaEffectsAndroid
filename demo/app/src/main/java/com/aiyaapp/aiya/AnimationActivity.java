@@ -13,13 +13,14 @@ import com.aiyaapp.aiya.animTool.AYAnimView;
 import com.aiyaapp.aiya.animTool.AYAnimViewListener;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectPlayFinishListener;
 
 import java.util.concurrent.locks.ReentrantLock;
 
 import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageContentMode.kAYGPUImageScaleAspectFill;
 
-public class AnimationActivity extends AppCompatActivity implements AYAnimViewListener, AYAnimRenderHandler {
+public class AnimationActivity extends AppCompatActivity implements AYAnimViewListener, AYAnimRenderHandler, AYGPUImageEffectPlayFinishListener {
 
     AYAnimView animView;
 
@@ -63,7 +64,7 @@ public class AnimationActivity extends AppCompatActivity implements AYAnimViewLi
             animView.eglContext.makeCurrent();
 
             effectHandler = new AYAnimHandler(AnimationActivity.this);
-            effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
+            effectHandler.setEffectPlayFinishListener(this);
         });
 
         renderThread = new AYAnimRenderThread();
@@ -121,5 +122,10 @@ public class AnimationActivity extends AppCompatActivity implements AYAnimViewLi
                 inputImageFramebuffer = null;
             }
         });
+    }
+
+    @Override
+    public void playFinish() {
+        Log.d("AnimationActivity", "当前特效播放完成");
     }
 }
