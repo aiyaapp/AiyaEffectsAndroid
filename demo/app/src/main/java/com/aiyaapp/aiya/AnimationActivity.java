@@ -47,7 +47,7 @@ public class AnimationActivity extends AppCompatActivity implements AYAnimViewLi
                 if (button.getText().equals("play")) {
                     // 设置特效
                     effectHandler.setEffectPath(getExternalCacheDir() + "/aiya/effect/shiwaitaoyuan/meta.json");
-                    effectHandler.setEffectPlayCount(0);
+                    effectHandler.setEffectPlayCount(1);
                     button.setText("stop");
                 } else if (button.getText().equals("stop")) {
                     // 设置特效
@@ -64,6 +64,7 @@ public class AnimationActivity extends AppCompatActivity implements AYAnimViewLi
             animView.eglContext.makeCurrent();
 
             effectHandler = new AYAnimHandler(AnimationActivity.this);
+            effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
             effectHandler.setEffectPlayFinishListener(this);
         });
 
