@@ -59,6 +59,11 @@ public class AYGPUImageTextureOutput implements AYGPUImageInput {
                 filterProgram.use();
 
                 glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[0]);
+
+                glBindTexture(GL_TEXTURE_2D, texture[0]);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, inputWidth, inputHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
+                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture[0], 0);
+
                 glViewport(0, 0, inputWidth, inputHeight);
 
                 glClearColor(0, 0, 0, 0);
@@ -95,14 +100,6 @@ public class AYGPUImageTextureOutput implements AYGPUImageInput {
                     glGenFramebuffers(1, framebuffer, 0);
                     Log.d(TAG, "创建一个 OpenGL frameBuffer " + framebuffer[0]);
                 }
-                glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[0]);
-
-                glBindTexture(GL_TEXTURE_2D, texture[0]);
-
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, inputWidth, inputHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, null);
-                glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture[0], 0);
-
-                glBindTexture(GL_TEXTURE_2D, 0);
             }
         });
     }

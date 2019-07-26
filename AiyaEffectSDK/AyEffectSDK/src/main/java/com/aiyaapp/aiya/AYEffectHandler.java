@@ -13,6 +13,7 @@ import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBeautyFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBigEyeFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageDelayFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectFilter;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectPlayFinishListener;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageLookupFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageSlimFaceFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageTrackFilter;
@@ -39,25 +40,25 @@ public class AYEffectHandler {
     private AYGPUImageEGLContext eglContext;
     private SurfaceTexture surfaceTexture;
 
-    private AYGPUImageTextureInput textureInput;
-    private AYGPUImageTextureOutput textureOutput;
+    protected AYGPUImageTextureInput textureInput;
+    protected AYGPUImageTextureOutput textureOutput;
 
-    private AYGPUImageI420DataInput i420DataInput;
-    private AYGPUImageI420DataOutput i420DataOutput;
+    protected AYGPUImageI420DataInput i420DataInput;
+    protected AYGPUImageI420DataOutput i420DataOutput;
 
-    private AYGPUImageFilter commonInputFilter;
-    private AYGPUImageFilter commonOutputFilter;
+    protected AYGPUImageFilter commonInputFilter;
+    protected AYGPUImageFilter commonOutputFilter;
 
-    private AYGPUImageDelayFilter delayFilter;
-    private AYGPUImageLookupFilter lookupFilter;
-    private AYGPUImageBeautyFilter beautyFilter;
-    private AYGPUImageTrackFilter trackFilter;
-    private AYGPUImageBigEyeFilter bigEyeFilter;
-    private AYGPUImageSlimFaceFilter slimFaceFilter;
-    private AYGPUImageEffectFilter effectFilter;
+    protected AYGPUImageDelayFilter delayFilter;
+    protected AYGPUImageLookupFilter lookupFilter;
+    protected AYGPUImageBeautyFilter beautyFilter;
+    protected AYGPUImageTrackFilter trackFilter;
+    protected AYGPUImageBigEyeFilter bigEyeFilter;
+    protected AYGPUImageSlimFaceFilter slimFaceFilter;
+    protected AYGPUImageEffectFilter effectFilter;
 
-    private boolean initCommonProcess = false;
-    private boolean initProcess = false;
+    protected boolean initCommonProcess = false;
+    protected boolean initProcess = false;
 
     private int[] bindingFrameBuffer = new int[1];
     private int[] bindingRenderBuffer = new int[1];
@@ -129,6 +130,12 @@ public class AYEffectHandler {
     public void setEffectPlayCount(int effectPlayCount) {
         if (effectFilter != null) {
             effectFilter.setEffectPlayCount(effectPlayCount);
+        }
+    }
+
+    public void setEffectPlayFinishListener(AYGPUImageEffectPlayFinishListener effectPlayFinishListener) {
+        if (effectFilter != null) {
+            effectFilter.setEffectPlayFinishListener(effectPlayFinishListener);
         }
     }
 
@@ -217,7 +224,7 @@ public class AYEffectHandler {
         this.i420DataOutput.setRotateMode(rotateMode);
     }
 
-    private void commonProcess(boolean useDelay) {
+    protected void commonProcess(boolean useDelay) {
 
         if (!initCommonProcess) {
             List<AYGPUImageFilter> filterChainArray = new ArrayList<AYGPUImageFilter>();

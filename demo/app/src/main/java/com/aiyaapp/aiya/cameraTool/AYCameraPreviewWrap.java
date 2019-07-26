@@ -4,7 +4,6 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.opengl.EGL14;
 import android.opengl.GLES11Ext;
-import android.util.Log;
 
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
@@ -21,9 +20,8 @@ import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.needExchangeWidthAnd
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.textureCoordinatesForRotation;
 
 public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListener {
-    public static final String TAG = "AYCameraPreviewWrap";
 
-    public static final String kAYOESTextureFragmentShader = "" +
+    private static final String kAYOESTextureFragmentShader = "" +
             "#extension GL_OES_EGL_image_external : require\n" +
             "\n" +
             "varying highp vec2 textureCoordinate;\n" +
@@ -36,7 +34,7 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
 
     private Camera mCamera;
 
-    private AYGPUImageEGLContext eglContext = new AYGPUImageEGLContext();
+    private AYGPUImageEGLContext eglContext;
 
     private SurfaceTexture surfaceTexture;
 
@@ -57,16 +55,14 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
     private int filterInputTextureUniform;
 
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
-    private Buffer textureCoordinates = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.noRotationTextureCoordinates);
-
-    private AYCameraPreviewWrap() {}
 
     public AYCameraPreviewWrap(Camera camera) {
         mCamera = camera;
     }
 
-    public void startPreview() {
-        initEGLContext();
+    public void startPreview(AYGPUImageEGLContext eglContext) {
+        this.eglContext = eglContext;
+        createGLEnvironment();
 
         try {
             mCamera.setPreviewTexture(surfaceTexture);
@@ -83,7 +79,7 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
    }
 
    public void stopPreview() {
-       destroyEGLContext();
+       destroyGLContext();
        mCamera.stopPreview();
    }
 
@@ -101,28 +97,23 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
         }
     }
 
-    private void initEGLContext() {
-        eglContext.initWithEGLWindow(new SurfaceTexture(0));
+    private void createGLEnvironment() {
+        eglContext.syncRunOnRenderThread(() -> {
+            eglContext.makeCurrent();
 
-        eglContext.syncRunOnRenderThread(new Runnable() {
-            @Override
-            public void run() {
-                eglContext.makeCurrent();
+            oesTexture = createOESTextureID();
+            surfaceTexture = new SurfaceTexture(oesTexture);
+            surfaceTexture.setOnFrameAvailableListener(AYCameraPreviewWrap.this);
 
-                oesTexture = createOESTextureID();
-                surfaceTexture = new SurfaceTexture(oesTexture);
-                surfaceTexture.setOnFrameAvailableListener(AYCameraPreviewWrap.this);
+            filterProgram = new AYGLProgram(AYGPUImageFilter.kAYGPUImageVertexShaderString, kAYOESTextureFragmentShader);
+            filterProgram.link();
 
-                filterProgram = new AYGLProgram(AYGPUImageFilter.kAYGPUImageVertexShaderString, kAYOESTextureFragmentShader);
-                filterProgram.link();
+            filterPositionAttribute = filterProgram.attributeIndex("position");
+            filterTextureCoordinateAttribute = filterProgram.attributeIndex("inputTextureCoordinate");
+            filterInputTextureUniform = filterProgram.uniformIndex("inputImageTexture");
 
-                filterPositionAttribute = filterProgram.attributeIndex("position");
-                filterTextureCoordinateAttribute = filterProgram.attributeIndex("inputTextureCoordinate");
-                filterInputTextureUniform = filterProgram.uniformIndex("inputImageTexture");
-
-                if (previewListener != null) {
-                    previewListener.cameraCrateGLEnvironment();
-                }
+            if (previewListener != null) {
+                previewListener.cameraCrateGLEnvironment();
             }
         });
     }
@@ -196,7 +187,7 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
         return texture[0];
     }
 
-    private void destroyEGLContext() {
+    private void destroyGLContext() {
         eglContext.syncRunOnRenderThread(() -> {
 
             filterProgram.destroy();
@@ -208,8 +199,6 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
             if (previewListener != null) {
                 previewListener.cameraDestroyGLEnvironment();
             }
-
-            eglContext.destroyEGLWindow();
         });
     }
 }

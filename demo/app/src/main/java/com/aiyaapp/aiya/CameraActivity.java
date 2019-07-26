@@ -10,7 +10,6 @@ import com.aiyaapp.aiya.cameraTool.AYCameraPreviewListener;
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewWrap;
 import com.aiyaapp.aiya.cameraTool.AYPreviewView;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
-import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageShortVideoFilter;
 
 import java.io.IOException;
 
@@ -30,7 +29,7 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_camera);
-        surfaceView = findViewById(R.id.preview);
+        surfaceView = findViewById(R.id.camera_preview);
 
         surfaceView.getHolder().addCallback(this);
         surfaceView.setContentMode(kAYGPUImageScaleAspectFill);
@@ -49,7 +48,7 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
         cameraPreviewWrap = new AYCameraPreviewWrap(camera);
         cameraPreviewWrap.setPreviewListener(this);
         cameraPreviewWrap.setRotateMode(kAYGPUImageRotateRight);
-        cameraPreviewWrap.startPreview();
+        cameraPreviewWrap.startPreview(surfaceView.eglContext);
     }
 
     /**
@@ -67,8 +66,6 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
 
     @Override
     public void cameraCrateGLEnvironment() {
-
-        surfaceView.createGLEnvironment();
 
         effectHandler = new AYEffectHandler(this);
         effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
@@ -112,8 +109,6 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
             effectHandler.destroy();
             effectHandler = null;
         }
-
-        surfaceView.destroyGLEnvironment();
     }
 
     @Override

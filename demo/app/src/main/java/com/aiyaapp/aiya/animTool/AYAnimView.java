@@ -1,15 +1,11 @@
-package com.aiyaapp.aiya.cameraTool;
+package com.aiyaapp.aiya.animTool;
 
 import android.content.Context;
 import android.graphics.PointF;
-import android.opengl.EGL14;
-import android.opengl.GLSurfaceView;
+import android.graphics.SurfaceTexture;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.TextureView;
-import android.widget.TextView;
 
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
@@ -22,9 +18,9 @@ import static android.opengl.GLES20.*;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageContentMode.kAYGPUImageScaleAspectFit;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.getAspectRatioInsideSize;
 
-public class AYPreviewView extends SurfaceView implements SurfaceHolder.Callback {
+public class AYAnimView extends TextureView implements TextureView.SurfaceTextureListener {
 
-    private AYPreviewViewListener listener;
+    private AYAnimViewListener listener;
 
     public AYGPUImageEGLContext eglContext;
 
@@ -40,23 +36,23 @@ public class AYPreviewView extends SurfaceView implements SurfaceHolder.Callback
 
     private AYGPUImageConstants.AYGPUImageContentMode contentMode = kAYGPUImageScaleAspectFit;
 
-    public AYPreviewView(Context context) {
+    public AYAnimView(Context context) {
         super(context);
         commonInit();
     }
 
-    public AYPreviewView(Context context, AttributeSet attrs) {
+    public AYAnimView(Context context, AttributeSet attrs) {
         super(context, attrs);
         commonInit();
     }
 
-    public AYPreviewView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public AYAnimView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         commonInit();
     }
 
     private void commonInit() {
-        getHolder().addCallback(this);
+        setSurfaceTextureListener(this);
     }
 
     /**
@@ -82,6 +78,7 @@ public class AYPreviewView extends SurfaceView implements SurfaceHolder.Callback
                 filterProgram.use();
 
                 glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
                 glViewport(0, 0, boundingWidth, boundingHeight);
 
                 glClearColor(0, 0, 0, 0);
@@ -140,28 +137,34 @@ public class AYPreviewView extends SurfaceView implements SurfaceHolder.Callback
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        createGLEnvironment(holder);
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        Log.d("wang", "onSurfaceTextureAvailable");
+        this.boundingWidth = width;
+        this.boundingHeight = height;
+
+        createGLEnvironment(surface);
         if (listener != null) {
             listener.createGLEnvironment();
         }
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
+    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
         this.boundingWidth = width;
         this.boundingHeight = height;
     }
 
     @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
         if (listener != null) {
             listener.destroyGLEnvironment();
         }
         destroyGLEnvironment();
+
+        return false;
     }
 
-    public void setListener(AYPreviewViewListener listener) {
+    public void setListener(AYAnimViewListener listener) {
         this.listener = listener;
     }
 
@@ -198,5 +201,10 @@ public class AYPreviewView extends SurfaceView implements SurfaceHolder.Callback
             eglContext.destroyEGLWindow();
             eglContext = null;
         });
+    }
+
+    @Override
+    public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+
     }
 }
