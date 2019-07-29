@@ -52,6 +52,7 @@ public class AYAnimView extends TextureView implements TextureView.SurfaceTextur
     }
 
     private void commonInit() {
+        setOpaque(false);
         setSurfaceTextureListener(this);
     }
 
