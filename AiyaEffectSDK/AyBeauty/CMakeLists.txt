@@ -19,8 +19,8 @@ find_library(logLib log )
 
 # 将目标文件与外部库文件进行链接
 target_link_libraries(AyBeautyJni
-                        ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAiyaEffectLib.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libBaseEffects.so
+                        ${CMAKE_SOURCE_DIR}/../AyShortVideoEffect/libs/${ANDROID_ABI}/libAiyaEffectLib.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAyCoreSdk.so
                         ${CMAKE_SOURCE_DIR}/../AyBeauty/libs/${ANDROID_ABI}/libBeauty.so
                         ${CMAKE_SOURCE_DIR}/../AyBeauty/libs/${ANDROID_ABI}/libFaceprocess.so

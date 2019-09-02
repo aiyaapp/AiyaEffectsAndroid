@@ -16,8 +16,7 @@ add_library(AyShortVideoEffectJni SHARED ${cpp_src})
 
 # 将目标文件与外部库文件进行链接
 target_link_libraries(AyShortVideoEffectJni
-                        ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAiyaEffectLib.so
-                        ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libBaseEffects.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAyCoreSdk.so
+                        ${CMAKE_SOURCE_DIR}/../AyShortVideoEffect/libs/${ANDROID_ABI}/libAiyaEffectLib.so
                         ${CMAKE_SOURCE_DIR}/../AyShortVideoEffect/libs/${ANDROID_ABI}/libAiyaAe3dLib.so
                         ${CMAKE_SOURCE_DIR}/../AyShortVideoEffect/libs/${ANDROID_ABI}/libShortVideo.so)

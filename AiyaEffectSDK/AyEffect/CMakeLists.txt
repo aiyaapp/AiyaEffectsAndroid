@@ -18,9 +18,8 @@ find_library(logLib log)
 
 # 将目标文件与外部库文件进行链接
 target_link_libraries(AyEffectJni
-                        ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAiyaEffectLib.so
-                        ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libBaseEffects.so
                         ${CMAKE_SOURCE_DIR}/../AyCore/libs/${ANDROID_ABI}/libAyCoreSdk.so
                         ${CMAKE_SOURCE_DIR}/../AyEffect/libs/${ANDROID_ABI}/libassimp.so
                         ${CMAKE_SOURCE_DIR}/../AyEffect/libs/${ANDROID_ABI}/libayeffects.so
+                        ${CMAKE_SOURCE_DIR}/../AyEffect/libs/${ANDROID_ABI}/libgameplay.so
                         ${logLib})
