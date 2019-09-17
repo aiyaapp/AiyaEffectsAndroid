@@ -5,6 +5,7 @@ import android.opengl.EGLContext;
 import android.opengl.EGLDisplay;
 import android.opengl.EGLExt;
 import android.opengl.EGLSurface;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.Log;
@@ -186,6 +187,12 @@ public class AYGPUImageEGLContext {
 
         if (eglDisplay != null && surface != null) {
             eglDestroySurface(eglDisplay, surface);
+        }
+
+        if (eglDisplay != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+            }
         }
     }
 
