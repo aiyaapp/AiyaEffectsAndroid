@@ -8,6 +8,7 @@ import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
 import java.nio.Buffer;
+import java.util.Locale;
 
 import static android.opengl.GLES20.*;
 
@@ -28,7 +29,6 @@ public class AYGPUImageGaussianBlurFilter extends AYGPUImageFilter {
         super(context);
     }
 
-    @SuppressLint("DefaultLocale")
     private static String vertexShaderForOptimizedBlurOfRadius(int blurRadius, float sigma) {
         // First, generate the normal Gaussian weights for a given sigma
         float[] standardGaussianWeights = new float[blurRadius + 1];
@@ -65,7 +65,7 @@ public class AYGPUImageGaussianBlurFilter extends AYGPUImageFilter {
         StringBuilder shaderString = new StringBuilder();
 
         // Header
-        shaderString.append(String.format(
+        shaderString.append(String.format(Locale.ENGLISH,
                 "attribute vec4 position;\n" +
                 "attribute vec4 inputTextureCoordinate;\n" +
                 "\n" +
@@ -83,7 +83,7 @@ public class AYGPUImageGaussianBlurFilter extends AYGPUImageFilter {
         // Inner offset loop
         shaderString.append("blurCoordinates[0] = inputTextureCoordinate.xy;\n");
         for (int currentOptimizedOffset = 0; currentOptimizedOffset < numberOfOptimizedOffsets; currentOptimizedOffset++) {
-            shaderString.append(String.format(
+            shaderString.append(String.format(Locale.ENGLISH,
                 "blurCoordinates[%d] = inputTextureCoordinate.xy + singleStepOffset * %f;\n" +
                 "blurCoordinates[%d] = inputTextureCoordinate.xy - singleStepOffset * %f;\n",
                     (long)((currentOptimizedOffset * 2) + 1),
@@ -128,7 +128,7 @@ public class AYGPUImageGaussianBlurFilter extends AYGPUImageFilter {
         StringBuilder shaderString = new StringBuilder();
 
         // Header
-        shaderString.append(String.format(
+        shaderString.append(String.format(Locale.ENGLISH,
             "uniform sampler2D inputImageTexture;\n" +
             "uniform highp float texelWidthOffset;\n" +
             "uniform highp float texelHeightOffset;\n" +
@@ -140,15 +140,15 @@ public class AYGPUImageGaussianBlurFilter extends AYGPUImageFilter {
             "  lowp vec4 sum = vec4(0.0);\n", (long)(1 + (numberOfOptimizedOffsets * 2))));
 
         // Inner texture loop
-        shaderString.append(String.format("sum += texture2D(inputImageTexture, blurCoordinates[0]) * %f;\n", standardGaussianWeights[0]));
+        shaderString.append(String.format(Locale.ENGLISH,"sum += texture2D(inputImageTexture, blurCoordinates[0]) * %f;\n", standardGaussianWeights[0]));
 
         for (int currentBlurCoordinateIndex = 0; currentBlurCoordinateIndex < numberOfOptimizedOffsets; currentBlurCoordinateIndex++) {
             float firstWeight = standardGaussianWeights[currentBlurCoordinateIndex * 2 + 1];
             float secondWeight = standardGaussianWeights[currentBlurCoordinateIndex * 2 + 2];
             float optimizedWeight = firstWeight + secondWeight;
 
-            shaderString.append(String.format("sum += texture2D(inputImageTexture, blurCoordinates[%d]) * %f;\n", (long)((currentBlurCoordinateIndex * 2) + 1), optimizedWeight));
-            shaderString.append(String.format("sum += texture2D(inputImageTexture, blurCoordinates[%d]) * %f;\n", (long)((currentBlurCoordinateIndex * 2) + 2), optimizedWeight));
+            shaderString.append(String.format(Locale.ENGLISH,"sum += texture2D(inputImageTexture, blurCoordinates[%d]) * %f;\n", (long)((currentBlurCoordinateIndex * 2) + 1), optimizedWeight));
+            shaderString.append(String.format(Locale.ENGLISH,"sum += texture2D(inputImageTexture, blurCoordinates[%d]) * %f;\n", (long)((currentBlurCoordinateIndex * 2) + 2), optimizedWeight));
         }
 
         // If the number of required samples exceeds the amount we can pass in via varyings, we have to do dependent texture reads in the fragment shader
@@ -162,8 +162,8 @@ public class AYGPUImageGaussianBlurFilter extends AYGPUImageFilter {
                 float optimizedWeight = firstWeight + secondWeight;
                 float optimizedOffset = (firstWeight * (currentOverlowTextureRead * 2 + 1) + secondWeight * (currentOverlowTextureRead * 2 + 2)) / optimizedWeight;
 
-                shaderString.append(String.format("sum += texture2D(inputImageTexture, blurCoordinates[0] + singleStepOffset * %f) * %f;\n", optimizedOffset, optimizedWeight));
-                shaderString.append(String.format("sum += texture2D(inputImageTexture, blurCoordinates[0] - singleStepOffset * %f) * %f;\n", optimizedOffset, optimizedWeight));
+                shaderString.append(String.format(Locale.ENGLISH,"sum += texture2D(inputImageTexture, blurCoordinates[0] + singleStepOffset * %f) * %f;\n", optimizedOffset, optimizedWeight));
+                shaderString.append(String.format(Locale.ENGLISH,"sum += texture2D(inputImageTexture, blurCoordinates[0] - singleStepOffset * %f) * %f;\n", optimizedOffset, optimizedWeight));
             }
         }
 
