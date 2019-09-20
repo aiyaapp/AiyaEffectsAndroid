@@ -114,9 +114,9 @@ public class AYGPUImageI420DataOutput implements AYGPUImageInput {
                 glReadPixels(0, 0, outputWidth, outputHeight, GL_RGBA, GL_UNSIGNED_BYTE, bgraBuffer);
 
                 AYYuvUtil.RGBA_To_I420(bgraBuffer, yuvBuffer, outputWidth, outputHeight);
-                System.arraycopy(yuvBuffer.array(), 0, outputYUVData, 0, outputWidth * outputHeight);
-                System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight, outputYUVData, outputWidth * outputHeight, outputWidth * outputHeight / 4);
-                System.arraycopy(yuvBuffer.array(), outputWidth * outputHeight + outputWidth * outputHeight / 4, outputYUVData, outputWidth * outputHeight + outputWidth * outputHeight / 4, outputWidth * outputHeight / 4);
+
+                yuvBuffer.rewind();
+                yuvBuffer.get(outputYUVData);
 
                 //TODO TEST: 保存最终的RGBA数据到 SDCard/test.png
 //                try {
