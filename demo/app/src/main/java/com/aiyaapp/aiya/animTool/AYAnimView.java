@@ -157,12 +157,14 @@ public class AYAnimView extends TextureView implements TextureView.SurfaceTextur
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+        surface.release();
+
         if (listener != null) {
             listener.destroyGLEnvironment();
         }
         destroyGLEnvironment();
 
-        return false;
+        return true;
     }
 
     public void setListener(AYAnimViewListener listener) {
