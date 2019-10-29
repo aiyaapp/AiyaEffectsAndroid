@@ -194,6 +194,10 @@ public class AYGPUImageEGLContext {
                 eglMakeCurrent(eglDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
             }
         }
+
+        if (handlerThread != null) {
+            handlerThread.quit();
+        }
     }
 
     public void syncRunOnRenderThread(final Runnable runnable) {

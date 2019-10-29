@@ -17,6 +17,8 @@ import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageEffectPlayFinish
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageLookupFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageSlimFaceFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageTrackFilter;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageBGRADataInput;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageBGRADataOutput;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageI420DataInput;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageI420DataOutput;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageTextureInput;
@@ -45,6 +47,9 @@ public class AYEffectHandler {
 
     protected AYGPUImageI420DataInput i420DataInput;
     protected AYGPUImageI420DataOutput i420DataOutput;
+
+    protected AYGPUImageBGRADataInput bgraDataInput;
+    protected AYGPUImageBGRADataOutput bgraDataOutput;
 
     protected AYGPUImageFilter commonInputFilter;
     protected AYGPUImageFilter commonOutputFilter;
@@ -93,6 +98,9 @@ public class AYEffectHandler {
 
                 i420DataInput = new AYGPUImageI420DataInput(eglContext);
                 i420DataOutput = new AYGPUImageI420DataOutput(eglContext);
+
+                bgraDataInput = new AYGPUImageBGRADataInput(eglContext);
+                bgraDataOutput = new AYGPUImageBGRADataOutput(eglContext);
 
                 commonInputFilter = new AYGPUImageFilter(eglContext);
                 commonOutputFilter = new AYGPUImageFilter(eglContext);
@@ -213,6 +221,7 @@ public class AYEffectHandler {
     public void setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode rotateMode) {
         this.textureInput.setRotateMode(rotateMode);
         this.i420DataInput.setRotateMode(rotateMode);
+        this.bgraDataInput.setRotateMode(rotateMode);
 
         if (rotateMode == kAYGPUImageRotateLeft) {
             rotateMode = kAYGPUImageRotateRight;
@@ -222,6 +231,7 @@ public class AYEffectHandler {
 
         this.textureOutput.setRotateMode(rotateMode);
         this.i420DataOutput.setRotateMode(rotateMode);
+        this.bgraDataOutput.setRotateMode(rotateMode);
     }
 
     protected void commonProcess(boolean useDelay) {
@@ -339,6 +349,33 @@ public class AYEffectHandler {
         });
     }
 
+    public void processWithBGRAData(final byte[] bgraData, final int width, final int height) {
+        eglContext.syncRunOnRenderThread(new Runnable() {
+            @Override
+            public void run() {
+                eglContext.makeCurrent();
+
+                saveOpenGLState();
+
+                commonProcess(false);
+
+                if (!initProcess) {
+                    bgraDataInput.addTarget(commonInputFilter);
+                    commonOutputFilter.addTarget(bgraDataOutput);
+                    initProcess = true;
+                }
+
+                // 设置输出的Filter
+                bgraDataOutput.setOutputWithBGRAData(bgraData, width, height, width);
+
+                // 设置输入的Filter, 同时开始处理纹理数据
+                bgraDataInput.processWithBGRAData(bgraData, width, height, width);
+
+                restoreOpenGLState();
+            }
+        });
+    }
+
     public Bitmap getCurrentImage(final int width, final int height) {
         final ByteBuffer byteBuffer = ByteBuffer.allocate(width*height*4);
 
@@ -405,6 +442,8 @@ public class AYEffectHandler {
                     textureOutput.destroy();
                     i420DataInput.destroy();
                     i420DataOutput.destroy();
+                    bgraDataInput.destroy();
+                    bgraDataOutput.destroy();
                     commonInputFilter.destroy();
                     commonOutputFilter.destroy();
 
