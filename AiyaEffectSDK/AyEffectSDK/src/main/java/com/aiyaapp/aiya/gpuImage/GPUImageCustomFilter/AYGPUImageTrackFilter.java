@@ -153,7 +153,15 @@ public class AYGPUImageTrackFilter implements AYGPUImageInput {
             }
         });
 
+        try {
+            semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         AyFaceTrack.Deinit();
+
+        semaphore.release();
     }
 
     public void setOutputWidthAndHeight(int width, int height) {
