@@ -79,7 +79,7 @@ public class AYGPUImageDelayFilter extends AYGPUImageFilter {
 
                 // 切换缓存位置
                 cachePosition = processPosition;
-                cacheExpireTime = System.currentTimeMillis() + 100;
+                cacheExpireTime = System.currentTimeMillis() + 1000;
             }
         });
     }
