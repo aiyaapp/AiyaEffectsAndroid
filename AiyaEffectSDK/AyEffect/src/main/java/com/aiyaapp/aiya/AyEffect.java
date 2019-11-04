@@ -1,10 +1,11 @@
 package com.aiyaapp.aiya;
 
-import android.util.Log;
-
 public class AyEffect {
 
     static {
+        System.loadLibrary("assimp");
+        System.loadLibrary("gameplay");
+        System.loadLibrary("ayeffects");
         System.loadLibrary("AyEffectJni");
     }
 

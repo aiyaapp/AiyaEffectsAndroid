@@ -17,7 +17,6 @@ allprojects {
     repositories {
         jcenter()
         google()
-        maven { url "https://dl.bintray.com/aiyaapp/sdk" }
     }
     tasks.withType(Javadoc) {
         options.addStringOption('Xdoclint:none', '-quiet')

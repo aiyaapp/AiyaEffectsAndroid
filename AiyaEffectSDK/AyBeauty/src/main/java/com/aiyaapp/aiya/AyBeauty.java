@@ -3,6 +3,11 @@ package com.aiyaapp.aiya;
 public class AyBeauty {
 
     static {
+        System.loadLibrary("Beauty");
+        System.loadLibrary("Faceprocess");
+        System.loadLibrary("ShortVideo");
+        System.loadLibrary("AiyaAe3dLib");
+        System.loadLibrary("AiyaEffectLib");
         System.loadLibrary("AyBeautyJni");
     }
 

@@ -3,6 +3,9 @@ package com.aiyaapp.aiya;
 public class AyShortVideoEffect {
 
     static {
+        System.loadLibrary("ShortVideo");
+        System.loadLibrary("AiyaAe3dLib");
+        System.loadLibrary("AiyaEffectLib");
         System.loadLibrary("AyShortVideoEffectJni");
     }
 

@@ -13,6 +13,8 @@ import java.nio.ByteBuffer;
 public class AyFaceTrack {
 
     static {
+        System.loadLibrary("simd");
+        System.loadLibrary("aftk");
         System.loadLibrary("AyFaceTrackJni");
     }
 

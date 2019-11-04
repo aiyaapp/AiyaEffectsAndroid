@@ -4,6 +4,8 @@ import android.content.Context;
 
 public class AyCore {
     static {
+        System.loadLibrary("AyCoreSdk");
+        System.loadLibrary("BaseEffects");
         System.loadLibrary("AyCoreJni");
     }
 
