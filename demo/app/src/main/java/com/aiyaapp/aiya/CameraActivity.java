@@ -4,11 +4,13 @@ import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewListener;
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewWrap;
 import com.aiyaapp.aiya.cameraTool.AYPreviewView;
+import com.aiyaapp.aiya.cameraTool.AYPreviewViewListener;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 
 import java.io.IOException;
@@ -16,7 +18,7 @@ import java.io.IOException;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageContentMode.kAYGPUImageScaleAspectFill;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRight;
 
-public class CameraActivity extends AppCompatActivity implements AYCameraPreviewListener, SurfaceHolder.Callback {
+public class CameraActivity extends AppCompatActivity implements AYCameraPreviewListener, AYPreviewViewListener {
 
     Camera camera;
     AYCameraPreviewWrap cameraPreviewWrap;
@@ -30,8 +32,7 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
 
         setContentView(R.layout.activity_camera);
         surfaceView = findViewById(R.id.camera_preview);
-
-        surfaceView.getHolder().addCallback(this);
+        surfaceView.setListener(this);
         surfaceView.setContentMode(kAYGPUImageScaleAspectFill);
     }
 
@@ -112,17 +113,12 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    public void createGLEnvironment() {
         openHardware();
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public void destroyGLEnvironment() {
         closeHardware();
     }
 }
