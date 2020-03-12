@@ -133,9 +133,9 @@ public class AYGPUImageEffectFilter extends AYGPUImageFilter implements AyEffect
 
         if (effectPath == null || effectPath.equals("")) {
             // 路径错误
-        } else if (ret == MSG_STAT_EFFECTS_END) { //已经渲染完成一遍
+        } else if (ret == MSG_STAT_EFFECTS_END || ret < 0) { //已经渲染完成一遍, 或者发生错误
             currentPlayCount++;
-            if (effectPlayCount != 0 && currentPlayCount >= effectPlayCount) {
+            if (ret < 0 || (effectPlayCount != 0 && currentPlayCount >= effectPlayCount)) {
                 setEffectPath("");
 
                 if (effectPlayFinishListener != null) {
