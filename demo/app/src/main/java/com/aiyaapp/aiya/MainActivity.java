@@ -28,10 +28,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         // copy数据
         new Thread(() -> {
-            String dstPath = getExternalCacheDir() + "/aiya/effect";
+            String dstPath = getCacheDir().getPath() + File.separator + "effect";
             if (!new File(dstPath).exists()) {
                 AyFaceTrack.deleteFile(new File(dstPath));
-                AyFaceTrack.copyFileFromAssets("modelsticker", dstPath, getAssets());
+                AyFaceTrack.copyFileFromAssets("effect", dstPath, getAssets());
+            }
+            dstPath = getCacheDir().getPath() + File.separator + "style";
+            if (!new File(dstPath).exists()) {
+                AyFaceTrack.deleteFile(new File(dstPath));
+                AyFaceTrack.copyFileFromAssets("style", dstPath, getAssets());
             }
         }).start();
     }

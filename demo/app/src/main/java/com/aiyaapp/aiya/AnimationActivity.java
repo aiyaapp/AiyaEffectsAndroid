@@ -11,7 +11,11 @@ import com.aiyaapp.aiya.animTool.AYAnimViewListener;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
-import static android.opengl.GLES20.*;
+import java.io.File;
+
+import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
+import static android.opengl.GLES20.glClear;
+import static android.opengl.GLES20.glClearColor;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageContentMode.kAYGPUImageScaleAspectFill;
 
 public class AnimationActivity extends AppCompatActivity {
@@ -20,7 +24,7 @@ public class AnimationActivity extends AppCompatActivity {
     AYAnimHandler effectHandler;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_animation);
 
@@ -54,7 +58,7 @@ public class AnimationActivity extends AppCompatActivity {
 
                     inputImageFramebuffer.activateFramebuffer();
 
-                    glClearColor(0,0,0,0);
+                    glClearColor(0, 0, 0, 0);
                     glClear(GL_COLOR_BUFFER_BIT);
 
                     // 渲染特效美颜
@@ -98,7 +102,7 @@ public class AnimationActivity extends AppCompatActivity {
             Button button = (Button) v;
             if (button.getText().equals("play")) {
                 // 设置特效
-                effectHandler.setEffectPath(getExternalCacheDir() + "/aiya/effect/gaokongshiai/meta.json");
+                effectHandler.setEffectPath(getCacheDir() + File.separator + "effect" + File.separator + "data" + File.separator + "gaokongshiai" + File.separator + "meta.json");
                 effectHandler.setEffectPlayCount(1);
                 button.setText("stop");
             } else if (button.getText().equals("stop")) {

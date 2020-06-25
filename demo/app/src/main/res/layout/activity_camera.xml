@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,4 +9,65 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-</RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recycle_view"
+        android:layout_width="match_parent"
+        android:layout_height="71dp"
+        android:layout_marginBottom="94dp"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <ImageButton
+        android:id="@+id/effect_btn"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginBottom="25dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerInside"
+        android:src="@mipmap/bt_camera_texiao_nor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent" />
+
+    <ImageButton
+        android:id="@+id/beauty_btn"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="25dp"
+        android:layout_marginBottom="25dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerInside"
+        android:src="@mipmap/bt_camera_face_texiao_nor"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+    <ImageButton
+        android:id="@+id/style_btn"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:layout_marginEnd="94dp"
+        android:layout_marginBottom="25dp"
+        android:background="?android:attr/selectableItemBackground"
+        android:contentDescription="@string/app_name"
+        android:scaleType="centerInside"
+        android:src="@mipmap/bt_camera_style_filter"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:layout_marginBottom="175dp"
+        android:background="@drawable/round_box_66000000"
+        android:thumb="@drawable/thumb"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+
+</android.support.constraint.ConstraintLayout>

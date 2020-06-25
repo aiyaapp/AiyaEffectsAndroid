@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sample</string>
+    <string name="app_name">特效演示</string>
     <string name="btn_camera">相机</string>
     <string name="btn_animation">动画</string>
 </resources>

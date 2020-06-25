@@ -139,7 +139,6 @@ public class AYAnimView extends TextureView implements TextureView.SurfaceTextur
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        Log.d("wang", "onSurfaceTextureAvailable");
         this.boundingWidth = width;
         this.boundingHeight = height;
 
