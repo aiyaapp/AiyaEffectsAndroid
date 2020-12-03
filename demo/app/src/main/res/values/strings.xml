@@ -2,4 +2,8 @@
     <string name="app_name">特效演示</string>
     <string name="btn_camera">相机</string>
     <string name="btn_animation">动画</string>
+    <string name="btn_recorder">录像</string>
+    <string name="btn_stop_recorder">结束录制</string>
+    <string name="btn_start_recorder">开始录制</string>
+    <string name="btn_switch_camera">切换相机</string>
 </resources>

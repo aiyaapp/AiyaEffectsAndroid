@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.aiyaapp.aiya.cameraTool.AYPreviewView
+        android:id="@+id/recorder_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <ToggleButton
+        android:id="@+id/recorder_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOn="@string/btn_stop_recorder"
+        android:textOff="@string/btn_start_recorder"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="150dp"/>
+
+    <Button
+        android:id="@+id/switch_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_switch_camera"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="50dp"/>
+
+</RelativeLayout>

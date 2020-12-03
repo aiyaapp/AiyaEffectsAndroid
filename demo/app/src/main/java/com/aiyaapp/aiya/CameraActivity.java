@@ -274,7 +274,7 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
     }
 
     @Override
-    public void cameraVideoOutput(int texture, int width, int height, long timeStamp) {
+    public void cameraVideoOutput(int texture, int width, int height, long timestamp) {
         // 渲染特效美颜
         if (effectHandler != null) {
             effectHandler.processWithTexture(texture, width, height);
