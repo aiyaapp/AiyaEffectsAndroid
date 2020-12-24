@@ -263,14 +263,20 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
         }
     }
 
-    @Override
-    public void cameraCrateGLEnvironment() {
-
+    public void createEffectHandler() {
         effectHandler = new AYEffectHandler(this);
         effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
         effectHandler.setIntensityOfSlimFace(0);
         effectHandler.setIntensityOfBigEye(0);
         effectHandler.setEffectPath("");
+    }
+
+
+    public void destroyEffectHandler() {
+        if (effectHandler != null) {
+            effectHandler.destroy();
+            effectHandler = null;
+        }
     }
 
     @Override
@@ -286,21 +292,18 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
         }
     }
 
-    @Override
-    public void cameraDestroyGLEnvironment() {
-        if (effectHandler != null) {
-            effectHandler.destroy();
-            effectHandler = null;
-        }
-    }
 
     @Override
     public void createGLEnvironment() {
         openHardware();
+
+        surfaceView.eglContext.syncRunOnRenderThread(this::createEffectHandler);
     }
 
     @Override
     public void destroyGLEnvironment() {
         closeHardware();
+
+        surfaceView.eglContext.syncRunOnRenderThread(this::destroyEffectHandler);
     }
 }

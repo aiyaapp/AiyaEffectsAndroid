@@ -22,6 +22,7 @@ import android.widget.ToggleButton;
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewListener;
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewWrap;
 import com.aiyaapp.aiya.cameraTool.AYPreviewView;
+import com.aiyaapp.aiya.cameraTool.AYPreviewViewListener;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 import com.aiyaapp.aiya.recorderTool.AYAudioRecorderListener;
 import com.aiyaapp.aiya.recorderTool.AYAudioRecorderWrap;
@@ -39,7 +40,7 @@ import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMo
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRightFlipHorizontal;
 import static com.aiyaapp.aiya.recorderTool.AYMediaCodecHelper.getAvcSupportedFormatInfo;
 
-public class RecorderActivity extends AppCompatActivity implements AYCameraPreviewListener, AYAudioRecorderListener, SurfaceHolder.Callback {
+public class RecorderActivity extends AppCompatActivity implements AYCameraPreviewListener, AYAudioRecorderListener, AYPreviewViewListener {
 
     private static final String TAG = "RecorderActivity";
 
@@ -75,8 +76,8 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         setContentView(R.layout.activity_recorder);
 
         surfaceView = findViewById(R.id.recorder_preview);
-        surfaceView.getHolder().addCallback(this);
         surfaceView.setContentMode(kAYGPUImageScaleAspectFit);
+        surfaceView.setListener(this);
 
         ToggleButton recorderToggle = findViewById(R.id.recorder_toggle);
         recorderToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -103,18 +104,17 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
+    public void createGLEnvironment() {
         openHardware();
+
+        surfaceView.eglContext.syncRunOnRenderThread(this::createEffectHandler);
     }
 
     @Override
-    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-    }
-
-    @Override
-    public void surfaceDestroyed(SurfaceHolder holder) {
+    public void destroyGLEnvironment() {
         closeHardware();
+
+        surfaceView.eglContext.syncRunOnRenderThread(this::destroyEffectHandler);
     }
 
     /**
@@ -222,13 +222,11 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         closeMediaCodec();
     }
 
-    @Override
-    public void cameraCrateGLEnvironment() {
+    public void createEffectHandler() {
         effectHandler = new AYEffectHandler(this);
         effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
         // 设置特效
-        effectHandler.setEffectPath(getExternalCacheDir() + "/aiya/effect/mogulin/meta.json");
-        effectHandler.setEffectPlayCount(2);
+        effectHandler.setEffectPath(getCacheDir().getPath() + "/effect/data/2017/meta.json");
         // 设置美颜程度
         effectHandler.setBeautyType(AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_3);
         effectHandler.setIntensityOfSmooth(0.8f);
@@ -237,13 +235,16 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
 
         // 设置大眼瘦脸
         effectHandler.setIntensityOfBigEye(0.2f);
-        effectHandler.setIntensityOfSlimFace(0.8f);
+        effectHandler.setIntensityOfSlimFace(0.2f);
 
-        try {
-            // 添加滤镜
-            effectHandler.setStyle(BitmapFactory.decodeStream(getApplicationContext().getAssets().open("FilterResources/filter/03桃花.JPG")));
-        } catch (IOException e) {
-            e.printStackTrace();
+        // 添加滤镜
+        effectHandler.setStyle(BitmapFactory.decodeFile(getCacheDir().getPath() + "/style/data/03桃花.png"));
+    }
+
+    public void destroyEffectHandler() {
+        if (effectHandler != null) {
+            effectHandler.destroy();
+            effectHandler = null;
         }
     }
 
@@ -266,14 +267,6 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         // 进行视频编码
         if (videoCodec != null && videoCodecConfigResult) {
             videoCodec.writeImageTexture(texture, width, height, timestamp);
-        }
-    }
-
-    @Override
-    public void cameraDestroyGLEnvironment() {
-        if (effectHandler != null) {
-            effectHandler.destroy();
-            effectHandler = null;
         }
     }
 
@@ -318,9 +311,9 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
             Intent intent = new Intent(Intent.ACTION_VIEW);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 Uri contentUri = FileProvider.getUriForFile(getBaseContext(), "com.aiyaapp.aiya.test.fileprovider", new File(videoPath));
-                intent.setDataAndType(contentUri, "video/*");
+                intent.setDataAndType(contentUri, "video/mp4");
             } else {
-                intent.setDataAndType(Uri.fromFile(new File(videoPath)), "video/*");
+                intent.setDataAndType(Uri.fromFile(new File(videoPath)), "video/mp4");
             }
             startActivity(intent);
         } catch (Exception e) {
@@ -344,7 +337,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         // 图像编码参数
         int width = 1280; // 视频编码时图像旋转了90度
         int height = 720;
-        int bitRate = 20000000; // 码率: 2Mbps
+        int bitRate = 10000000; // 码率: 1Mbps
         int fps = 30; // 帧率: 30
         int iFrameInterval = 1; // GOP: 30
 
@@ -406,4 +399,5 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
 
         return recordSuccess;
     }
+
 }

@@ -111,10 +111,6 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
             filterPositionAttribute = filterProgram.attributeIndex("position");
             filterTextureCoordinateAttribute = filterProgram.attributeIndex("inputTextureCoordinate");
             filterInputTextureUniform = filterProgram.uniformIndex("inputImageTexture");
-
-            if (previewListener != null) {
-                previewListener.cameraCrateGLEnvironment();
-            }
         });
     }
 
@@ -194,10 +190,6 @@ public class AYCameraPreviewWrap implements SurfaceTexture.OnFrameAvailableListe
 
             if (outputFramebuffer != null) {
                 outputFramebuffer.destroy();
-            }
-
-            if (previewListener != null) {
-                previewListener.cameraDestroyGLEnvironment();
             }
         });
     }
