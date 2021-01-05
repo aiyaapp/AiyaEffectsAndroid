@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.main_camera).setOnClickListener(this);
         findViewById(R.id.main_animation).setOnClickListener(this);
         findViewById(R.id.main_recorder).setOnClickListener(this);
+        findViewById(R.id.main_convert).setOnClickListener(this);
 
         // 初始化License
         AYLicenseManager.initLicense(getApplicationContext(), "477de67d19ba39fb656a4806c803b552", ret -> Log.d("哎吖科技", "License初始化结果 : " + ret));
@@ -95,6 +96,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 enterRecorderPage();
             }
 
+        } else if (view.getId() == R.id.main_convert) {
+            enterConvertPage();
+
         }
 
     }
@@ -109,5 +113,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void enterRecorderPage() {
         startActivity(new Intent(this, RecorderActivity.class));
+    }
+
+    private void enterConvertPage() {
+        startActivity(new Intent(this, DecoderAndEncoderActivity.class));
     }
 }

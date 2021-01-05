@@ -25,6 +25,7 @@
         <activity android:name=".CameraActivity" />
         <activity android:name=".AnimationActivity" />
         <activity android:name=".RecorderActivity" />
+        <activity android:name=".DecoderAndEncoderActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"

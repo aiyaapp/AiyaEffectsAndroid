@@ -1,12 +1,16 @@
 package com.aiyaapp.aiya;
 
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.hardware.Camera;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Surface;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.SeekBar;
 
 import com.aiyaapp.aiya.adapter.Adapter;
@@ -243,12 +247,55 @@ public class CameraActivity extends AppCompatActivity implements AYCameraPreview
             camera = null;
         }
         camera = Camera.open(1);
+        setCameraDisplayOrientation(this, camera);
 
         cameraPreviewWrap = new AYCameraPreviewWrap(camera);
         cameraPreviewWrap.setPreviewListener(this);
         cameraPreviewWrap.setRotateMode(kAYGPUImageRotateRight);
         cameraPreviewWrap.startPreview(surfaceView.eglContext);
     }
+
+    /**
+     * @see <a
+     * href="http://stackoverflow.com/questions/12216148/android-screen-orientation-differs-between-devices">SO
+     * post</a>
+     */
+    public static  void setCameraDisplayOrientation(Context context, Camera mCamera) {
+        final int rotationOffset;
+        // Check "normal" screen orientation and adjust accordingly
+        int naturalOrientation = ((WindowManager) context.getSystemService(Context.WINDOW_SERVICE))
+                .getDefaultDisplay().getRotation();
+        if (naturalOrientation == Surface.ROTATION_0) {
+            rotationOffset = 0;
+        } else if (naturalOrientation == Surface.ROTATION_90) {
+            rotationOffset = 90;
+        } else if (naturalOrientation == Surface.ROTATION_180) {
+            rotationOffset = 180;
+        } else if (naturalOrientation == Surface.ROTATION_270) {
+            rotationOffset = 270;
+        } else {
+            // just hope for the best (shouldn't happen)
+            rotationOffset = 0;
+        }
+
+        int result;
+
+        /* check API level. If upper API level 21, re-calculate orientation. */
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            android.hardware.Camera.CameraInfo info =
+                    new android.hardware.Camera.CameraInfo();
+            android.hardware.Camera.getCameraInfo(0, info);
+            int cameraOrientation = info.orientation;
+            result = (cameraOrientation - rotationOffset + 360) % 360;
+        } else {
+            /* if API level is lower than 21, use the default value */
+            result = 90;
+        }
+
+        /*set display orientation*/
+        mCamera.setDisplayOrientation(result);
+    }
+
 
     /**
      * 关闭硬件设备

@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 
-public class AYMediaCodecHelper {
+public class AYMediaCodecEncoderHelper {
 
     static final String MIME_TYPE = "video/avc";    // H.264 Advanced Video Coding
 

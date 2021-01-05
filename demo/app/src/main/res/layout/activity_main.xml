@@ -22,4 +22,10 @@
         android:layout_height="wrap_content"
         android:text="@string/btn_recorder"/>
 
+    <Button
+        android:id="@+id/main_convert"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/btn_convert"/>
+
 </LinearLayout>

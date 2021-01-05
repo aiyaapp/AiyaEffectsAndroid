@@ -12,11 +12,8 @@ import android.os.Bundle;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.SurfaceHolder;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.RadioGroup;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.aiyaapp.aiya.cameraTool.AYCameraPreviewListener;
@@ -26,19 +23,19 @@ import com.aiyaapp.aiya.cameraTool.AYPreviewViewListener;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 import com.aiyaapp.aiya.recorderTool.AYAudioRecorderListener;
 import com.aiyaapp.aiya.recorderTool.AYAudioRecorderWrap;
-import com.aiyaapp.aiya.recorderTool.AYMediaCodec;
-import com.aiyaapp.aiya.recorderTool.AYMediaCodecHelper.CodecInfo;
+import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoder;
+import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderHelper.CodecInfo;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.UUID;
 
+import static com.aiyaapp.aiya.CameraActivity.setCameraDisplayOrientation;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageContentMode.kAYGPUImageScaleAspectFill;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageContentMode.kAYGPUImageScaleAspectFit;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRight;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRightFlipHorizontal;
-import static com.aiyaapp.aiya.recorderTool.AYMediaCodecHelper.getAvcSupportedFormatInfo;
+import static com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderHelper.getAvcSupportedFormatInfo;
 
 public class RecorderActivity extends AppCompatActivity implements AYCameraPreviewListener, AYAudioRecorderListener, AYPreviewViewListener {
 
@@ -62,7 +59,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
     AYPreviewView surfaceView;
 
     // 音视频硬编码
-    volatile AYMediaCodec videoCodec;
+    volatile AYMediaCodecEncoder videoCodec;
     volatile boolean videoCodecConfigResult = false;
     volatile boolean audioCodecConfigResult = false;
 
@@ -145,6 +142,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         Log.d(TAG, "打开前置相机");
         mCurrentCameraID = FRONT_CAMERA_ID;
         camera = Camera.open(mCurrentCameraID); // TODO 省略判断是否有前置相机
+        setCameraDisplayOrientation(this, camera);
 
         cameraPreviewWrap = new AYCameraPreviewWrap(camera);
         cameraPreviewWrap.setPreviewListener(this);
@@ -167,6 +165,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         Log.d(TAG, "打开后置相机");
         mCurrentCameraID = BACK_CAMERA_ID;
         camera = Camera.open(mCurrentCameraID);
+        setCameraDisplayOrientation(this, camera);
 
         cameraPreviewWrap = new AYCameraPreviewWrap(camera);
         cameraPreviewWrap.setPreviewListener(this);
@@ -337,7 +336,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         // 图像编码参数
         int width = 1280; // 视频编码时图像旋转了90度
         int height = 720;
-        int bitRate = 10000000; // 码率: 1Mbps
+        int bitRate = 1000000; // 码率: 1Mbps
         int fps = 30; // 帧率: 30
         int iFrameInterval = 1; // GOP: 30
 
@@ -370,10 +369,10 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
                 + "fps = " + fps + "IFrameInterval = " + iFrameInterval);
 
         // 启动编码
-        videoCodec = new AYMediaCodec(videoPath);
+        videoCodec = new AYMediaCodecEncoder(videoPath, false);
         videoCodec.setContentMode(kAYGPUImageScaleAspectFill);
         videoCodecConfigResult = videoCodec.configureVideoCodecAndStart(surfaceView.eglContext, width, height, bitRate, fps, iFrameInterval);
-        audioCodecConfigResult = videoCodec.configureAudioCodecAndStart(audioBitRate, sampleRate);
+        audioCodecConfigResult = videoCodec.configureAudioCodecAndStart(audioBitRate, sampleRate, 1);
 
         return videoCodecConfigResult && audioCodecConfigResult;
     }
