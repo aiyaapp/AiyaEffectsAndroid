@@ -6,7 +6,6 @@ import android.media.MediaCodec;
 import android.media.MediaExtractor;
 import android.media.MediaFormat;
 import android.opengl.EGL14;
-import android.opengl.GLES11Ext;
 import android.os.Build;
 import android.os.SystemClock;
 import android.util.Log;
@@ -18,23 +17,18 @@ import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 
-import java.io.FileDescriptor;
 import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import javax.microedition.khronos.opengles.GL11Ext;
-
 import static android.opengl.GLES11Ext.GL_TEXTURE_EXTERNAL_OES;
 import static android.opengl.GLES20.GL_CLAMP_TO_EDGE;
 import static android.opengl.GLES20.GL_COLOR_BUFFER_BIT;
 import static android.opengl.GLES20.GL_FLOAT;
 import static android.opengl.GLES20.GL_LINEAR;
-import static android.opengl.GLES20.GL_NEAREST;
 import static android.opengl.GLES20.GL_TEXTURE2;
-import static android.opengl.GLES20.GL_TEXTURE_2D;
 import static android.opengl.GLES20.GL_TEXTURE_MAG_FILTER;
 import static android.opengl.GLES20.GL_TEXTURE_MIN_FILTER;
 import static android.opengl.GLES20.GL_TEXTURE_WRAP_S;
@@ -50,12 +44,9 @@ import static android.opengl.GLES20.glEnableVertexAttribArray;
 import static android.opengl.GLES20.glFinish;
 import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glTexParameterf;
-import static android.opengl.GLES20.glTexParameteri;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glVertexAttribPointer;
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.noRotationTextureCoordinates;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.textureCoordinatesForRotation;
 
 /**
  *
@@ -65,6 +56,7 @@ import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.textureCoordinatesFo
  */
 public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListener {
 
+    // ----- GLES 相关变量 -----
     private static final String kAYOESTextureFragmentShader = "" +
             "#extension GL_OES_EGL_image_external : require\n" +
             "\n" +
@@ -75,17 +67,6 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             "void main() {\n" +
             "    gl_FragColor = texture2D(inputImageTexture, textureCoordinate);\n" +
             "}";
-
-    private static final int TIMEOUT = 1000;
-
-    private MediaExtractor videoExtractor;
-    private MediaExtractor audioExtractor;
-
-    // 编码器
-    private MediaCodec videoDecoder;
-    private MediaCodec audioDecoder;
-
-    private AYMediaCodecDecoderListener decoderListener;
 
     private AYGPUImageEGLContext eglContext;
 
@@ -110,13 +91,31 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
     private Buffer textureCoordinates = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.verticalFlipTextureCoordinates);
 
+    // ----- MediaCodec 相关变量 -----
+    private static final int TIMEOUT = 1000;
+
+    private MediaExtractor videoExtractor;
+    private MediaExtractor audioExtractor;
+
+    // 解码器
+    private MediaCodec videoDecoder;
+    private MediaCodec audioDecoder;
+
     // 视频解码中断时用到的锁
     private Boolean isDecoderAbort = false;
     private ReadWriteLock decoderAbortLock = new ReentrantReadWriteLock(true);
 
+    // 同步视频解码
     private final Object decoderFrameSyncObject = new Object();     // guards decoderFrameAvailable
-    private boolean decoderFrameAvailable;
-    
+    private boolean decoderFrameAvailable = false;
+
+    // 开始
+    volatile private boolean isStart = false;
+
+    private AYMediaCodecDecoderListener decoderListener;
+
+    private int renderCount;
+
     public AYMediaCodecDecoder(String path) throws IOException {
         videoExtractor = new MediaExtractor();
         audioExtractor = new MediaExtractor();
@@ -133,7 +132,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
         audioExtractor.setDataSource(fileDescriptor.getFileDescriptor(), fileDescriptor.getStartOffset(), fileDescriptor.getLength());
     }
 
-    public boolean configCodecAndStart(AYGPUImageEGLContext eglContext) {
+    public boolean configCodec(AYGPUImageEGLContext eglContext) {
         this.eglContext = eglContext;
 
         // 找到视频格式
@@ -156,17 +155,20 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
         }
 
         if (videoFormat == null) {
-            Log.w(AYGPUImageConstants.TAG, "no exist video track");
+            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> no exist video track");
             return false;
         }
 
         if (audioFormat == null) {
-            Log.w(AYGPUImageConstants.TAG, "no exist audio track");
+            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> no exist audio track");
             return false;
         }
 
-        Log.w(AYGPUImageConstants.TAG, "视频格式 : " + videoFormat);
-        Log.w(AYGPUImageConstants.TAG, "音频格式 : " + audioFormat);
+        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 视频轨道格式 : " + videoFormat);
+        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 音频轨道格式 : " + audioFormat);
+
+        decoderListener.decoderOutputVideoTrackFormat(videoFormat);
+        decoderListener.decoderOutputAudioTrackFormat(audioFormat);
 
         // 创建MediaCodec硬解码器
         boolean hadError = false;
@@ -178,7 +180,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             videoDecoder = MediaCodec.createDecoderByType(videoFormat.getString(MediaFormat.KEY_MIME));
             videoDecoder.configure(videoFormat, surface, null, 0);
         } catch (Throwable e) {
-            Log.w(AYGPUImageConstants.TAG, "video mediaCodec create error: " + e);
+            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> video mediaCodec create error: " + e);
             hadError = true;
         } finally {
             if (videoDecoder != null && hadError) {
@@ -200,7 +202,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             audioDecoder = MediaCodec.createDecoderByType(audioFormat.getString(MediaFormat.KEY_MIME));
             audioDecoder.configure(audioFormat, null, null, 0);
         } catch (Throwable e) {
-            Log.w(AYGPUImageConstants.TAG, "audio mediaCodec create error: " + e);
+            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> audio mediaCodec create error: " + e);
             hadError = true;
         } finally {
             if (audioDecoder != null && hadError) {
@@ -214,34 +216,27 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             return false;
         }
 
-        if (decoderListener != null) {
-            decoderListener.decoderVideoFormat(videoFormat);
-            decoderListener.decoderAudioFormat(audioFormat);
-        }
-
         videoDecoder.start();
         audioDecoder.start();
 
         videoExtractor.selectTrack(videoTrack);
         audioExtractor.selectTrack(audioTrack);
 
-        Runnable videoDecodeRunnable = new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                // 等待编码器设置各种参数
-                SystemClock.sleep(500);
-
                 MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
 
                 boolean outputDone = false;
                 boolean inputDone = false;
+                boolean isVideoDecoderReady = false;
 
                 while (!outputDone) {
 
                     decoderAbortLock.readLock().lock();
 
                     if (isDecoderAbort) {
-                        Log.i(AYGPUImageConstants.TAG, "视频解码器强制中断");
+                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 视频解码器强制中断");
                         decoderAbortLock.readLock().unlock();
                         return;
                     }
@@ -283,16 +278,28 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                         }
                     }
 
+                    // 初始化视频解码器成功, 等待开始解码
+                    if (isVideoDecoderReady && !isStart) {
+                        decoderAbortLock.readLock().unlock();
+                        SystemClock.sleep(1);
+                        continue;
+                    }
+
                     int outputBufIndex = videoDecoder.dequeueOutputBuffer(info, TIMEOUT);
 
                     if (outputBufIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                        Log.d(AYGPUImageConstants.TAG, "视频解码器初始化完成");
+                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(视频)初始化完成");
+                        isVideoDecoderReady = true;
+
+                        if (decoderListener != null) {
+                            decoderListener.decoderOutputVideoFormat(videoDecoder.getOutputFormat());
+                        }
 
                     } else if (outputBufIndex >= 0) {
 
                         // 最后一个输出
                         if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                            Log.i(AYGPUImageConstants.TAG, "视频解码器输出完成");
+                            Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(视频)输出完成");
                             outputDone = true;
                         }
 
@@ -304,6 +311,8 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                         if (info.size != 0) {
                             awaitNewImage();
                         }
+                    } else {
+                        SystemClock.sleep(1);
                     }
 
                     decoderAbortLock.readLock().unlock();
@@ -311,46 +320,37 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
 
                 decoderAbortLock.readLock().lock();
 
-                if (videoDecoder != null) {
-                    videoDecoder.stop();
-                    videoDecoder.release();
-                    videoDecoder = null;
+                if (isDecoderAbort) {
+                    Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 视频解码器强制中断");
+                    decoderAbortLock.readLock().unlock();
+                    return;
                 }
 
-                if (videoExtractor != null) {
-                    videoExtractor.release();
-                    videoExtractor = null;
-                }
+                releaseVideoDecoder();
 
-                destroyGLContext();
-
-                // 等待页面渲染完成后, 再回调EOS
-                if (!isDecoderAbort) {
-                    SystemClock.sleep(100);
-
-                    if (decoderListener != null) {
-                        decoderListener.decoderVideoEOS();
-                    }
+                if (decoderListener != null) {
+                    decoderListener.decoderVideoEOS();
                 }
 
                 decoderAbortLock.readLock().unlock();
             }
-        };
+        }).start();
 
-        Runnable audioDecodeRunnable = new Runnable() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
 
                 boolean outputDone = false;
                 boolean inputDone = false;
+                boolean isAudioDecoderReady = false;
 
                 while (!outputDone) {
 
                     decoderAbortLock.readLock().lock();
 
                     if (isDecoderAbort) {
-                        Log.i(AYGPUImageConstants.TAG, "音频解码器强制中断");
+                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 音频解码器强制中断");
                         decoderAbortLock.readLock().unlock();
                         return;
                     }
@@ -391,16 +391,28 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                         }
                     }
 
+                    // 初始化音频解码器成功, 等待开始解码
+                    if (isAudioDecoderReady && !isStart) {
+                        decoderAbortLock.readLock().unlock();
+                        SystemClock.sleep(1);
+                        continue;
+                    }
+
                     int outputBufIndex = audioDecoder.dequeueOutputBuffer(info, TIMEOUT);
 
                     if (outputBufIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                        Log.d(AYGPUImageConstants.TAG, "音频解码器初始化完成");
+                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(音频)初始化完成");
+                        isAudioDecoderReady = true;
+
+                        if (decoderListener != null) {
+                            decoderListener.decoderOutputAudioFormat(audioDecoder.getOutputFormat());
+                        }
 
                     } else if (outputBufIndex >= 0) {
 
                         // 最后一个输出
                         if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                            Log.i(AYGPUImageConstants.TAG, "音频解码器输出完成");
+                            Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(音频)输出完成");
                             outputDone = true;
                         }
 
@@ -418,6 +430,9 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                         }
 
                         audioDecoder.releaseOutputBuffer(outputBufIndex, false);
+
+                    } else {
+                        SystemClock.sleep(1);
                     }
 
                     decoderAbortLock.readLock().unlock();
@@ -425,32 +440,19 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
 
                 decoderAbortLock.readLock().lock();
 
-                if (audioDecoder != null) {
-                    audioDecoder.stop();
-                    audioDecoder.release();
-                    audioDecoder = null;
+                if (isDecoderAbort) {
+                    Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 音频解码器强制中断");
+                    decoderAbortLock.readLock().unlock();
+                    return;
                 }
 
-                if (audioExtractor != null) {
-                    audioExtractor.release();
-                    audioExtractor = null;
-                }
+                releaseAudioDecoder();
 
-                if (!isDecoderAbort) {
-                    if (decoderListener != null) {
-                        decoderListener.decoderAudioEOS();
-                    }
+                if (decoderListener != null) {
+                    decoderListener.decoderAudioEOS();
                 }
 
                 decoderAbortLock.readLock().unlock();
-            }
-        };
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                videoDecodeRunnable.run();
-                audioDecodeRunnable.run();
             }
         }).start();
 
@@ -462,18 +464,34 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
     }
 
     /**
-     * 中断解码器
+     * 可以开始解码
+     */
+    public void start() {
+        isStart = true;
+    }
+
+    /**
+     * 中断解码器, 此函数可能重复调用多次, 需要做去重处理
      */
     public void abortDecoder() {
 
         // 等待MediaCodec读锁释放
         decoderAbortLock.writeLock().lock();
         isDecoderAbort = true;
+        decoderAbortLock.writeLock().unlock();
 
+        releaseVideoDecoder();
+
+        releaseAudioDecoder();
+
+    }
+
+    private void releaseVideoDecoder() {
         if (videoDecoder != null) {
             videoDecoder.stop();
             videoDecoder.release();
             videoDecoder = null;
+            Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 释放 解码器(视频) 总共解码视频帧: " + renderCount);
         }
 
         if (videoExtractor != null) {
@@ -481,20 +499,24 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             videoExtractor = null;
         }
 
+        if (eglContext != null) {
+            destroyGLEnvironment();
+            eglContext = null;
+        }
+    }
+
+    private void releaseAudioDecoder() {
         if (audioDecoder != null) {
             audioDecoder.stop();
             audioDecoder.release();
             audioDecoder = null;
+            Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 释放 解码器(音频)");
         }
 
         if (audioExtractor != null) {
             audioExtractor.release();
             audioExtractor = null;
         }
-
-        destroyGLContext();
-
-        decoderAbortLock.writeLock().unlock();
     }
 
     private void createGLEnvironment() {
@@ -519,7 +541,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
     private void awaitNewImage() {
         final int TIMEOUT_MS = 500;
         synchronized (decoderFrameSyncObject) {
-            while (!decoderFrameAvailable) {
+            if (!decoderFrameAvailable) {
                 try {
                     // Wait for onFrameAvailable() to signal us.  Use a timeout to avoid
                     // stalling the test if it doesn't arrive.
@@ -539,7 +561,14 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             decoderFrameAvailable = true;
             decoderFrameSyncObject.notifyAll();
         }
-        
+
+        decoderAbortLock.readLock().lock();
+
+        if (isDecoderAbort) {
+            decoderAbortLock.readLock().unlock();
+            return;
+        }
+
         eglContext.syncRunOnRenderThread(() -> {
             eglContext.makeCurrent();
 
@@ -551,12 +580,16 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                 // 因为在shader中处理oes纹理需要使用到扩展类型, 必须要先转换为普通纹理再传给下一级
                 // 同时解码出来的画面要进行垂直翻转才是正常状态
                 renderToFramebuffer(oesTexture);
+                renderCount++;
 
                 if (decoderListener != null) {
                     decoderListener.decoderVideoOutput(outputFramebuffer.texture[0], inputWidth, inputHeight, surfaceTexture.getTimestamp());
                 }
+
             }
         });
+
+        decoderAbortLock.readLock().unlock();
     }
 
     private void renderToFramebuffer(int oesTexture) {
@@ -609,10 +642,8 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
         return texture[0];
     }
 
-    private void destroyGLContext() {
+    private void destroyGLEnvironment() {
         eglContext.syncRunOnRenderThread(() -> {
-
-            Log.d(AYGPUImageConstants.TAG, "释放解码器EGL环境");
 
             if (filterProgram != null) {
                 filterProgram.destroy();

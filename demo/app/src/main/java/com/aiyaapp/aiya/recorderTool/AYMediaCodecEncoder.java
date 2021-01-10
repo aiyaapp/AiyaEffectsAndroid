@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -82,16 +84,23 @@ public class AYMediaCodecEncoder {
     private AYMp4Muxer mp4Muxer;
 
     // 视频编码完成时用到的锁
-    private Boolean isRecordFinish = false;
+    volatile private Boolean isRecordFinish = false;
     private ReadWriteLock recordFinishLock = new ReentrantReadWriteLock(true);
 
-    public AYMediaCodecEncoder(String path, boolean onlyVideo) {
+    private AYMediaCodecEncoderListener mediaCodecEncoderListener;
+
+    // 开始
+    volatile private boolean isStart = false;
+
+    private int renderCount;
+
+    public AYMediaCodecEncoder(String path) {
         // 创建音视频合成器
-        mp4Muxer = new AYMp4Muxer(onlyVideo);
+        mp4Muxer = new AYMp4Muxer();
         try {
             mp4Muxer.setPath(path);
         } catch (IOException e) {
-            Log.d(AYGPUImageConstants.TAG, "视频文件保存路径无法访问");
+            Log.e(AYGPUImageConstants.TAG, "🍇  encoder -> 视频文件保存路径无法访问");
             e.printStackTrace();
         }
     }
@@ -106,9 +115,9 @@ public class AYMediaCodecEncoder {
     /**
      * 配置和启用视频编码器
      */
-    public boolean configureVideoCodecAndStart(AYGPUImageEGLContext eglContext, final int width, final int height, int bitrate, int fps, int iFrameInterval) {
+    public boolean configureVideoCodec(AYGPUImageEGLContext eglContext, final int width, final int height, int bitrate, int fps, int iFrameInterval) {
         if (width % 16 != 0 && height % 16 != 0) {
-            Log.w(AYGPUImageConstants.TAG, "width = " + width + " height = " + height + " Compatibility is not good");
+            Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> width = " + width + " height = " + height + " Compatibility is not good");
         }
 
         // 配置视频媒体格式
@@ -125,7 +134,7 @@ public class AYMediaCodecEncoder {
             videoEncoder = MediaCodec.createEncoderByType(AYMediaCodecEncoderHelper.MIME_TYPE);
             videoEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (Throwable e) {
-            Log.w(AYGPUImageConstants.TAG, "video mediaCodec create error: " + e);
+            Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> video mediaCodec create error: " + e);
             hadError = true;
         } finally {
             if (videoEncoder != null && hadError) {
@@ -135,7 +144,7 @@ public class AYMediaCodecEncoder {
             }
         }
 
-        if (hadError) {
+        if (hadError || videoEncoder == null) {
             return false;
         }
 
@@ -143,11 +152,11 @@ public class AYMediaCodecEncoder {
         boundingWidth = height; // 交换一下, GL绘制比较方便
         boundingHeight = width;
 
-        initEGLContext(eglContext);
+        createGLEnvironment(eglContext);
 
         videoEncoder.start();
 
-        Log.d(AYGPUImageConstants.TAG, "video mediaCodec create success");
+        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> video mediaCodec create success");
 
         // 开启编码线程
         new Thread() {
@@ -156,35 +165,41 @@ public class AYMediaCodecEncoder {
                 MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
                 int trackIndex = -1;
                 long presentationTimeUs = -1;
+                boolean isVideoEncoderReady = false;
 
                 for (; ; ) {
                     recordFinishLock.readLock().lock();
 
                     if (isRecordFinish) {
-                        Log.i(AYGPUImageConstants.TAG, "视频编码器输出完成");
+                        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 编码器(视频)输出完成");
                         recordFinishLock.readLock().unlock();
                         return;
                     }
 
-                    // 初始化合成器成功, 等待写入数据
-                    if (trackIndex >= 0) {
-                        if (!mp4Muxer.canWriteData()) {
-//                            Log.i(AYGPUImageConstants.TAG, "视频编码器初始化完成, 等待写入数据");
-                            recordFinishLock.readLock().unlock();
-                            SystemClock.sleep(1);
-                            continue;
-                        }
+                    // 初始化视频编码器成功, 等待写入数据
+                    if (isVideoEncoderReady && !isStart) {
+                        recordFinishLock.readLock().unlock();
+                        SystemClock.sleep(1);
+                        continue;
                     }
 
                     int index = videoEncoder.dequeueOutputBuffer(info, TIMEOUT);
 
                     if (index == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                         MediaFormat format = videoEncoder.getOutputFormat();
-                        Log.d(AYGPUImageConstants.TAG, "视频编码器初始化完成");
+                        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 编码器(视频)初始化完成");
+
+                        isVideoEncoderReady = true;
 
                         // 添加视频轨道信息到合成器
-                        trackIndex = mp4Muxer.addTrack(format);
+                        int _trackIndex = mp4Muxer.addTrack(format);
+                        if (_trackIndex != -1) {
+                            trackIndex = _trackIndex;
 
+                            if (mediaCodecEncoderListener != null) {
+                                mediaCodecEncoderListener.encoderOutputVideoFormat(format);
+                            }
+                        }
                     } else if (index >= 0) {
                         // 添加视频数据到合成器
                         ByteBuffer byteBuffer;
@@ -203,10 +218,12 @@ public class AYMediaCodecEncoder {
 
                         // 最后一个输出
                         if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                            Log.i(AYGPUImageConstants.TAG, "视频编码器输出完成");
+                            Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 编码器(视频)输出完成");
                             recordFinishLock.readLock().unlock();
                             return;
                         }
+                    } else {
+                        SystemClock.sleep(1);
                     }
 
                     recordFinishLock.readLock().unlock();
@@ -220,7 +237,7 @@ public class AYMediaCodecEncoder {
     /**
      * 配置和启用音频编码器
      */
-    public boolean configureAudioCodecAndStart(int bitrate, int sampleRate, int channelCount) {
+    public boolean configureAudioCodec(int bitrate, int sampleRate, int channelCount) {
         final MediaFormat format = MediaFormat.createAudioFormat(AYMediaCodecEncoderHelper.MIME_TYPE_AUDIO, sampleRate, channelCount);
         format.setInteger(MediaFormat.KEY_AAC_PROFILE, CodecProfileLevel.AACObjectLC); // 最广泛支持的AAC配置
         format.setInteger(MediaFormat.KEY_BIT_RATE, bitrate);
@@ -231,7 +248,7 @@ public class AYMediaCodecEncoder {
             audioEncoder = MediaCodec.createEncoderByType(AYMediaCodecEncoderHelper.MIME_TYPE_AUDIO);
             audioEncoder.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
         } catch (Throwable e) {
-            Log.w(AYGPUImageConstants.TAG, "audio mediaCodec create error: " + e);
+            Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> audio mediaCodec create error: " + e);
             hadError = true;
         } finally {
             if (audioEncoder != null && hadError) {
@@ -247,7 +264,7 @@ public class AYMediaCodecEncoder {
 
         audioEncoder.start();
 
-        Log.d(AYGPUImageConstants.TAG, "audio mediaCodec create success");
+        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> audio mediaCodec create success");
 
         // 开启编码线程
         new Thread() {
@@ -256,24 +273,22 @@ public class AYMediaCodecEncoder {
                 MediaCodec.BufferInfo info = new MediaCodec.BufferInfo();
                 int trackIndex = -1;
                 long presentationTimeUs = -1;
+                boolean isAudioEncoderReady = false;
 
                 for (; ; ) {
                     recordFinishLock.readLock().lock();
 
                     if (isRecordFinish) {
-                        Log.i(AYGPUImageConstants.TAG, "音频编码器输出完成");
+                        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 编码器(音频)输出完成");
                         recordFinishLock.readLock().unlock();
                         return;
                     }
 
-                    // 初始化合成器成功, 等待写入数据
-                    if (trackIndex >= 0) {
-                        if (!mp4Muxer.canWriteData()) {
-//                            Log.i(AYGPUImageConstants.TAG, "音频编码器初始化完成, 等待写入数据");
-                            recordFinishLock.readLock().unlock();
-                            SystemClock.sleep(1);
-                            continue;
-                        }
+                    // 初始化音频编码器成功, 等待写入数据
+                    if (isAudioEncoderReady && !isStart) {
+                        recordFinishLock.readLock().unlock();
+                        SystemClock.sleep(1);
+                        continue;
                     }
 
                     // 从编码器中取出一个输出buffer
@@ -281,10 +296,19 @@ public class AYMediaCodecEncoder {
 
                     if (index == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                         MediaFormat format = audioEncoder.getOutputFormat();
-                        Log.d(AYGPUImageConstants.TAG, "音频编码器初始化完成");
+                        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 编码器(音频)初始化完成");
 
-                        // 添加音频轨道信息到合成器
-                        trackIndex = mp4Muxer.addTrack(format);
+                        isAudioEncoderReady = true;
+
+                        // 添加音频轨道信息到合成器, 如果已经提前添加此处返回-1
+                        int _trackIndex = mp4Muxer.addTrack(format);
+                        if (_trackIndex != -1) {
+                            trackIndex = _trackIndex;
+
+                            if (mediaCodecEncoderListener != null) {
+                                mediaCodecEncoderListener.encoderOutputAudioFormat(format);
+                            }
+                        }
 
                     } else if (index >= 0) {
                         // 添加视频数据到合成器
@@ -305,10 +329,12 @@ public class AYMediaCodecEncoder {
 
                         // 最后一个输出
                         if ((info.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                            Log.i(AYGPUImageConstants.TAG, "音频编码器输出完成");
+                            Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 编码器(音频)输出完成");
                             recordFinishLock.readLock().unlock();
                             return;
                         }
+                    } else {
+                        SystemClock.sleep(1);
                     }
 
                     recordFinishLock.readLock().unlock();
@@ -319,7 +345,20 @@ public class AYMediaCodecEncoder {
         return true;
     }
 
-    private void initEGLContext(AYGPUImageEGLContext eglContext) {
+    public void setMediaCodecEncoderListener(AYMediaCodecEncoderListener mediaCodecEncoderListener) {
+        this.mediaCodecEncoderListener = mediaCodecEncoderListener;
+    }
+
+    public void prepareForAddingTrack(MediaFormat mediaFormat) {
+        mp4Muxer.addTrack(mediaFormat);
+    }
+
+    public void start() {
+        mp4Muxer.start();
+        isStart = true;
+    }
+
+    private void createGLEnvironment(AYGPUImageEGLContext eglContext) {
         this.eglContext = eglContext;
         eglHelper = new AYGPUImageEGLContext.Helper();
 
@@ -327,6 +366,7 @@ public class AYMediaCodecEncoder {
             @Override
             public void run() {
                 eglHelper.generateEGLWindow(videoEncoder.createInputSurface());
+                eglContext.makeCurrent(eglHelper.eglDisplay, eglHelper.surface);
 
                 filterProgram = new AYGLProgram(kAYGPUImageVertexShaderString, kAYGPUImagePassthroughFragmentShaderString);
                 filterProgram.link();
@@ -348,7 +388,10 @@ public class AYMediaCodecEncoder {
         }
         final long time = timestamp - videoStartTime;
 
-        recordFinishLock.readLock().lock();
+        // 此函数是在渲染线程, 不能中断
+        if (!recordFinishLock.readLock().tryLock()) {
+            return;
+        }
 
         if (isRecordFinish) {
             recordFinishLock.readLock().unlock();
@@ -447,6 +490,8 @@ public class AYMediaCodecEncoder {
                 glDisableVertexAttribArray(filterTextureCoordinateAttribute);
 
                 eglContext.swapBuffers(eglHelper.eglDisplay, eglHelper.surface);
+
+                renderCount++;
             }
         });
 
@@ -506,21 +551,43 @@ public class AYMediaCodecEncoder {
         isRecordFinish = true;
         recordFinishLock.writeLock().unlock();
 
+        releaseVideoEncoder();
+
+        releaseAudioEncoder();
+
+        // 等待合成器结束
+        if (mp4Muxer != null) {
+            mp4Muxer.finish();
+            mp4Muxer = null;
+        }
+
+        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 释放编码器 总共编码视频帧: " + renderCount);
+    }
+
+    private void releaseAudioEncoder() {
+        if (audioEncoder != null) {
+            audioEncoder.stop();
+            audioEncoder.release();
+            audioEncoder = null;
+        }
+    }
+
+    private void releaseVideoEncoder() {
         // 释放MediaCodec
         if (videoEncoder != null) {
             videoEncoder.stop();
             videoEncoder.release();
+            videoEncoder = null;
         }
-
-        if (audioEncoder != null) {
-            audioEncoder.stop();
-            audioEncoder.release();
-        }
-
-        // 等待合成器结束
-        mp4Muxer.finish();
 
         // 释放GLES
+        if (eglContext != null) {
+            destroyGLEnvironment();
+            eglContext = null;
+        }
+    }
+
+    private void destroyGLEnvironment() {
         eglContext.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
@@ -540,21 +607,14 @@ public class AYMediaCodecEncoder {
                 }
             }
         });
-
-        Log.d(AYGPUImageConstants.TAG, "释放编码器 完成");
     }
 
     private static class AYMp4Muxer {
 
         private MediaMuxer muxer;
         private ReadWriteLock lock = new ReentrantReadWriteLock(false);
-        private boolean hasVideoTrack = false;
-        private boolean hasAudioTrack = false;
-        private boolean onlyVideo;
-
-        private AYMp4Muxer(boolean onlyVideo) {
-            this.onlyVideo = onlyVideo;
-        }
+        private boolean isStart = false;
+        private Map<String, Integer> indexInfo = new HashMap<>();
 
         /**
          * 设置路径
@@ -565,7 +625,7 @@ public class AYMediaCodecEncoder {
         }
 
         /**
-         * 设置音视频轨道
+         * 设置音视频轨道, 如果已经设置返回已经设置的值
          */
         int addTrack(MediaFormat mediaFormat) {
             lock.writeLock().lock();
@@ -575,36 +635,42 @@ public class AYMediaCodecEncoder {
                 return -1;
             }
 
+            if (isStart) {
+                Integer index = indexInfo.get(mediaFormat.getString(MediaFormat.KEY_MIME));
+
+                lock.writeLock().unlock();
+                if (index != null) {
+                    return index;
+                } else {
+                    return -1;
+                }
+            }
+
             int trackIndex = muxer.addTrack(mediaFormat);
-
-            String mime = mediaFormat.getString(MediaFormat.KEY_MIME);
-            if (mime.startsWith("video")) {
-                hasVideoTrack = true;
-            } else if (mime.startsWith("audio")) {
-                hasAudioTrack = true;
-            }
-
-            if ((hasVideoTrack && onlyVideo) || (hasVideoTrack && hasAudioTrack)) {
-                muxer.start();
-                Log.d(AYGPUImageConstants.TAG, "开始muxer");
-            }
+            indexInfo.put(mediaFormat.getString(MediaFormat.KEY_MIME), trackIndex);
 
             lock.writeLock().unlock();
             return trackIndex;
         }
 
-        boolean canWriteData() {
-            boolean result = false;
+        void start() {
+            lock.writeLock().lock();
 
-            lock.readLock().lock();
-
-            if ((hasVideoTrack && onlyVideo) || (hasVideoTrack && hasAudioTrack)) {
-                result = true;
+            if (muxer == null) {
+                lock.writeLock().unlock();
+                return;
             }
 
-            lock.readLock().unlock();
+            if (isStart) {
+                Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> 请勿重复 start muxer");
+                lock.writeLock().unlock();
+                return;
+            }
 
-            return result;
+            muxer.start();
+            isStart = true;
+
+            lock.writeLock().unlock();
         }
 
         /**
@@ -619,6 +685,7 @@ public class AYMediaCodecEncoder {
             }
 
             if (trackIndex == -1) {
+                Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> muxer 写入数据失败, track 不能为 -1");
                 lock.readLock().unlock();
                 return;
             }
@@ -648,10 +715,11 @@ public class AYMediaCodecEncoder {
             }
 
             try {
-                muxer.stop();
+                if (isStart) {
+                    muxer.stop();
+                }
                 muxer.release();
             } catch (IllegalStateException e) {
-                Log.d(AYGPUImageConstants.TAG, "AYMediaMuxer 关闭失败");
                 e.printStackTrace();
             } finally {
                 muxer = null;

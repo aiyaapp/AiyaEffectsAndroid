@@ -6,9 +6,13 @@ import java.nio.ByteBuffer;
 
 public interface AYMediaCodecDecoderListener {
 
-    void decoderVideoFormat(MediaFormat format);
+    void decoderOutputVideoTrackFormat(MediaFormat format);
 
-    void decoderAudioFormat(MediaFormat format);
+    void decoderOutputAudioTrackFormat(MediaFormat format);
+
+    void decoderOutputVideoFormat(MediaFormat format);
+
+    void decoderOutputAudioFormat(MediaFormat format);
 
     void decoderVideoOutput(int texture, int width, int height, long timestamp);
 

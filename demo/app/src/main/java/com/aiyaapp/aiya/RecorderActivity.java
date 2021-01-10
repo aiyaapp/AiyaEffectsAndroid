@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
+import android.media.MediaFormat;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -25,6 +26,7 @@ import com.aiyaapp.aiya.recorderTool.AYAudioRecorderListener;
 import com.aiyaapp.aiya.recorderTool.AYAudioRecorderWrap;
 import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoder;
 import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderHelper.CodecInfo;
+import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderListener;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -37,7 +39,7 @@ import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMo
 import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRightFlipHorizontal;
 import static com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderHelper.getAvcSupportedFormatInfo;
 
-public class RecorderActivity extends AppCompatActivity implements AYCameraPreviewListener, AYAudioRecorderListener, AYPreviewViewListener {
+public class RecorderActivity extends AppCompatActivity implements AYCameraPreviewListener, AYAudioRecorderListener, AYPreviewViewListener, AYMediaCodecEncoderListener {
 
     private static final String TAG = "RecorderActivity";
 
@@ -263,8 +265,8 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         // 渲染到surfaceView
         surfaceView.render(texture, width, height);
 
-        // 进行视频编码
-        if (videoCodec != null && videoCodecConfigResult) {
+        // 进行视频编码 // TODO 不渲染没有回调 videoCodecConfigResult
+        if (videoCodec != null && videoCodecConfigResult && audioCodecConfigResult) {
             videoCodec.writeImageTexture(texture, width, height, timestamp);
         }
     }
@@ -278,7 +280,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
     public void audioRecorderOutput(ByteBuffer byteBuffer, long timestamp) {
 
         // 进行音频编码
-        if (videoCodec != null && audioCodecConfigResult) {
+        if (videoCodec != null && videoCodecConfigResult && audioCodecConfigResult) {
             videoCodec.writePCMByteBuffer(byteBuffer, timestamp);
         }
     }
@@ -369,10 +371,11 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
                 + "fps = " + fps + "IFrameInterval = " + iFrameInterval);
 
         // 启动编码
-        videoCodec = new AYMediaCodecEncoder(videoPath, false);
+        videoCodec = new AYMediaCodecEncoder(videoPath);
         videoCodec.setContentMode(kAYGPUImageScaleAspectFill);
-        videoCodecConfigResult = videoCodec.configureVideoCodecAndStart(surfaceView.eglContext, width, height, bitRate, fps, iFrameInterval);
-        audioCodecConfigResult = videoCodec.configureAudioCodecAndStart(audioBitRate, sampleRate, 1);
+        videoCodec.setMediaCodecEncoderListener(this);
+        boolean videoCodecConfigResult = videoCodec.configureVideoCodec(surfaceView.eglContext, width, height, bitRate, fps, iFrameInterval);
+        boolean audioCodecConfigResult = videoCodec.configureAudioCodec(audioBitRate, sampleRate, 1);
 
         return videoCodecConfigResult && audioCodecConfigResult;
     }
@@ -384,10 +387,8 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         // 关闭编码
         if (videoCodec != null) {
             Log.d(TAG, "关闭编码器");
-            if (videoCodecConfigResult || audioCodecConfigResult) {
-                videoCodec.finish();
-                videoCodec = null;
-            }
+            videoCodec.finish();
+            videoCodec = null;
         }
 
         boolean recordSuccess = videoCodecConfigResult && audioCodecConfigResult;
@@ -399,4 +400,14 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         return recordSuccess;
     }
 
+    @Override
+    public void encoderOutputVideoFormat(MediaFormat format) {
+        videoCodecConfigResult = true;
+
+    }
+
+    @Override
+    public void encoderOutputAudioFormat(MediaFormat format) {
+        audioCodecConfigResult = true;
+    }
 }

@@ -2,7 +2,6 @@ package com.aiyaapp.aiya;
 
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
-import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.net.Uri;
 import android.os.Build;
@@ -19,6 +18,7 @@ import com.aiyaapp.aiya.decoderTool.AYMediaCodecDecoder;
 import com.aiyaapp.aiya.decoderTool.AYMediaCodecDecoderListener;
 import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoder;
 import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderHelper;
+import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderListener;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +31,7 @@ import static com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderHelper.getAvcSupp
 /**
  * 解码和编码
  */
-public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPreviewViewListener, AYMediaCodecDecoderListener {
+public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPreviewViewListener, AYMediaCodecDecoderListener, AYMediaCodecEncoderListener {
 
     private static final String TAG = "DecoderAndEncoder";
 
@@ -97,22 +97,33 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         videoPath = videoPath + File.separator + UUID.randomUUID().toString().replace("-", "") + ".mp4";
 
         // 启动编码, 每次都是先设置
-        encoder = new AYMediaCodecEncoder(videoPath, false);
+        encoder = new AYMediaCodecEncoder(videoPath);
         encoder.setContentMode(kAYGPUImageScaleAspectFill);
+        encoder.setMediaCodecEncoderListener(this);
 
         // 启动解码
         try {
             AssetFileDescriptor masterFd = getResources().openRawResourceFd(R.raw.test);
             decoder = new AYMediaCodecDecoder(masterFd);
             decoder.setDecoderListener(this);
-            decoder.configCodecAndStart(surfaceView.eglContext);
+            decoder.configCodec(surfaceView.eglContext);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     @Override
-    public void decoderVideoFormat(MediaFormat format) {
+    public void decoderOutputVideoTrackFormat(MediaFormat format) {
+        encoder.prepareForAddingTrack(format);
+    }
+
+    @Override
+    public void decoderOutputAudioTrackFormat(MediaFormat format) {
+        encoder.prepareForAddingTrack(format);
+    }
+
+    @Override
+    public void decoderOutputVideoFormat(MediaFormat format) {
 
         // 图像编码参数
         int height = format.getInteger(MediaFormat.KEY_WIDTH); // 视频编码时图像旋转了90度
@@ -145,11 +156,21 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         Log.d(TAG, "开始视频编码，初始化参数 : " + "width = " + width + "height = " + height + "bitRate = " + bitRate
                 + "fps = " + fps + "IFrameInterval = " + iFrameInterval);
 
-        videoCodecConfigResult = encoder.configureVideoCodecAndStart(surfaceView.eglContext, width, height, bitRate, fps, iFrameInterval);
+        int finalWidth = width;
+        int finalHeight = height;
+        int finalBitRate = bitRate;
+        int finalFps = fps;
+
+        videoCodecConfigResult = encoder.configureVideoCodec(surfaceView.eglContext, finalWidth, finalHeight, finalBitRate, finalFps, iFrameInterval);
+
+        if (videoCodecConfigResult && audioCodecConfigResult) {
+            decoder.start();
+            encoder.start();
+        }
     }
 
     @Override
-    public void decoderAudioFormat(MediaFormat format) {
+    public void decoderOutputAudioFormat(MediaFormat format) {
         // 音频编码参数
         int audioBitRate = 128000; // 码率: 128kbps
         int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE); // 采样率
@@ -157,7 +178,12 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
 
         Log.d(TAG, "开始音频编码，初始化参数 : " + "sampleRate = " + sampleRate + " channelCount = " + channelCount);
 
-        audioCodecConfigResult = encoder.configureAudioCodecAndStart(audioBitRate, 44100, 2);
+        audioCodecConfigResult = encoder.configureAudioCodec(audioBitRate, sampleRate, channelCount);
+
+        if (videoCodecConfigResult && audioCodecConfigResult) {
+            decoder.start();
+            encoder.start();
+        }
     }
 
     @Override
@@ -167,18 +193,14 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         surfaceView.render(texture, width, height);
 
         // 编码器视频编码
-        if (videoCodecConfigResult) {
-            encoder.writeImageTexture(texture, width, height, timestamp);
-        }
+        encoder.writeImageTexture(texture, width, height, timestamp);
     }
 
     @Override
     public void decoderAudioOutput(ByteBuffer byteBuffer, long timestamp) {
 
         // 编码器音频编码
-        if (audioCodecConfigResult) {
-            encoder.writePCMByteBuffer(byteBuffer, timestamp);
-        }
+        encoder.writePCMByteBuffer(byteBuffer, timestamp);
     }
 
     @Override
@@ -199,24 +221,36 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         if (videoDecoderEOS && audioDecoderEOS) {
             encoder.finish();
 
-            if (new File(videoPath).exists()) {
-                showVideo();
+            showVideo();
+        }
+    }
+
+    @Override
+    public void encoderOutputVideoFormat(MediaFormat format) {
+        videoCodecConfigResult = true;
+    }
+
+    @Override
+    public void encoderOutputAudioFormat(MediaFormat format) {
+        audioCodecConfigResult = true;
+    }
+
+    public void showVideo() {
+        if (new File(videoPath).exists()) {
+            Log.d(TAG, "文件保存路径: " + videoPath);
+            try {
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    Uri contentUri = FileProvider.getUriForFile(getBaseContext(), "com.aiyaapp.aiya.test.fileprovider", new File(videoPath));
+                    intent.setDataAndType(contentUri, "video/mp4");
+                } else {
+                    intent.setDataAndType(Uri.fromFile(new File(videoPath)), "video/mp4");
+                }
+                startActivity(intent);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
 
-    public void showVideo() {
-        try {
-            Intent intent = new Intent(Intent.ACTION_VIEW);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                Uri contentUri = FileProvider.getUriForFile(getBaseContext(), "com.aiyaapp.aiya.test.fileprovider", new File(videoPath));
-                intent.setDataAndType(contentUri, "video/mp4");
-            } else {
-                intent.setDataAndType(Uri.fromFile(new File(videoPath)), "video/mp4");
-            }
-            startActivity(intent);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
