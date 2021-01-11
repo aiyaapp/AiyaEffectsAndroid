@@ -560,8 +560,6 @@ public class AYMediaCodecEncoder {
             mp4Muxer.finish();
             mp4Muxer = null;
         }
-
-        Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 释放编码器 总共编码视频帧: " + renderCount);
     }
 
     private void releaseAudioEncoder() {
@@ -578,6 +576,9 @@ public class AYMediaCodecEncoder {
             videoEncoder.stop();
             videoEncoder.release();
             videoEncoder = null;
+
+            Log.i(AYGPUImageConstants.TAG, "🍇  encoder -> 释放编码器 总共编码视频帧: " + renderCount);
+            renderCount = 0;
         }
 
         // 释放GLES
@@ -635,22 +636,29 @@ public class AYMediaCodecEncoder {
                 return -1;
             }
 
-            if (isStart) {
-                Integer index = indexInfo.get(mediaFormat.getString(MediaFormat.KEY_MIME));
+            // 防止重复添加轨道
+            Integer index = indexInfo.get(mediaFormat.getString(MediaFormat.KEY_MIME));
+
+            if (index != null) {
+                Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> 请勿重复添加 " + mediaFormat.getString(MediaFormat.KEY_MIME) +" 轨道");
+                lock.writeLock().unlock();
+                return index;
+
+            } else if (!isStart){
+                int trackIndex = muxer.addTrack(mediaFormat);
+
+                indexInfo.put(mediaFormat.getString(MediaFormat.KEY_MIME), trackIndex);
 
                 lock.writeLock().unlock();
-                if (index != null) {
-                    return index;
-                } else {
-                    return -1;
-                }
+                return trackIndex;
+
+            } else {
+                Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> 编码器已经启动, 无法再添加轨道");
+                lock.writeLock().unlock();
+                return -1;
             }
 
-            int trackIndex = muxer.addTrack(mediaFormat);
-            indexInfo.put(mediaFormat.getString(MediaFormat.KEY_MIME), trackIndex);
 
-            lock.writeLock().unlock();
-            return trackIndex;
         }
 
         void start() {
@@ -716,6 +724,7 @@ public class AYMediaCodecEncoder {
 
             try {
                 if (isStart) {
+                    isStart = false;
                     muxer.stop();
                 }
                 muxer.release();
@@ -723,6 +732,7 @@ public class AYMediaCodecEncoder {
                 e.printStackTrace();
             } finally {
                 muxer = null;
+                indexInfo.clear();
                 lock.writeLock().unlock();
             }
         }

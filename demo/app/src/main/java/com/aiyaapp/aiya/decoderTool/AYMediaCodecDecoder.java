@@ -491,7 +491,9 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             videoDecoder.stop();
             videoDecoder.release();
             videoDecoder = null;
+
             Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 释放 解码器(视频) 总共解码视频帧: " + renderCount);
+            renderCount = 0;
         }
 
         if (videoExtractor != null) {
