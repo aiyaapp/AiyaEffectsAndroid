@@ -61,9 +61,10 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
     AYPreviewView surfaceView;
 
     // 音视频硬编码
-    volatile AYMediaCodecEncoder videoCodec;
+    volatile AYMediaCodecEncoder encoder;
     volatile boolean videoCodecConfigResult = false;
     volatile boolean audioCodecConfigResult = false;
+    volatile boolean isCodecInit = false;
 
     // 视频保存路径
     String videoPath;
@@ -95,7 +96,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         findViewById(R.id.switch_camera).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (videoCodec == null) {
+                if (encoder == null) {
                     switchCamera();
                 }
             }
@@ -265,9 +266,9 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         // 渲染到surfaceView
         surfaceView.render(texture, width, height);
 
-        // 进行视频编码 // TODO 不渲染没有回调 videoCodecConfigResult
-        if (videoCodec != null && videoCodecConfigResult && audioCodecConfigResult) {
-            videoCodec.writeImageTexture(texture, width, height, timestamp);
+        // 进行视频编码
+        if (encoder != null && isCodecInit) {
+            encoder.writeImageTexture(texture, width, height, timestamp);
         }
     }
 
@@ -280,8 +281,8 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
     public void audioRecorderOutput(ByteBuffer byteBuffer, long timestamp) {
 
         // 进行音频编码
-        if (videoCodec != null && videoCodecConfigResult && audioCodecConfigResult) {
-            videoCodec.writePCMByteBuffer(byteBuffer, timestamp);
+        if (encoder != null && isCodecInit) {
+            encoder.writePCMByteBuffer(byteBuffer, timestamp);
         }
     }
 
@@ -371,13 +372,14 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
                 + "fps = " + fps + "IFrameInterval = " + iFrameInterval);
 
         // 启动编码
-        videoCodec = new AYMediaCodecEncoder(videoPath);
-        videoCodec.setContentMode(kAYGPUImageScaleAspectFill);
-        videoCodec.setMediaCodecEncoderListener(this);
-        boolean videoCodecConfigResult = videoCodec.configureVideoCodec(surfaceView.eglContext, width, height, bitRate, fps, iFrameInterval);
-        boolean audioCodecConfigResult = videoCodec.configureAudioCodec(audioBitRate, sampleRate, 1);
+        encoder = new AYMediaCodecEncoder(videoPath);
+        encoder.setContentMode(kAYGPUImageScaleAspectFill);
+        encoder.setMediaCodecEncoderListener(this);
+        boolean videoCodecInitResult = encoder.configureVideoCodec(surfaceView.eglContext, width, height, bitRate, fps, iFrameInterval);
+        boolean audioCodecInitResult = encoder.configureAudioCodec(audioBitRate, sampleRate, 1);
 
-        return videoCodecConfigResult && audioCodecConfigResult;
+        isCodecInit = videoCodecInitResult && audioCodecInitResult;
+        return isCodecInit;
     }
 
     /**
@@ -385,10 +387,10 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
      */
     private boolean closeMediaCodec() {
         // 关闭编码
-        if (videoCodec != null) {
+        if (encoder != null) {
             Log.d(TAG, "关闭编码器");
-            videoCodec.finish();
-            videoCodec = null;
+            encoder.finish();
+            encoder = null;
         }
 
         boolean recordSuccess = videoCodecConfigResult && audioCodecConfigResult;
@@ -403,11 +405,16 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
     @Override
     public void encoderOutputVideoFormat(MediaFormat format) {
         videoCodecConfigResult = true;
-
+        if (videoCodecConfigResult && audioCodecConfigResult) {
+            encoder.start();
+        }
     }
 
     @Override
     public void encoderOutputAudioFormat(MediaFormat format) {
         audioCodecConfigResult = true;
+        if (videoCodecConfigResult && audioCodecConfigResult) {
+            encoder.start();
+        }
     }
 }

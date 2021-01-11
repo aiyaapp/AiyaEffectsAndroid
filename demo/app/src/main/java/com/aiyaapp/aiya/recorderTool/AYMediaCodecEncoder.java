@@ -349,10 +349,6 @@ public class AYMediaCodecEncoder {
         this.mediaCodecEncoderListener = mediaCodecEncoderListener;
     }
 
-    public void prepareForAddingTrack(MediaFormat mediaFormat) {
-        mp4Muxer.addTrack(mediaFormat);
-    }
-
     public void start() {
         mp4Muxer.start();
         isStart = true;
@@ -645,6 +641,7 @@ public class AYMediaCodecEncoder {
                 return index;
 
             } else if (!isStart){
+                Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> 添加轨道 " + mediaFormat);
                 int trackIndex = muxer.addTrack(mediaFormat);
 
                 indexInfo.put(mediaFormat.getString(MediaFormat.KEY_MIME), trackIndex);
@@ -692,6 +689,12 @@ public class AYMediaCodecEncoder {
                 return;
             }
 
+            if (!isStart) {
+                Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> muxer 还未启动");
+                lock.writeLock().unlock();
+                return;
+            }
+
             if (trackIndex == -1) {
                 Log.w(AYGPUImageConstants.TAG, "🍇  encoder -> muxer 写入数据失败, track 不能为 -1");
                 lock.readLock().unlock();
@@ -699,6 +702,7 @@ public class AYMediaCodecEncoder {
             }
 
             if (info.size == 0) {
+                // 结束标识不需要写入
                 lock.readLock().unlock();
                 return;
             }

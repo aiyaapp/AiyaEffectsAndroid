@@ -42,13 +42,15 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
     // 音视频硬编码
     String videoPath;
     volatile AYMediaCodecEncoder encoder;
-    volatile boolean videoCodecConfigResult = false;
-    volatile boolean audioCodecConfigResult = false;
+    volatile boolean videoCodecInitResult = false;
+    volatile boolean audioCodecInitResult = false;
 
     // 音视频硬解码
     volatile AYMediaCodecDecoder decoder;
     volatile boolean videoDecoderEOS = false;
     volatile boolean audioDecoderEOS = false;
+    volatile boolean videoCodecConfigResult = false;
+    volatile boolean audioCodecConfigResult = false;
 
 
     @Override
@@ -113,16 +115,6 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
     }
 
     @Override
-    public void decoderOutputVideoTrackFormat(MediaFormat format) {
-        encoder.prepareForAddingTrack(format);
-    }
-
-    @Override
-    public void decoderOutputAudioTrackFormat(MediaFormat format) {
-        encoder.prepareForAddingTrack(format);
-    }
-
-    @Override
     public void decoderOutputVideoFormat(MediaFormat format) {
 
         // 图像编码参数
@@ -161,11 +153,10 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         int finalBitRate = bitRate;
         int finalFps = fps;
 
-        videoCodecConfigResult = encoder.configureVideoCodec(surfaceView.eglContext, finalWidth, finalHeight, finalBitRate, finalFps, iFrameInterval);
+        videoCodecInitResult = encoder.configureVideoCodec(surfaceView.eglContext, finalWidth, finalHeight, finalBitRate, finalFps, iFrameInterval);
 
-        if (videoCodecConfigResult && audioCodecConfigResult) {
+        if (videoCodecInitResult && audioCodecInitResult) {
             decoder.start();
-            encoder.start();
         }
     }
 
@@ -176,13 +167,10 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE); // 采样率
         int channelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT); // 通道数
 
-        Log.d(TAG, "开始音频编码，初始化参数 : " + "sampleRate = " + sampleRate + " channelCount = " + channelCount);
+        audioCodecInitResult = encoder.configureAudioCodec(audioBitRate, sampleRate, channelCount);
 
-        audioCodecConfigResult = encoder.configureAudioCodec(audioBitRate, sampleRate, channelCount);
-
-        if (videoCodecConfigResult && audioCodecConfigResult) {
+        if (videoCodecInitResult && audioCodecInitResult) {
             decoder.start();
-            encoder.start();
         }
     }
 
@@ -228,11 +216,17 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
     @Override
     public void encoderOutputVideoFormat(MediaFormat format) {
         videoCodecConfigResult = true;
+        if (videoCodecConfigResult && audioCodecConfigResult) {
+            encoder.start();
+        }
     }
 
     @Override
     public void encoderOutputAudioFormat(MediaFormat format) {
         audioCodecConfigResult = true;
+        if (videoCodecConfigResult && audioCodecConfigResult) {
+            encoder.start();
+        }
     }
 
     public void showVideo() {

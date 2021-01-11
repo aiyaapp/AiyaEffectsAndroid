@@ -164,12 +164,6 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             return false;
         }
 
-        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 视频轨道格式 : " + videoFormat);
-        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 音频轨道格式 : " + audioFormat);
-
-        decoderListener.decoderOutputVideoTrackFormat(videoFormat);
-        decoderListener.decoderOutputAudioTrackFormat(audioFormat);
-
         // 创建MediaCodec硬解码器
         boolean hadError = false;
 
