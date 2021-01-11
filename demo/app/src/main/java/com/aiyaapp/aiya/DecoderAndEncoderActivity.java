@@ -2,6 +2,7 @@ package com.aiyaapp.aiya;
 
 import android.content.Intent;
 import android.content.res.AssetFileDescriptor;
+import android.graphics.BitmapFactory;
 import android.media.MediaFormat;
 import android.net.Uri;
 import android.os.Build;
@@ -11,11 +12,13 @@ import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.aiyaapp.aiya.cameraTool.AYPreviewView;
 import com.aiyaapp.aiya.cameraTool.AYPreviewViewListener;
 import com.aiyaapp.aiya.decoderTool.AYMediaCodecDecoder;
 import com.aiyaapp.aiya.decoderTool.AYMediaCodecDecoderListener;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
 import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoder;
 import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderHelper;
 import com.aiyaapp.aiya.recorderTool.AYMediaCodecEncoderListener;
@@ -42,16 +45,18 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
     // 音视频硬编码
     String videoPath;
     volatile AYMediaCodecEncoder encoder;
-    volatile boolean videoCodecInitResult = false;
-    volatile boolean audioCodecInitResult = false;
-
+    volatile boolean videoEncoderInitResult = false;
+    volatile boolean audioEncoderInitResult = false;
+    volatile boolean videoEncoderConfigResult = false;
+    volatile boolean audioEncoderConfigResult = false;
+    
     // 音视频硬解码
     volatile AYMediaCodecDecoder decoder;
     volatile boolean videoDecoderEOS = false;
     volatile boolean audioDecoderEOS = false;
-    volatile boolean videoCodecConfigResult = false;
-    volatile boolean audioCodecConfigResult = false;
 
+    // 相机处理
+    AYEffectHandler effectHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -65,7 +70,10 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         findViewById(R.id.start).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startDecoder();
+                boolean result = startDecoder();
+                if (!result) {
+                    Toast.makeText(DecoderAndEncoderActivity.this, "初始化解码器失败", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
@@ -81,14 +89,18 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
 
         if (decoder != null) {
             decoder.abortDecoder();
+            decoder = null;
         }
 
         if (encoder != null) {
             encoder.finish();
+            encoder = null;
         }
+
+        surfaceView.eglContext.syncRunOnRenderThread(this::destroyEffectHandler);
     }
 
-    private void startDecoder() {
+    private boolean startDecoder() {
 
         // 设置视频编辑完成后路径
         if (getExternalCacheDir() != null) {
@@ -98,20 +110,36 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         }
         videoPath = videoPath + File.separator + UUID.randomUUID().toString().replace("-", "") + ".mp4";
 
-        // 启动编码, 每次都是先设置
+        // 启动编码, 每次都是先设置编码器
+        videoEncoderInitResult = false;
+        audioEncoderInitResult = false;
+        videoEncoderConfigResult = false;
+        audioEncoderConfigResult = false;
         encoder = new AYMediaCodecEncoder(videoPath);
         encoder.setContentMode(kAYGPUImageScaleAspectFill);
         encoder.setMediaCodecEncoderListener(this);
 
         // 启动解码
+        videoDecoderEOS = false;
+        audioDecoderEOS = false;
+        AssetFileDescriptor masterFd = getResources().openRawResourceFd(R.raw.test);
         try {
-            AssetFileDescriptor masterFd = getResources().openRawResourceFd(R.raw.test);
             decoder = new AYMediaCodecDecoder(masterFd);
-            decoder.setDecoderListener(this);
-            decoder.configCodec(surfaceView.eglContext);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
+        decoder.setDecoderListener(this);
+        boolean videoDecoderInitResult = decoder.configureVideoCodec(surfaceView.eglContext);
+        boolean audioDecoderInitResult = decoder.configureAudioCodec();
+        boolean initDecoderResult = videoDecoderInitResult && audioDecoderInitResult;
+
+        // 初始化特效处理
+        if (initDecoderResult) {
+            surfaceView.eglContext.syncRunOnRenderThread(this::createEffectHandler);
+        }
+
+        return initDecoderResult;
     }
 
     @Override
@@ -153,9 +181,9 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         int finalBitRate = bitRate;
         int finalFps = fps;
 
-        videoCodecInitResult = encoder.configureVideoCodec(surfaceView.eglContext, finalWidth, finalHeight, finalBitRate, finalFps, iFrameInterval);
+        videoEncoderInitResult = encoder.configureVideoCodec(surfaceView.eglContext, finalWidth, finalHeight, finalBitRate, finalFps, iFrameInterval);
 
-        if (videoCodecInitResult && audioCodecInitResult) {
+        if (videoEncoderInitResult && audioEncoderInitResult) {
             decoder.start();
         }
     }
@@ -167,15 +195,20 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
         int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE); // 采样率
         int channelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT); // 通道数
 
-        audioCodecInitResult = encoder.configureAudioCodec(audioBitRate, sampleRate, channelCount);
+        audioEncoderInitResult = encoder.configureAudioCodec(audioBitRate, sampleRate, channelCount);
 
-        if (videoCodecInitResult && audioCodecInitResult) {
+        if (videoEncoderInitResult && audioEncoderInitResult) {
             decoder.start();
         }
     }
 
     @Override
     public void decoderVideoOutput(int texture, int width, int height, long timestamp) {
+
+        // 渲染特效美颜
+        if (effectHandler != null) {
+            effectHandler.processWithTexture(texture, width, height);
+        }
 
         // 渲染到surfaceView
         surfaceView.render(texture, width, height);
@@ -215,17 +248,46 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
 
     @Override
     public void encoderOutputVideoFormat(MediaFormat format) {
-        videoCodecConfigResult = true;
-        if (videoCodecConfigResult && audioCodecConfigResult) {
+        videoEncoderConfigResult = true;
+        if (videoEncoderConfigResult && audioEncoderConfigResult) {
             encoder.start();
         }
     }
 
     @Override
     public void encoderOutputAudioFormat(MediaFormat format) {
-        audioCodecConfigResult = true;
-        if (videoCodecConfigResult && audioCodecConfigResult) {
+        audioEncoderConfigResult = true;
+        if (videoEncoderConfigResult && audioEncoderConfigResult) {
             encoder.start();
+        }
+    }
+
+    public void createEffectHandler() {
+        effectHandler = new AYEffectHandler(this);
+        effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
+
+        // 设置特效
+        effectHandler.setEffectPath(getCacheDir().getPath() + "/effect/data/2017/meta.json");
+        effectHandler.setEffectPlayCount(0);
+
+        // 设置美颜程度
+        effectHandler.setBeautyType(AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_3);
+        effectHandler.setIntensityOfSmooth(0.8f);
+        effectHandler.setIntensityOfSaturation(0.2f);
+        effectHandler.setIntensityOfWhite(0f);
+
+        // 设置大眼瘦脸
+        effectHandler.setIntensityOfBigEye(0.2f);
+        effectHandler.setIntensityOfSlimFace(0.2f);
+
+        // 添加滤镜
+        effectHandler.setStyle(BitmapFactory.decodeFile(getCacheDir().getPath() + "/style/data/03桃花.png"));
+    }
+
+    public void destroyEffectHandler() {
+        if (effectHandler != null) {
+            effectHandler.destroy();
+            effectHandler = null;
         }
     }
 

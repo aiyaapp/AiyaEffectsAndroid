@@ -132,15 +132,13 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
         audioExtractor.setDataSource(fileDescriptor.getFileDescriptor(), fileDescriptor.getStartOffset(), fileDescriptor.getLength());
     }
 
-    public boolean configCodec(AYGPUImageEGLContext eglContext) {
+    public boolean configureVideoCodec(AYGPUImageEGLContext eglContext) {
         this.eglContext = eglContext;
 
         // 找到视频格式
         MediaFormat videoFormat = null;
-        MediaFormat audioFormat = null;
 
         int videoTrack = 0;
-        int audioTrack = 0;
 
         for (int i = 0; i < videoExtractor.getTrackCount(); i++) {
             MediaFormat format = videoExtractor.getTrackFormat(i);
@@ -148,19 +146,11 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             if (mime != null && mime.startsWith("video")) {
                 videoFormat = format;
                 videoTrack = i;
-            } else if (mime != null && mime.startsWith("audio")) {
-                audioFormat = format;
-                audioTrack = i;
             }
         }
 
         if (videoFormat == null) {
             Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> no exist video track");
-            return false;
-        }
-
-        if (audioFormat == null) {
-            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> no exist audio track");
             return false;
         }
 
@@ -191,30 +181,9 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
         inputWidth = videoFormat.getInteger(MediaFormat.KEY_WIDTH);
         inputHeight = videoFormat.getInteger(MediaFormat.KEY_HEIGHT);
 
-        // 配置音频解码器
-        try {
-            audioDecoder = MediaCodec.createDecoderByType(audioFormat.getString(MediaFormat.KEY_MIME));
-            audioDecoder.configure(audioFormat, null, null, 0);
-        } catch (Throwable e) {
-            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> audio mediaCodec create error: " + e);
-            hadError = true;
-        } finally {
-            if (audioDecoder != null && hadError) {
-                audioDecoder.stop();
-                audioDecoder.release();
-                audioDecoder = null;
-            }
-        }
-
-        if (hadError || audioDecoder == null) {
-            return false;
-        }
-
         videoDecoder.start();
-        audioDecoder.start();
 
         videoExtractor.selectTrack(videoTrack);
-        audioExtractor.selectTrack(audioTrack);
 
         new Thread(new Runnable() {
             @Override
@@ -230,7 +199,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                     decoderAbortLock.readLock().lock();
 
                     if (isDecoderAbort) {
-                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 视频解码器强制中断");
+                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(视频)强制中断");
                         decoderAbortLock.readLock().unlock();
                         return;
                     }
@@ -315,7 +284,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                 decoderAbortLock.readLock().lock();
 
                 if (isDecoderAbort) {
-                    Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 视频解码器强制中断");
+                    Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(视频)强制中断");
                     decoderAbortLock.readLock().unlock();
                     return;
                 }
@@ -329,6 +298,55 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                 decoderAbortLock.readLock().unlock();
             }
         }).start();
+
+        return true;
+    }
+
+    public boolean configureAudioCodec() {
+        // 找到音频格式
+        MediaFormat audioFormat = null;
+
+        int audioTrack = 0;
+
+        for (int i = 0; i < videoExtractor.getTrackCount(); i++) {
+            MediaFormat format = videoExtractor.getTrackFormat(i);
+            String mime = format.getString(MediaFormat.KEY_MIME);
+            if (mime != null && mime.startsWith("audio")) {
+                audioFormat = format;
+                audioTrack = i;
+            }
+        }
+
+        if (audioFormat == null) {
+            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> no exist audio track");
+            return false;
+        }
+
+        // 创建MediaCodec硬解码器
+        boolean hadError = false;
+
+        // 配置音频解码器
+        try {
+            audioDecoder = MediaCodec.createDecoderByType(audioFormat.getString(MediaFormat.KEY_MIME));
+            audioDecoder.configure(audioFormat, null, null, 0);
+        } catch (Throwable e) {
+            Log.w(AYGPUImageConstants.TAG, "🍉  decoder -> audio mediaCodec create error: " + e);
+            hadError = true;
+        } finally {
+            if (audioDecoder != null && hadError) {
+                audioDecoder.stop();
+                audioDecoder.release();
+                audioDecoder = null;
+            }
+        }
+
+        if (hadError || audioDecoder == null) {
+            return false;
+        }
+
+        audioDecoder.start();
+
+        audioExtractor.selectTrack(audioTrack);
 
         new Thread(new Runnable() {
             @Override
@@ -344,7 +362,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                     decoderAbortLock.readLock().lock();
 
                     if (isDecoderAbort) {
-                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 音频解码器强制中断");
+                        Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(音频)强制中断");
                         decoderAbortLock.readLock().unlock();
                         return;
                     }
@@ -435,7 +453,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                 decoderAbortLock.readLock().lock();
 
                 if (isDecoderAbort) {
-                    Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 音频解码器强制中断");
+                    Log.i(AYGPUImageConstants.TAG, "🍉  decoder -> 解码器(音频)强制中断");
                     decoderAbortLock.readLock().unlock();
                     return;
                 }

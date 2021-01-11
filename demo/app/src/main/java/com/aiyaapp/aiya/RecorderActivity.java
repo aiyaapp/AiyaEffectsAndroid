@@ -229,6 +229,7 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
         effectHandler.setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical);
         // 设置特效
         effectHandler.setEffectPath(getCacheDir().getPath() + "/effect/data/2017/meta.json");
+        effectHandler.setEffectPlayCount(0);
         // 设置美颜程度
         effectHandler.setBeautyType(AyBeauty.AY_BEAUTY_TYPE.AY_BEAUTY_TYPE_3);
         effectHandler.setIntensityOfSmooth(0.8f);

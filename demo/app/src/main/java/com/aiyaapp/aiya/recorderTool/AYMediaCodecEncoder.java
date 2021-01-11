@@ -114,6 +114,7 @@ public class AYMediaCodecEncoder {
 
     /**
      * 配置和启用视频编码器
+     * @return 初始化视频编码器是否成功
      */
     public boolean configureVideoCodec(AYGPUImageEGLContext eglContext, final int width, final int height, int bitrate, int fps, int iFrameInterval) {
         if (width % 16 != 0 && height % 16 != 0) {
@@ -236,6 +237,7 @@ public class AYMediaCodecEncoder {
 
     /**
      * 配置和启用音频编码器
+     * @return 初始化音频编码器是否成功
      */
     public boolean configureAudioCodec(int bitrate, int sampleRate, int channelCount) {
         final MediaFormat format = MediaFormat.createAudioFormat(AYMediaCodecEncoderHelper.MIME_TYPE_AUDIO, sampleRate, channelCount);
