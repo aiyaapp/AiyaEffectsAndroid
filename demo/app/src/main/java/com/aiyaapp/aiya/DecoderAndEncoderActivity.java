@@ -143,11 +143,11 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
     }
 
     @Override
-    public void decoderOutputVideoFormat(MediaFormat format) {
+    public void decoderOutputVideoFormat(int _width, int _height) {
 
         // 图像编码参数
-        int height = format.getInteger(MediaFormat.KEY_WIDTH); // 视频编码时图像旋转了90度
-        int width = format.getInteger(MediaFormat.KEY_HEIGHT);
+        int height = _width; // 视频编码时图像旋转了90度
+        int width = _height;
         int bitRate = 1000000; // 码率: 1Mbps
         int fps = 30; // 帧率: 30
         int iFrameInterval = 1; // GOP: 30
@@ -189,11 +189,10 @@ public class DecoderAndEncoderActivity extends AppCompatActivity implements AYPr
     }
 
     @Override
-    public void decoderOutputAudioFormat(MediaFormat format) {
+    public void decoderOutputAudioFormat(int sampleRate, int channelCount) {
+
         // 音频编码参数
         int audioBitRate = 128000; // 码率: 128kbps
-        int sampleRate = format.getInteger(MediaFormat.KEY_SAMPLE_RATE); // 采样率
-        int channelCount = format.getInteger(MediaFormat.KEY_CHANNEL_COUNT); // 通道数
 
         audioEncoderInitResult = encoder.configureAudioCodec(audioBitRate, sampleRate, channelCount);
 

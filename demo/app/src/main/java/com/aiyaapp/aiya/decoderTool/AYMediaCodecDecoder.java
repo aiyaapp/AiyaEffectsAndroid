@@ -13,6 +13,7 @@ import android.view.Surface;
 
 import com.aiyaapp.aiya.gpuImage.AYGLProgram;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFilter;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
@@ -46,7 +47,11 @@ import static android.opengl.GLES20.glGenTextures;
 import static android.opengl.GLES20.glTexParameterf;
 import static android.opengl.GLES20.glUniform1i;
 import static android.opengl.GLES20.glVertexAttribPointer;
-import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageNoRotation;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipHorizontal;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageFlipVertical;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRightFlipHorizontal;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.AYGPUImageRotationMode.kAYGPUImageRotateRightFlipVertical;
+import static com.aiyaapp.aiya.gpuImage.AYGPUImageConstants.needExchangeWidthAndHeightWithRotation;
 
 /**
  *
@@ -78,8 +83,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
 
     private AYGPUImageFramebuffer outputFramebuffer;
 
-    private AYGPUImageConstants.AYGPUImageRotationMode rotateMode = kAYGPUImageNoRotation;
-
+    private AYGPUImageRotationMode rotationMode = kAYGPUImageFlipVertical;
     private int inputWidth;
     private int inputHeight;
 
@@ -89,7 +93,6 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
     private int filterInputTextureUniform;
 
     private Buffer imageVertices = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.imageVertices);
-    private Buffer textureCoordinates = AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.verticalFlipTextureCoordinates);
 
     // ----- MediaCodec 相关变量 -----
     private static final int TIMEOUT = 1000;
@@ -178,8 +181,30 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             return false;
         }
 
+        if (videoFormat.containsKey("rotation-degrees")) {
+            int rotation = videoFormat.getInteger("rotation-degrees");
+            if ((rotation % 90) == 0) {
+                switch ((rotation / 90) & 3) {
+                    case 1:
+                        rotationMode = kAYGPUImageRotateRightFlipHorizontal;
+                        break;
+                    case 2:
+                        rotationMode = kAYGPUImageFlipHorizontal;
+                        break;
+                    case 3:
+                        rotationMode = kAYGPUImageRotateRightFlipVertical;
+                        break;
+                }
+            }
+        }
         inputWidth = videoFormat.getInteger(MediaFormat.KEY_WIDTH);
         inputHeight = videoFormat.getInteger(MediaFormat.KEY_HEIGHT);
+
+        if (needExchangeWidthAndHeightWithRotation(rotationMode)) {
+            int temp = inputWidth;
+            inputWidth = inputHeight;
+            inputHeight = temp;
+        }
 
         videoDecoder.start();
 
@@ -255,7 +280,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                         isVideoDecoderReady = true;
 
                         if (decoderListener != null) {
-                            decoderListener.decoderOutputVideoFormat(videoDecoder.getOutputFormat());
+                            decoderListener.decoderOutputVideoFormat(inputWidth, inputHeight);
                         }
 
                     } else if (outputBufIndex >= 0) {
@@ -344,6 +369,9 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
             return false;
         }
 
+        final int sampleRate = audioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE); // 采样率
+        final int channelCount = audioFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT); // 通道数
+
         audioDecoder.start();
 
         audioExtractor.selectTrack(audioTrack);
@@ -417,7 +445,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
                         isAudioDecoderReady = true;
 
                         if (decoderListener != null) {
-                            decoderListener.decoderOutputAudioFormat(audioDecoder.getOutputFormat());
+                            decoderListener.decoderOutputAudioFormat(sampleRate, channelCount);
                         }
 
                     } else if (outputBufIndex >= 0) {
@@ -635,7 +663,7 @@ public class AYMediaCodecDecoder implements SurfaceTexture.OnFrameAvailableListe
         glEnableVertexAttribArray(filterTextureCoordinateAttribute);
 
         glVertexAttribPointer(filterPositionAttribute, 2, GL_FLOAT, false, 0, imageVertices);
-        glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, false, 0, textureCoordinates);
+        glVertexAttribPointer(filterTextureCoordinateAttribute, 2, GL_FLOAT, false, 0, AYGPUImageConstants.floatArrayToBuffer(AYGPUImageConstants.textureCoordinatesForRotation(rotationMode)));
 
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 

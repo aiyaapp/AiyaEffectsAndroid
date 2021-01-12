@@ -88,7 +88,6 @@ public class RecorderActivity extends AppCompatActivity implements AYCameraPrevi
                     startRecord();
                 } else {
                     stopRecord();
-                    showVideo();
                 }
             }
         });
