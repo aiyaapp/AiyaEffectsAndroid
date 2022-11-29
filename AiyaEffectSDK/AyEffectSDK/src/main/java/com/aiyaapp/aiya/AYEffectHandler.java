@@ -9,6 +9,7 @@ import android.opengl.EGL14;
 import android.util.Log;
 
 import com.aiyaapp.aiya.gpuImage.AYGPUImageEGLContext;
+import com.aiyaapp.aiya.gpuImage.AYGPUImageFramebuffer;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBeautyFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageBigEyeFilter;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.AYGPUImageDelayFilter;
@@ -21,6 +22,8 @@ import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageBGRA
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageBGRADataOutput;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageI420DataInput;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageI420DataOutput;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageOESTextureInput;
+import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageOESTextureOutput;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageTextureInput;
 import com.aiyaapp.aiya.gpuImage.GPUImageCustomFilter.inputOutput.AYGPUImageTextureOutput;
 import com.aiyaapp.aiya.gpuImage.AYGPUImageConstants;
@@ -44,6 +47,9 @@ public class AYEffectHandler {
 
     protected AYGPUImageTextureInput textureInput;
     protected AYGPUImageTextureOutput textureOutput;
+
+    protected AYGPUImageOESTextureInput oesTextureInput;
+    protected AYGPUImageOESTextureOutput oesTextureOutput;
 
     protected AYGPUImageI420DataInput i420DataInput;
     protected AYGPUImageI420DataOutput i420DataOutput;
@@ -95,6 +101,9 @@ public class AYEffectHandler {
             public void run() {
                 textureInput = new AYGPUImageTextureInput(eglContext);
                 textureOutput = new AYGPUImageTextureOutput(eglContext);
+
+                oesTextureInput = new AYGPUImageOESTextureInput(eglContext);
+                oesTextureOutput = new AYGPUImageOESTextureOutput(eglContext);
 
                 i420DataInput = new AYGPUImageI420DataInput(eglContext);
                 i420DataOutput = new AYGPUImageI420DataOutput(eglContext);
@@ -220,6 +229,7 @@ public class AYEffectHandler {
 
     public void setRotateMode(AYGPUImageConstants.AYGPUImageRotationMode rotateMode) {
         this.textureInput.setRotateMode(rotateMode);
+        this.oesTextureInput.setRotateMode(rotateMode);
         this.i420DataInput.setRotateMode(rotateMode);
         this.bgraDataInput.setRotateMode(rotateMode);
 
@@ -230,6 +240,7 @@ public class AYEffectHandler {
         }
 
         this.textureOutput.setRotateMode(rotateMode);
+        this.oesTextureOutput.setRotateMode(rotateMode);
         this.i420DataOutput.setRotateMode(rotateMode);
         this.bgraDataOutput.setRotateMode(rotateMode);
     }
@@ -320,6 +331,38 @@ public class AYEffectHandler {
                 restoreOpenGLState();
             }
         });
+    }
+
+    public int processWithOESTexture(final int oesTexture, final int width, final int height) {
+        final int[] texture = new int[1];
+        eglContext.syncRunOnRenderThread(new Runnable() {
+            @Override
+            public void run() {
+                eglContext.makeCurrent();
+
+                saveOpenGLState();
+
+                commonProcess(false);
+
+                if (!initProcess) {
+                    oesTextureInput.addTarget(commonInputFilter);
+                    commonOutputFilter.addTarget(oesTextureOutput);
+                    initProcess = true;
+                }
+
+                // 设置输出的Filter
+                oesTextureOutput.setOutputWithOESTexture(width, height);
+
+                // 设置输入的Filter, 同时开始处理纹理数据
+                oesTextureInput.processWithOESTexture(oesTexture, width, height);
+
+                texture[0] = oesTextureOutput.getOutputTexture();
+
+                restoreOpenGLState();
+            }
+        });
+
+        return texture[0];
     }
 
     public void processWithYUVData(final byte[] yuvData, final int width, final int height) {
@@ -440,6 +483,8 @@ public class AYEffectHandler {
 
                     textureInput.destroy();
                     textureOutput.destroy();
+                    oesTextureInput.destroy();
+                    oesTextureOutput.destroy();
                     i420DataInput.destroy();
                     i420DataOutput.destroy();
                     bgraDataInput.destroy();

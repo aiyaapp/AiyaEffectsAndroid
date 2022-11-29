@@ -2,8 +2,8 @@
 
 buildscript {
     repositories {
-        jcenter()
-        google()
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
     }
 
     dependencies {
@@ -15,9 +15,8 @@ buildscript {
 
 allprojects {
     repositories {
-        jcenter()
-        google()
-        maven { url "https://dl.bintray.com/aiyaapp/sdk" }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'https://maven.aliyun.com/repository/jcenter' }
     }
     tasks.withType(Javadoc) {
         options.addStringOption('Xdoclint:none', '-quiet')
