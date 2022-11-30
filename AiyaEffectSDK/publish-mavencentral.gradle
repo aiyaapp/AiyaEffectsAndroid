@@ -1,0 +1,79 @@
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+task androidSourcesJar(type: Jar) {
+    classifier = 'sources'
+    from android.sourceSets.main.java.source
+}
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+publishing {
+    publications {
+        release(MavenPublication) {
+
+            groupId 'com.aiyaapp.aiya'
+            artifactId project.name
+            version android.defaultConfig.versionName
+
+            artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+            artifact androidSourcesJar
+
+            pom {
+                name = project.name
+                description = '宝宝特效 AiyaEffectsSDK 涵盖Android、iOS两个平台，基于自主研发的人脸识别模块，作为一款动态贴纸和动画特效高效渲染的解决方案'
+                url = 'https://github.com/aiyaapp/AiyaEffectsAndroid'
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'aiyaapp'
+                        name = 'aiyaapp'
+                        email = 'marketing@aiyaapp.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git:git@github.com:aiyaapp/AiyaEffectsAndroid.git'
+                    developerConnection = 'scm:git:ssh://github.com/aiyaapp/AiyaEffectsAndroid.git'
+                    url = 'https://github.com/aiyaapp/AiyaEffectsAndroid'
+                }
+                withXml {
+                    def dependenciesNode = asNode().appendNode('dependencies')
+
+                    project.configurations.implementation.allDependencies.each {
+                        def dependencyNode = dependenciesNode.appendNode('dependency')
+                        dependencyNode.appendNode('groupId', it.group)
+                        dependencyNode.appendNode('artifactId', it.name)
+                        dependencyNode.appendNode('version', it.version)
+                    }
+                }
+            }
+        }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotsRepoUrl = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+            credentials {
+                username properties.getProperty("sonatypeUsername")
+                password properties.getProperty("sonatypePassword")
+            }
+        }
+    }
+}
+
+ext["signing.gnupg.executable"] = properties.getProperty("signing.gnupg.executable")
+ext["signing.gnupg.keyName"] = properties.getProperty("signing.gnupg.keyName")
+ext["signing.gnupg.passphrase"] = properties.getProperty("signing.gnupg.passphrase")
+
+signing {
+    useGpgCmd()
+    sign publishing.publications
+}
+

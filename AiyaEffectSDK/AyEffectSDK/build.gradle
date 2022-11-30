@@ -1,33 +1,25 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.kezong.fat-aar'
 
 android {
     compileSdkVersion 28
     buildToolsVersion "27.0.3"
 
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion 18
         targetSdkVersion 28
-        versionCode 4206
-        versionName "4.2.6"
+        versionCode 4300
+        versionName "4.3.0"
     }
 }
 
 dependencies {
-//    compile project(':libyuv')
-//    compile project(':AyCore')
-//    compile project(':AyBeauty')
-//    compile project(':AyFaceTrack')
-//    compile project(':AyEffect')
-//    compile project(':AyShortVideoEffect')
-
-//    TODO 直接依赖jcenter项目
-    compile "com.aiyaapp.aiya:libyuv:$android.defaultConfig.versionName"
-    compile "com.aiyaapp.aiya:AyCore:$android.defaultConfig.versionName"
-    compile "com.aiyaapp.aiya:AyBeauty:$android.defaultConfig.versionName"
-    compile "com.aiyaapp.aiya:AyFaceTrack:$android.defaultConfig.versionName"
-    compile "com.aiyaapp.aiya:AyEffect:$android.defaultConfig.versionName"
-    compile "com.aiyaapp.aiya:AyShortVideoEffect:$android.defaultConfig.versionName"
-
+    embed project(path: ':libyuv', configuration: 'default')
+    embed project(path: ':AyCore', configuration: 'default')
+    embed project(path: ':AyBeauty', configuration: 'default')
+    embed project(path: ':AyFaceTrack', configuration: 'default')
+    embed project(path: ':AyEffect', configuration: 'default')
+    embed project(path: ':AyShortVideoEffect', configuration: 'default')
 }
 
-apply from: "../AyCore/buildJCenter.gradle"
+apply from: "../publish-mavencentral.gradle"

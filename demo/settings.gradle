@@ -1,8 +1,8 @@
-include ':app', ':AyEffectSDK'//, ':AyCore', ':AyEffect', ':AyFaceTrack', ':AyBeauty', ':libyuv', ':AyShortVideoEffect'
-//project(':AyCore').projectDir=new File('../AiyaEffectSDK/AyCore')
-//project(':AyEffect').projectDir=new File('../AiyaEffectSDK/AyEffect')
-//project(':AyFaceTrack').projectDir=new File('../AiyaEffectSDK/AyFaceTrack')
-//project(':AyBeauty').projectDir=new File('../AiyaEffectSDK/AyBeauty')
-//project(':libyuv').projectDir=new File('../AiyaEffectSDK/libyuv')
-//project(':AyShortVideoEffect').projectDir=new File('../AiyaEffectSDK/AyShortVideoEffect')
+include ':app', ':AyEffectSDK', ':AyCore', ':AyEffect', ':AyFaceTrack', ':AyBeauty', ':libyuv', ':AyShortVideoEffect'
 project(':AyEffectSDK').projectDir=new File('../AiyaEffectSDK/AyEffectSDK')
+project(':AyCore').projectDir=new File('../AiyaEffectSDK/AyCore')
+project(':AyEffect').projectDir=new File('../AiyaEffectSDK/AyEffect')
+project(':AyFaceTrack').projectDir=new File('../AiyaEffectSDK/AyFaceTrack')
+project(':AyBeauty').projectDir=new File('../AiyaEffectSDK/AyBeauty')
+project(':libyuv').projectDir=new File('../AiyaEffectSDK/libyuv')
+project(':AyShortVideoEffect').projectDir=new File('../AiyaEffectSDK/AyShortVideoEffect')

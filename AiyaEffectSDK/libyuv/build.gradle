@@ -5,10 +5,10 @@ android {
     buildToolsVersion "27.0.3"
 
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion 18
         targetSdkVersion 28
-        versionCode 4206
-        versionName "4.2.6"
+        versionCode 4300
+        versionName "4.3.0"
 
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
@@ -28,5 +28,3 @@ android {
         }
     }
 }
-
-apply from: "../AyCore/buildJCenter.gradle"
