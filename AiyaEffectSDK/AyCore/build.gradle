@@ -20,6 +20,8 @@ android {
         ndk {
             abiFilters "armeabi-v7a", "arm64-v8a"
         }
+
+        ndkVersion "16.1.4479499"
     }
 
     externalNativeBuild {
