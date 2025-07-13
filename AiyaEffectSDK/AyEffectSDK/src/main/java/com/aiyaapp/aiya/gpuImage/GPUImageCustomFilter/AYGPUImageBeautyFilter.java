@@ -13,6 +13,7 @@ public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
      美颜算法类型
      */
     private AyBeauty.AY_BEAUTY_TYPE type;
+    private boolean typeChanged = false;
 
     /**
      美颜强度 [0.0f, 1.0f], 只适用于 0x1002
@@ -54,6 +55,16 @@ public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
         context.syncRunOnRenderThread(new Runnable() {
             @Override
             public void run() {
+                if (typeChanged) {
+                    typeChanged = false;
+                    if (beauty != null) {
+                        beauty.releaseGLResource();
+                    }
+
+                    beauty = new AyBeauty(type);
+                    beauty.initGLResource();
+                }
+
                 filterProgram.use();
 
                 if (outputFramebuffer != null) {
@@ -77,19 +88,10 @@ public class AYGPUImageBeautyFilter extends AYGPUImageFilter {
     }
 
     public void setType(final AyBeauty.AY_BEAUTY_TYPE type) {
-        this.type = type;
-
-        context.syncRunOnRenderThread(new Runnable() {
-            @Override
-            public void run() {
-                if (beauty != null) {
-                    beauty.releaseGLResource();
-                }
-
-                beauty = new AyBeauty(type);
-                beauty.initGLResource();
-            }
-        });
+        if (this.type != type) {
+            this.type = type;
+            typeChanged = true;
+        }
     }
 
     public void setIntensity(float intensity) {
